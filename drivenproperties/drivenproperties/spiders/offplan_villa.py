@@ -9,8 +9,8 @@ import uuid
 
 
 class testingSpider(scrapy.Spider):
-    name = 'apartment_offplan'
-    start_urls = ["https://www.drivenproperties.com/dubai/off-plan-apartments-for-sale?page=1"]
+    name = 'offplan_villa'
+    start_urls = ["https://www.drivenproperties.com/dubai/off-plan-villas-for-sale?page=1"]
     page_number = 2
     link = ""
 
@@ -23,13 +23,13 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow('https://www.drivenproperties.com/'+one,callback = self.page)
 
-        next_page = f"https://www.drivenproperties.com/dubai/off-plan-apartments-for-sale?page={self.page_number}/"
-        if next_page is not None and self.page_number < 7:
+        next_page = f"https://www.drivenproperties.com/dubai/off-plan-villas-for-sale?page={self.page_number}/"
+        if next_page is not None and self.page_number < 3:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'driven offplan apartment done'}
+            data = {'message': 'driven offplan villa done'}
             response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
@@ -95,6 +95,7 @@ class testingSpider(scrapy.Spider):
         items['near_by_places'] = near_by_places
         items['unit_sizes'] = unit_sizes
         items['signature'] = signature
+
         yield items
 
 

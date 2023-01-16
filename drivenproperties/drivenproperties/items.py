@@ -23,6 +23,30 @@ class ApartmentOffplanItem(scrapy.Item):
     payment_plan = scrapy.Field()
     location = scrapy.Field()
     near_by_places = scrapy.Field()
-    # amentities = scrapy.Field()
-    # unit_sizes = scrapy.Field()
+    unit_sizes = scrapy.Field()
+    signature = scrapy.Field()
     # video = scrapy.Field()
+class BuyItem(scrapy.Item):
+    title = scrapy.Field()
+    type = scrapy.Field()
+    bedrooms = scrapy.Field()
+    bathrooms = scrapy.Field()
+    size = scrapy.Field()
+    price = scrapy.Field()
+    signature = scrapy.Field()
+    area = scrapy.Field()
+    amentities = scrapy.Field()
+    images = scrapy.Field()
+    description = scrapy.Field()
+
+class BlogItem(scrapy.Item):
+    title = scrapy.Field()
+    content = scrapy.Field()
+class WhyDubaiItem(scrapy.Item):
+    content = scrapy.Field()
+class AreaItem(scrapy.Item):
+    title = scrapy.Field()
+    about = scrapy.Field()
+    questions = scrapy.Field()
+    answers = scrapy.Field()
+
