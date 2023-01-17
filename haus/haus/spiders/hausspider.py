@@ -58,8 +58,8 @@ class HausspiderSpider(scrapy.Spider):
         develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get()
         completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get()
         price=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get()
+        description ="".join(response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract())
         # text = response.css(".col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12 .dpx-area-white.dpx-content-area.dpx-content-area-padding p::text").extract()
-        # description = response.css("div.main section.section-developments-details div.section-body section.section-header div.container h1.project-title::text").get()
         # highlights_keys = ['price','developer','area','bedrooms']
         # highlights = methods2.get_text_from_same_element_multiple_and_seperate_to_key_value(response.css(".col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12 .dpx-area-white.dpx-content-area.dpx-content-area-padding ul li").extract(),{'keys':["Bedrooms",'Developer','Area','Price']})
 
@@ -94,7 +94,7 @@ class HausspiderSpider(scrapy.Spider):
         items['develpment_type'] = develpment_type
         items['completion_date'] = completion_date
         items['price'] = price
-        # items['description'] = description
+        items['description'] = description
         # items['price'] = highlights['price']
         # items['developer'] = highlights['developer']
         # items['area'] = highlights['area']
