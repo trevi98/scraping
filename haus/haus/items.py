@@ -39,4 +39,51 @@ class HausBuyItem(scrapy.Item):
     description = scrapy.Field()
     amentities = scrapy.Field()
 
+class HausRentItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    images = scrapy.Field()
+    brochure = scrapy.Field()
+    signature = scrapy.Field()
+    price = scrapy.Field()
+    bedrooms = scrapy.Field()
+    bathrooms = scrapy.Field()
+    size = scrapy.Field()
+    description = scrapy.Field()
+    amentities = scrapy.Field()
+
+    
+class HausTenantsGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
+
+
+class HausBuyersGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
+
+
+class HausSellersGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
+
+
+class HausLandlordsGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
+
+    
+class HausAreaQuidesItem(scrapy.Item):
+    # define the fields for your item here like:
+    title=scrapy.Field()
+    description=scrapy.Field()
+    about=scrapy.Field()
     
