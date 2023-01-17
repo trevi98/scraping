@@ -39,8 +39,7 @@ class HausBuyItem(scrapy.Item):
     description = scrapy.Field()
     amentities = scrapy.Field()
 
-
-class HausRenItem(scrapy.Item):
+class HausRentItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     images = scrapy.Field()
@@ -53,4 +52,24 @@ class HausRenItem(scrapy.Item):
     description = scrapy.Field()
     amentities = scrapy.Field()
 
+    
+class HausTenantsGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
+
+
+class HausBuyersGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
+
+    
+class HausSellersGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
     

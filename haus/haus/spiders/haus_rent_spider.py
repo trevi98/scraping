@@ -1,5 +1,5 @@
 import scrapy
-from ..items import HausRenItem
+from ..items import HausRentItem
 import uuid
 from .helpers import methods
 from .file_downloader import img_downloader
@@ -9,7 +9,7 @@ import requests
 
 
 class HausspiderSpider(scrapy.Spider):
-    name = 'hausbuyspider'
+    name = 'hausrentspider'
     start_urls = ['https://www.hausandhaus.com/property-leasing/properties-available-for-rent-in-dubai']
     link=""
     page_number=2
@@ -33,7 +33,7 @@ class HausspiderSpider(scrapy.Spider):
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
-        items = HausRenItem()
+        items = HausRentItem()
         signature = uuid.uuid1()
 
         title = "N/A"
