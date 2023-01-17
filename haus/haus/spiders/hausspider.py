@@ -49,6 +49,7 @@ class HausspiderSpider(scrapy.Spider):
         unit_sizes = []
         video = "N/A"
         images = "N/A"
+        images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
         title = response.css("div.intro-content div.titile::text").get()
         overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.heading h2::text").get()
         brochure_link=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.btn-group a::attr('href')")[1].get()
@@ -58,34 +59,23 @@ class HausspiderSpider(scrapy.Spider):
         develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get()
         completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get()
         price=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get()
-        description ="".join(response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract())
-        # text = response.css(".col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12 .dpx-area-white.dpx-content-area.dpx-content-area-padding p::text").extract()
-        # highlights_keys = ['price','developer','area','bedrooms']
-        # highlights = methods2.get_text_from_same_element_multiple_and_seperate_to_key_value(response.css(".col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12 .dpx-area-white.dpx-content-area.dpx-content-area-padding ul li").extract(),{'keys':["Bedrooms",'Developer','Area','Price']})
+        description_details =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract()
+        description =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 strong::text").extract()
+        description.remove("Amenities")
+        for i in description:
+            i+=description_details[i]
+        description=''.join(description).replace("\n","")
+        payments=[]
+        key_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li strong::text").extract()
+        for i in key_payments:
+            i=i.split()[-1]
+        value_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li::text").extract()
+        size=len(value_payments)
+        for i in range(size-1):
+            payments.append({key_payments[i]:value_payments[i]})     
 
-        # for key in highlights_keys:
-        #     if key not in highlights.keys():
-        #         highlights[key] = ""
-
-        # amentities = methods2.get_text_as_list_form_simeler_elmnts(response.css(".dpx-project-amenities .col-xl-2.col-lg-2.col-md-2.col-sm-2.col-6").extract())
-        # images = methods.img_downloader_method_src(response.css(".carousel-inner").get(),signature)
-
-        # payment_plan = methods2.get_text_as_list_form_simeler_elmnts(response.css(".dpx-project-payment-section.dpx-area-white.dpx-content-area.dpx-content-area-padding .col-xl-3.col-lg-3.col-md-3.col-sm-3.col-12").extract())
-        # location = response.css(".dpx-project-privileged-location-area p::text").get()
-        # near_by_places = methods2.get_text_as_list_form_simeler_elmnts(response.css(".dpx-project-privileged-location-area td").extract())
-        # if len(near_by_places) == 0:
-        #     near_by_places = methods2.get_text_as_list_form_simeler_elmnts(response.css(".dpx-project-privileged-location-area ul li").extract())
-        # try:
-        #     table = response.css(".dpx-project-unit-sizes- tr").extract()
-        #     for row in table:
-        #         soup = BeautifulSoup(row,'lxml')
-        #         tds = soup.find_all('td')
-        #         unit_sizes.append({'bedrooms':tds[0].text.replace("\n",""),'size':tds[1].text.replace("\n",""),'price':tds[2].text.replace("\n","")})
-        # except:
-        #     unit_sizes = "N\A"
-        # description = soup.find_all('p')
        
-        items['images'] = methods.img_downloader_method_src(response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get(),signature)
+        items['images'] = methods.img_downloader_method_src(images,signature)
         items['title'] = title
         items['overview'] = overview
         items['brochure'] = brochure
@@ -96,6 +86,7 @@ class HausspiderSpider(scrapy.Spider):
         items['signature'] = signature
         items['price'] = price
         items['description'] = description
+        items['payments'] = description
         # items['price'] = highlights['price']
         # items['developer'] = highlights['developer']
         # items['area'] = highlights['area']

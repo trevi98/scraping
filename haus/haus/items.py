@@ -23,4 +23,6 @@ class HausOffPlanItem(scrapy.Item):
     price = scrapy.Field()
     images = scrapy.Field()
     signature = scrapy.Field()
+    amentities = scrapy.Field()
+    payments = scrapy.Field()
     # pass
