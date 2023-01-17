@@ -91,41 +91,22 @@ class methods():
                 continue
         return data  
 
-    # def img_downloader_method_src(elmnt,signature):
-    #     try:
-    #         data = []
-    #         soup = BeautifulSoup(elmnt,'lxml')
-    #         imgs = soup.find_all('img')
-    #         counter = 0
-    #         for img in imgs:
-    #             counter += 1
-    #             try:
-    #                 if 'svg' not in img['src']:
-    #                     data.append(img_downloader.download(img['src'],signature,counter))
-    #             except:
-    #                 continue
-    #         return data  
-    #     except:
-    #         return []
     def img_downloader_method_src(elmnt,signature):
-        data = []
-        soup = BeautifulSoup(elmnt,'lxml')
-        imgs = soup.find_all('img')
-        counter = 0
-        for img in imgs:
-            counter += 1
-            if 'svg' not in img['src']:
-                data.append(img_downloader.download(img['src'],signature,counter))
-        return data  
-    def img_downloader_method_from_list(list,signature):
-        data = []
-        counter = 0
-        for img in list:
-            counter += 1
-            # if 'svg' not in img['src']:
-            data.append(img_downloader.download(img,signature,counter))
-        return data  
-       
+        try:
+            data = []
+            soup = BeautifulSoup(elmnt,'lxml')
+            imgs = soup.find_all('img')
+            counter = 0
+            for img in imgs:
+                counter += 1
+                try:
+                    if 'svg' not in img['src']:
+                        data.append(img_downloader.download(img['src'],signature,counter))
+                except:
+                    continue
+            return data  
+        except:
+            return []
  
 
 

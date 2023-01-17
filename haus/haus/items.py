@@ -21,4 +21,6 @@ class HausOffPlanItem(scrapy.Item):
     develpment_type = scrapy.Field()
     completion_date = scrapy.Field()
     price = scrapy.Field()
-    pass
+    images = scrapy.Field()
+    signature = scrapy.Field()
+    # pass

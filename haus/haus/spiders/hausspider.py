@@ -85,7 +85,7 @@ class HausspiderSpider(scrapy.Spider):
         #     unit_sizes = "N\A"
         # description = soup.find_all('p')
        
-        # images = methods.img_downloader_method(elmnt,signature)
+        items['images'] = methods.img_downloader_method_src(response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get(),signature)
         items['title'] = title
         items['overview'] = overview
         items['brochure'] = brochure
@@ -93,6 +93,7 @@ class HausspiderSpider(scrapy.Spider):
         items['developer'] = developer
         items['develpment_type'] = develpment_type
         items['completion_date'] = completion_date
+        items['signature'] = signature
         items['price'] = price
         items['description'] = description
         # items['price'] = highlights['price']
@@ -108,4 +109,3 @@ class HausspiderSpider(scrapy.Spider):
 
         yield items
 #for images
-# response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details div.owl-carousel.owl-loaded.owl-drag div.owl-stage-outer").extract()
