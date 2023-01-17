@@ -50,14 +50,16 @@ class HausspiderSpider(scrapy.Spider):
         images = "N/A"
         images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
         title = response.css("div.intro-content div.titile::text").get()
-        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.heading h2::text").get()
+        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header p.lead::text").get()
         brochure_link=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.btn-group a::attr('href')")[1].get()
         brochure=img_downloader.download(brochure_link,signature,99)
         location=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-location::text").get()
         developer=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-developer::text").get()
         develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get()
         completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get()
-        price=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get()
+        price_name=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get()
+        price_number=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price span::text").get()
+        price=price_name+price_number
         description_details =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract()
         description =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 strong::text").extract()
         if "Amenities" in description:

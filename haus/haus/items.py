@@ -26,3 +26,8 @@ class HausOffPlanItem(scrapy.Item):
     amentities = scrapy.Field()
     payments = scrapy.Field()
     # pass
+class HausBuyItem(scrapy.Item):
+    # define the fields for your item here like:
+    # title = scrapy.Field()
+
+    pass

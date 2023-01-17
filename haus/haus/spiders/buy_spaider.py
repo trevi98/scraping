@@ -1,5 +1,5 @@
 import scrapy
-from ..items import HausOffPlanItem
+from ..items import HausBuyItem
 import uuid
 from .helpers import methods
 from .file_downloader import img_downloader
@@ -32,7 +32,7 @@ class HausspiderSpider(scrapy.Spider):
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
-        items = HausOffPlanItem()
+        items = HausBuyItem()
         signature = uuid.uuid1()
 
         title = "N/A"
