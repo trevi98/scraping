@@ -61,42 +61,33 @@ class HausspiderSpider(scrapy.Spider):
         price=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get()
         description_details =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract()
         description =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 strong::text").extract()
-        description.remove("Amenities")
-        for i in description:
-            i+=description_details[i]
-        description=''.join(description).replace("\n","")
+        if "Amenities" in description:
+            description.remove("Amenities")
+        for i in range(len(description)-1):
+            description[i]+=description_details[i]
+        description=','.join([str(i) for i in description]).replace("\n","")
         payments=[]
         key_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li strong::text").extract()
-        for i in key_payments:
-            i=i.split()[-1]
+        for i in range(len(key_payments)-1):
+            key_payments[i]=key_payments[i].split()[-1]
         value_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li::text").extract()
-        size=len(value_payments)
-        for i in range(size-1):
+        for i in range(len(value_payments)-1):
             payments.append({key_payments[i]:value_payments[i]})     
 
        
-        items['images'] = methods.img_downloader_method_src(images,signature)
-        items['title'] = title
-        items['overview'] = overview
-        items['brochure'] = brochure
-        items['location'] = location
-        items['developer'] = developer
-        items['develpment_type'] = develpment_type
-        items['completion_date'] = completion_date
-        items['signature'] = signature
-        items['price'] = price
-        items['description'] = description
-        items['payments'] = description
-        # items['price'] = highlights['price']
-        # items['developer'] = highlights['developer']
-        # items['area'] = highlights['area']
-        # items['bedrooms'] = highlights['bedrooms']
-        # items['amentities'] = amentities
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
+        # items['images'] = methods.img_downloader_method_src(images,signature)
+        # items['title'] = title
+        # items['overview'] = overview
+        # items['brochure'] = brochure
+        # items['location'] = location
+        # items['developer'] = developer
+        # items['develpment_type'] = develpment_type
+        # items['completion_date'] = completion_date
         # items['signature'] = signature
+        # items['price'] = price
+        # items['description'] = description
+        items['payments'] = payments
+
 
         yield items
-#for images
+
