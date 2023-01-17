@@ -10,8 +10,8 @@ import json
 
 
 class testingSpider(scrapy.Spider):
-    name = 'buy'
-    start_urls = ["https://api.allsoppandallsopp.com/dubai/properties/residential/sales/page-1"]
+    name = 'rent'
+    start_urls = ["https://www.allsoppandallsopp.com/dubai/properties/residential/lettings/page-1"]
     page_number = 2
     link = ""
 
@@ -27,16 +27,16 @@ class testingSpider(scrapy.Spider):
 
         for one in all:
             self.link = one
-            yield response.follow("https://api.allsoppandallsopp.com/dubai/property/sales/"+one[0],callback = self.page)
+            yield response.follow("https://www.allsoppandallsopp.com/dubai/property/lettings/"+one[0],callback = self.page)
 
-        next_page = f"https://api.allsoppandallsopp.com/dubai/properties/residential/sales/page-{self.page_number}/"
+        next_page = f"https://www.allsoppandallsopp.com/dubai/properties/residential/lettings/page-{self.page_number}/"
         if next_page is not None and self.page_number < 99:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
 
         else:
             # pass
-            data = {'message': 'machine 1 | allsop buy done (;'}
+            data = {'message': 'machine 1 | allsop rent done (;'}
             response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 

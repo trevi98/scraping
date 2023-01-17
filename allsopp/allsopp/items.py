@@ -26,15 +26,15 @@ class ApartmentOffplanItem(scrapy.Item):
 
 class BuyplanItem(scrapy.Item):
     title = scrapy.Field()
-    area = scrapy.Field()
-    priceFrom = scrapy.Field()
-    priceTo = scrapy.Field()
     description = scrapy.Field()
-    handoverDate = scrapy.Field()
-    location = scrapy.Field()
-    featuredImage = scrapy.Field()
-    brochure = scrapy.Field()
-    brochure = scrapy.Field()
-    property_developers = scrapy.Field()
-    floor_plans = scrapy.Field()
-
+    bathrooms = scrapy.Field()
+    lot_size = scrapy.Field()
+    category = scrapy.Field()
+    amentities = scrapy.Field()
+    area = scrapy.Field()
+    price = scrapy.Field()
+class AreaItem(scrapy.Item):
+    title = scrapy.Field()
+    description = scrapy.Field()
+    faqs = scrapy.Field()
+  

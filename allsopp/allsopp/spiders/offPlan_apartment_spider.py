@@ -4,6 +4,8 @@ from ..items import ApartmentOffplanItem
 from .helpers import methods
 from scrapy.http import FormRequest
 import json
+import requests
+
 
 # from .file_downloader import img_downloader
 import uuid
@@ -51,4 +53,6 @@ class AllsoppspiderSpider(scrapy.Spider):
                 floor_plans = []
             items['floor_plans'] = methods.img_downloader_method_from_list(floor_plans,signature)
             yield items
+        data = {'message': 'machine 1 | allsop offplan done (;'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
      
