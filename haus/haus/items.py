@@ -66,10 +66,24 @@ class HausBuyersGuideItem(scrapy.Item):
     descriptions=scrapy.Field()
     descriptionHome=scrapy.Field()
 
-    
+
 class HausSellersGuideItem(scrapy.Item):
     # define the fields for your item here like:
     titleHome=scrapy.Field()
     descriptions=scrapy.Field()
     descriptionHome=scrapy.Field()
+
+
+class HausLandlordsGuideItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptions=scrapy.Field()
+    descriptionHome=scrapy.Field()
+
+    
+class HausAreaQuidesItem(scrapy.Item):
+    # define the fields for your item here like:
+    title=scrapy.Field()
+    description=scrapy.Field()
+    about=scrapy.Field()
     
