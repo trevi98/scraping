@@ -9,8 +9,8 @@ import requests
 
 
 class HausspiderSpider(scrapy.Spider):
-    name = 'hausspider'
-    start_urls = ['https://www.hausandhaus.com/new-developments/developments-of-properties-in-dubai']
+    name = 'hausbuyspider'
+    start_urls = ['https://www.hausandhaus.com/property-sales/properties-available-for-sale-in-dubai']
     link=""
     page_number=2
 
@@ -48,6 +48,7 @@ class HausspiderSpider(scrapy.Spider):
         unit_sizes = []
         video = "N/A"
         images = "N/A"
+        amentities = response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 ul li::text").extract()
         images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
         title = response.css("div.intro-content div.titile::text").get()
         overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.heading h2::text").get()

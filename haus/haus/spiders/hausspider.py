@@ -84,9 +84,8 @@ class HausspiderSpider(scrapy.Spider):
         items['completion_date'] = completion_date
         items['signature'] = signature
         items['price'] = price
+        items['amentities'] = amentities
         items['description'] = description
         items['payments'] = payments
-
-
         yield items
 
