@@ -15,14 +15,15 @@ class HausspiderSpider(scrapy.Spider):
     page_number=2
 
     def parse(self,response):
-        all = response.css("div.card.card-primary.property.results-property div.col-sm-6.col-xs-12.card-content.box.box-2 div.content-wrapper a.btn.btn-black.btn-details.btn-animate::attr('href')").extract()
+        all = response.css("div.properties.map-properties.equalize-items div.col.col-property.col-sm-6.col-xs-6.col-xs-custom.js-animate-bottom div.card.card-white.card-primary.card-property.property.results-property div.card-image div.img-wrapper a::attr('href')").extract()
 
         for one in all:
             self.link = one
             yield response.follow('https://www.hausandhaus.com/'+one,callback = self.page)
 
-        next_page = f"https://www.hausandhaus.com/new-developments/developments-of-properties-in-dubai/page-{self.page_number}/"
-        if next_page is not None and self.page_number < 6:
+        next_page = f"https://www.hausandhaus.com/property-sales/properties-available-for-sale-in-dubai/page-{self.page_number}/"
+        if next_page is not None and self.page_number < 1:
+            print("next_page",next_page)
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
@@ -48,45 +49,29 @@ class HausspiderSpider(scrapy.Spider):
         unit_sizes = []
         video = "N/A"
         images = "N/A"
-        amentities = response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 ul li::text").extract()
-        images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
-        title = response.css("div.intro-content div.titile::text").get()
-        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.heading h2::text").get()
-        brochure_link=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.btn-group a::attr('href')")[1].get()
+        amentities = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-features ul li::text").extract()
+        bedrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").get()
+        bathrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[2]
+        size=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[4]
+        images=response.css("div.main section.section-details.section-details-1 div.section-gallery.js-animate-top div.section-gallery-wrapper.new.instruction").get()
+        title = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading::text").get()
+        brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
         brochure=img_downloader.download(brochure_link,signature,99)
-        location=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-location::text").get()
-        developer=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-developer::text").get()
-        develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get()
-        completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get()
-        price=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get()
-        description_details =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract()
-        description =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 strong::text").extract()
-        if "Amenities" in description:
-            description.remove("Amenities")
-        for i in range(len(description)-1):
-            description[i]+=description_details[i]
-        description=','.join([str(i) for i in description]).replace("\n","")
-        payments=[]
-        key_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li strong::text").extract()
-        for i in range(len(key_payments)-1):
-            key_payments[i]=key_payments[i].split()[-1]
-        value_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li::text").extract()
-        for i in range(len(value_payments)-1):
-            payments.append({key_payments[i]:value_payments[i]})     
+        price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get()
+        description =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text::text").get().replace("\n","")
+    
 
-       
+
         items['images'] = methods.img_downloader_method_src(images,signature)
         items['title'] = title
-        items['overview'] = overview
+        items['bedrooms'] = bedrooms
+        items['bathrooms'] = bathrooms
+        items['size'] = size
         items['brochure'] = brochure
-        items['location'] = location
-        items['developer'] = developer
-        items['develpment_type'] = develpment_type
-        items['completion_date'] = completion_date
         items['signature'] = signature
         items['price'] = price
         items['description'] = description
-        items['payments'] = payments
+        items['amentities'] = amentities
 
 
         yield items

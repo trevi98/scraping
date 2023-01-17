@@ -28,6 +28,15 @@ class HausOffPlanItem(scrapy.Item):
     # pass
 class HausBuyItem(scrapy.Item):
     # define the fields for your item here like:
-    # title = scrapy.Field()
+    title = scrapy.Field()
+    images = scrapy.Field()
+    brochure = scrapy.Field()
+    signature = scrapy.Field()
+    price = scrapy.Field()
+    bedrooms = scrapy.Field()
+    bathrooms = scrapy.Field()
+    size = scrapy.Field()
+    description = scrapy.Field()
+    amentities = scrapy.Field()
 
-    pass
+    
