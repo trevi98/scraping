@@ -15,7 +15,6 @@ class HausspiderSpider(scrapy.Spider):
     page_number=2
 
     def parse(self,response):
-        # items = TestscrapyItem()
         all = response.css("div.card.card-primary.property.results-property div.col-sm-6.col-xs-12.card-content.box.box-2 div.content-wrapper a.btn.btn-black.btn-details.btn-animate::attr('href')").extract()
 
         for one in all:
