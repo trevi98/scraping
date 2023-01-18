@@ -9,7 +9,7 @@ import requests
 
 
 class HausspiderSpider(scrapy.Spider):
-    name = 'hausrentspider'
+    name = 'rent'
     start_urls = ['https://www.hausandhaus.com/property-leasing/properties-available-for-rent-in-dubai']
     link=""
     page_number=2
@@ -28,7 +28,7 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'driven offplan villa done'}
+            data = {'message': 'machine 2 | haus rent done (;'}
             response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
@@ -50,14 +50,14 @@ class HausspiderSpider(scrapy.Spider):
         video = "N/A"
         images = "N/A"
         amentities = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-features ul li::text").extract()
-        bedrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").get()
-        bathrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[2]
-        size=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[4]
-        images=response.css("div.main section.section-details.section-details-1 div.section-gallery.js-animate-top div.section-gallery-wrapper.new.instruction").get()
-        title = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading::text").get()
+        bedrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").get().replace("\n","").replace("  ","")
+        bathrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[2].replace("\n","").replace("  ","")
+        size=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[4].replace("\n","").replace("  ","")
+        images=response.css("div.main section.section-details.section-details-1 div.section-gallery.js-animate-top div.section-gallery-wrapper.new.instruction").get().replace("\n","").replace("  ","")
+        title = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading::text").get().replace("\n","").replace("  ","")
         brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
         brochure=img_downloader.download(brochure_link,signature,99)
-        price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get()
+        price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get().replace("\n","").replace("  ","")
         description =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text::text").get().replace("\n","")
     
 

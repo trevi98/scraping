@@ -9,7 +9,7 @@ import requests
 
 
 class HausspiderSpider(scrapy.Spider):
-    name = 'offplan'
+    name = 'hausspider'
     start_urls = ['https://www.hausandhaus.com/new-developments/developments-of-properties-in-dubai']
     link=""
     page_number=2
@@ -27,7 +27,7 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'machine 2 | haus offplan done (;'}
+            data = {'message': 'driven offplan villa done'}
             response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
@@ -49,29 +49,23 @@ class HausspiderSpider(scrapy.Spider):
         video = "N/A"
         images = "N/A"
         images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
-        title = response.css("div.intro-content div.titile::text").get().replace("\n","").replace("  ","")
-        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header p.lead::text").get().replace("\n","").replace("  ","")
+        title = response.css("div.intro-content div.titile::text").get()
+        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header p.lead::text").get()
         brochure_link=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.btn-group a::attr('href')")[1].get()
         brochure=img_downloader.download(brochure_link,signature,99)
-        location=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-location::text").get().replace("\n","").replace("  ","")
-        developer=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-developer::text").get().replace("\n","").replace("  ","")
-        develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get().replace("\n","").replace("  ","")
-        completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get().replace("\n","").replace("  ","")
-        price_name=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get().replace("\n","").replace("  ","")
+        location=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-location::text").get()
+        developer=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-developer::text").get()
+        develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get()
+        completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get()
+        price_name=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get()
         price_number=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price span::text").get()
-        try:
-            price=price_name+price_number
-        except:
-            price = price_name
+        price=price_name+str(price_number)
         description_details =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract()
         description =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 strong::text").extract()
         if "Amenities" in description:
             description.remove("Amenities")
         for i in range(len(description)-1):
-            try:
-                description[i]+=description_details[i]
-            except:
-                description[i] = description[i]
+            description[i]+=description_details[i]
         description=','.join([str(i) for i in description]).replace("\n","")
         payments=[]
         key_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li strong::text").extract()
@@ -85,7 +79,7 @@ class HausspiderSpider(scrapy.Spider):
         items['images'] = methods.img_downloader_method_src(images,signature)
         items['title'] = title
         items['overview'] = overview
-        # items['brochure'] = brochure
+        items['brochure'] = brochure
         items['location'] = location
         items['developer'] = developer
         items['develpment_type'] = develpment_type

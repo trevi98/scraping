@@ -6,12 +6,7 @@
 import scrapy
 
 
-class FampropertiesItem(scrapy.Item):
+class BinayahItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
-class BlogItem(scrapy.Item):
-    # define the fields for your item here like:
-    title = scrapy.Field()
-    description = scrapy.Field()
-    # pass

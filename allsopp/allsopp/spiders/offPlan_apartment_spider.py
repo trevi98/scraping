@@ -10,7 +10,7 @@ import requests
 # from .file_downloader import img_downloader
 import uuid
 class AllsoppspiderSpider(scrapy.Spider):
-    name = 'apartment_offplan_item'
+    name = 'offplan'
     start_urls = ['https://api.allsoppandallsopp.com/dubai/buyers/off-plan']
     page_number=2
     link=""

@@ -9,7 +9,7 @@ import requests
 
 
 class HausspiderSpider(scrapy.Spider):
-    name = 'hausAreaQuidesSpider'
+    name = 'area'
     start_urls = ['https://www.hausandhaus.com/living-in-dubai/area-guides?start=1']
     link=""
     page_number=10
@@ -28,7 +28,7 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'driven offplan villa done'}
+            data = {'message': 'machine 2 | haus areae done (;'}
             response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
@@ -49,12 +49,12 @@ class HausspiderSpider(scrapy.Spider):
         unit_sizes = []
         video = "N/A"
         images = "N/A"
-        title = response.css("div.intro-content h1::text").get()
-        about = response.css(" div.article-head div.introtext.row.js-animate-right div.col-sm-12 p::text").get()
+        title = response.css("div.intro-content h1::text").get().replace("\n","").replace("  ","")
+        about = response.css(" div.article-head div.introtext.row.js-animate-right div.col-sm-12 p::text").get().replace("\n","").replace("  ","")
         soup=response.css(" div.article-entry div.row div.col-sm-6 p").extract()
         description=[]
         for i in range(len(soup)):
-            one=BeautifulSoup(soup[i],"lxml").text
+            one=BeautifulSoup(soup[i],"lxml").text.replace("\n","").replace("  ","")
             description.append(one)
     
         items['title'] = title
