@@ -10,7 +10,7 @@ class HausspiderSpider(scrapy.Spider):
         items=HausTenantsGuideItem()
         titleHome=response.css("div.article-head h1::text").get().replace("\n","").replace("  ","")
         descriptionHome=response.css("div.article-head div.introtext.row.js-animate-right div.col-sm-12 p::text").get().replace("\n","").replace("  ","")
-        all_descriptions=[]
+        all_descriptions=""
         soup=response.css("div.article-body.remove-border.js-animate-left div.article-entry div.row div.col-sm-6 p").extract()
         delete="For more information about renting a property in Dubai, contact the haus & haus team on +971 4 302 5800 or register your interest here."
         for i in range(len(soup)):
