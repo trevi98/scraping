@@ -15,7 +15,7 @@ class HausspiderSpider(scrapy.Spider):
         soup=response.css("div.article-body.remove-border.js-animate-left div.article-entry div.row div.col-sm-6 p").extract()
         for i in range(len(soup)):
             one=BeautifulSoup(soup[i],"lxml").text.replace("\n","").replace("  ","")
-            all_descriptions.append(one)
+            all_descriptions+=one
         items["titleHome"]=titleHome
         items["descriptions"]=all_descriptions
         items["descriptionHome"]=descriptionHome

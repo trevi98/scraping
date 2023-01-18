@@ -55,7 +55,7 @@ class HausspiderSpider(scrapy.Spider):
         description=[]
         for i in range(len(soup)):
             one=BeautifulSoup(soup[i],"lxml").text.replace("\n","").replace("  ","")
-            description.append(one)
+            description+=one
     
         items['title'] = title
         items['about'] = about

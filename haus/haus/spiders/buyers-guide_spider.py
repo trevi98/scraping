@@ -17,7 +17,7 @@ class HausspiderSpider(scrapy.Spider):
             one=BeautifulSoup(soup[i],"lxml").text.replace("\n","").replace("  ","")
             if delete in one:
                 one.remove(delete)
-            all_descriptions.append(one)
+            all_descriptions+=one
         items["titleHome"]=titleHome
         items["descriptions"]=all_descriptions
         items["descriptionHome"]=descriptionHome 
