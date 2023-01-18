@@ -15,4 +15,16 @@ class ProvidentOffplanItem(scrapy.Item):
     amentities = scrapy.Field()
     units = scrapy.Field()
     payments = scrapy.Field()
+
+class HausBuyItem(scrapy.Item):
+    # define the fields for your item here like:
+    images = scrapy.Field()
+    title = scrapy.Field()
+    location = scrapy.Field()
+    price = scrapy.Field()
+    developer = scrapy.Field()
+    property = scrapy.Field()
+    signature = scrapy.Field()
+    description = scrapy.Field()
+    features = scrapy.Field()
     

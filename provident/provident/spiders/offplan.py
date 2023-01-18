@@ -42,7 +42,7 @@ class OffplanSpider(scrapy.Spider):
         images = "N/A"
         # images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
         try:
-            title =response.css("div.wpb_wrapper h2.vc_custom_heading::text").get()
+            title =response.css("div.wpb_wrapper .vc_custom_heading::text").get()
         except:
             title=""     
         soup_overview=response.css("div.wpb_wrapper div.vc_row.wpb_row.vc_inner.vc_row-fluid.vc_custom_1548935033331.vc_row-has-fill div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element div.wpb_wrapper p").extract()
