@@ -52,10 +52,10 @@ class HausspiderSpider(scrapy.Spider):
         title = response.css("div.intro-content h1::text").get().replace("\n","").replace("  ","")
         about = response.css(" div.article-head div.introtext.row.js-animate-right div.col-sm-12 p::text").get().replace("\n","").replace("  ","")
         soup=response.css(" div.article-entry div.row div.col-sm-6 p").extract()
-        description=[]
+        description=""
         for i in range(len(soup)):
             one=BeautifulSoup(soup[i],"lxml").text.replace("\n","").replace("  ","")
-            description.append(one)
+            description+=one
     
         items['title'] = title
         items['about'] = about

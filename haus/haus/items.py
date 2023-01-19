@@ -86,4 +86,18 @@ class HausAreaQuidesItem(scrapy.Item):
     title=scrapy.Field()
     description=scrapy.Field()
     about=scrapy.Field()
+
+
+class HausBlogInformationsItem(scrapy.Item):
+    # define the fields for your item here like:
+    title=scrapy.Field()
+    description=scrapy.Field()
+    overview=scrapy.Field()
+
+
+class HausLastesNewsItem(scrapy.Item):
+    # define the fields for your item here like:
+    title=scrapy.Field()
+    description=scrapy.Field()
+    overview=scrapy.Field()
     
