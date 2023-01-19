@@ -9,12 +9,14 @@ import scrapy
 class ProvidentOffplanItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
-    overview = scrapy.Field()
-    features = scrapy.Field()
-    location = scrapy.Field()
-    amentities = scrapy.Field()
-    units = scrapy.Field()
-    payments = scrapy.Field()
+    sub_titles = scrapy.Field()
+    description = scrapy.Field()
+    # overview = scrapy.Field()
+    # features = scrapy.Field()
+    # location = scrapy.Field()
+    # amentities = scrapy.Field()
+    # units = scrapy.Field()
+    # payments = scrapy.Field()
     images = scrapy.Field()
     signature = scrapy.Field()
 

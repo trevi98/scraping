@@ -19,7 +19,6 @@ class OffplanSpider(scrapy.Spider):
 
         for one in all:
             self.link = one
-            print("one  : ",one)
             yield response.follow(one,callback = self.page)
 
         
@@ -41,46 +40,18 @@ class OffplanSpider(scrapy.Spider):
         unit_sizes = []
         video = "N/A"
         images = "N/A"
-        images=response.css(".vc_grid-container.vc_clearfix.wpb_content_element.vc_media_grid").get()
         try:
             title =response.css("div.wpb_wrapper .vc_custom_heading::text").get().replace("\n","").replace("  ","")
         except:
-            title=""     
-        soup_overview=response.css("div.wpb_wrapper div.vc_row.wpb_row.vc_inner.vc_row-fluid.vc_custom_1548935033331.vc_row-has-fill div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element div.wpb_wrapper p").extract()
-        overview=""
-        for i in range(len(soup_overview)):
-            one=BeautifulSoup(soup_overview[i],"lxml").text
-            overview+=one
-        amentities=[]
-        try:
-            amentities_description=response.css("div.wpb_wrapper h3.vc_custom_heading.vc_custom_1609242357676  ~ div.vc_separator.wpb_content_element.vc_separator_align_center.vc_sep_width_10.vc_sep_pos_align_left.vc_separator_no_text ~ div.wpb_text_column.wpb_content_element div.wpb_wrapper p span::text").get().replace("\n","").replace("  ","")
-        except:
-            amentities_description=""
-        try:        
-            amentities_list=response.css("div.wpb_column.vc_column_container.vc_col-sm-6 li::text").extract()
-        except:
-            amentities_list=[]
-        amentities.append({amentities_description:amentities_list})        
-        features=response.css("div.wpb_wrapper h3.vc_custom_heading.vc_custom_1609239901325 ~ div.vc_separator.wpb_content_element.vc_separator_align_center.vc_sep_width_10.vc_sep_pos_align_left.vc_separator_no_text ~ div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li::text").extract()
-        try:
-            location=response.css("div#locationmap  div.wpb_column.vc_column_container.vc_col-sm-12 div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element div.wpb_wrapper p::text").get().replace("\n","").replace("  ","")
-        except:
-            location=""    
-        units=[]
-        description_units = ""
-        try:
-            description_units=response.css("div.wpb_wrapper h3.vc_custom_heading.vc_custom_1671452651672 ~ div.wpb_text_column.wpb_content_element div.wpb_wrapper p::text").get().replace("\n","").replace("  ","")
-        except:
-            description_units = ""
-        try:
-            list_units=response.css("div.wpb_wrapper h3.vc_custom_heading.vc_custom_1671452651672 ~ div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li::text").extract()
-        except:
-            list_units=[] 
-        units.append({description_units:list_units})              
-        try:
-            payments=response.css("div.wpb_wrapper h3.vc_custom_heading.vc_custom_1609242466340 ~ div.wpb_text_column.wpb_content_element ul li::text").extract()
-        except:
-            payments="N/A"
+            title=""
+        sub_titles=response.css("div.wpb_wrapper h3::text").extract()
+        souo_description=response.css("div.vc_row.wpb_row.vc_row-fluid.vc_custom_1548935055607.vc_row-has-fill").extract()
+        description=[]
+        for i in range(len(souo_description)-1):
+            one=BeautifulSoup(souo_description[i],"lxml").text
+            one=one.replace("\n","").replace("  ","")
+            description.append(one)
+      
         images_cont = json.loads(response.css(".vc_grid-container.vc_clearfix.wpb_content_element.vc_media_grid::attr(data-vc-grid-settings)").get())
         page_id = images_cont['page_id']
         short_code = images_cont['shortcode_id']
@@ -109,11 +80,7 @@ class OffplanSpider(scrapy.Spider):
        
         items['images'] = methods.img_downloader_method_src(images,signature)
         items['title'] = title
-        items['overview'] = overview
-        items['features'] = features
-        items['location'] = location
-        items['amentities'] = amentities
-        items['payments'] = payments
-        items['units'] = units
+        items['sub_titles'] = sub_titles
+        items['description'] = description
         items['signature'] = signature
         yield items
