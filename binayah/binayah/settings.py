@@ -16,8 +16,14 @@ NEWSPIDER_MODULE = 'binayah.spiders'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'binayah (+http://www.yourdomain.com)'
 
+FEEDS = {
+    'data/%(name)s/%(name)s_%(time)s_batch_%(batch_id)d.csv':{
+        'format' : 'csv',
+        'batch_item_count' : 500
+    }
+}
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32

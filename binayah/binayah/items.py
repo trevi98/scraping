@@ -10,3 +10,16 @@ class BinayahItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+class AreaItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    description = scrapy.Field()
+    map_plan = scrapy.Field()
+    signature = scrapy.Field()
+class OffplanItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    description = scrapy.Field()
+    images = scrapy.Field()
+    signature = scrapy.Field()
+    # pass
