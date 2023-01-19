@@ -1,5 +1,5 @@
 import scrapy
-from ..items import HausBuyItem
+from ..items import HausRenItem
 import uuid
 from .helpers import methods
 from .file_downloader import img_downloader
@@ -9,8 +9,8 @@ import requests
 
 
 class HausspiderSpider(scrapy.Spider):
-    name = 'buy'
-    start_urls = ['https://www.providentestate.com/all-properties-for-sale.html']
+    name = 'rent'
+    start_urls = ['https://www.providentestate.com/all-properties-for-rent.html']
     link=""
     page_number=2
 
@@ -21,8 +21,8 @@ class HausspiderSpider(scrapy.Spider):
             self.link = one
             yield response.follow(one,callback = self.page)
 
-        next_page = f"https://www.providentestate.com/all-properties-for-sale.html/page/{self.page_number}/"
-        if next_page is not None and self.page_number <99:
+        next_page = f"https://www.providentestate.com/all-properties-for-rent.html/page/{self.page_number}/"
+        if next_page is not None and self.page_number <1:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
@@ -32,7 +32,7 @@ class HausspiderSpider(scrapy.Spider):
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
-        items = HausBuyItem()
+        items = HausRenItem()
         signature = uuid.uuid1()
 
         title = "N/A"
