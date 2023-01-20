@@ -116,4 +116,24 @@ class HauswhyoffplanItem(scrapy.Item):
     list_choose_haus=scrapy.Field()
     article=scrapy.Field()
     developers_overview=scrapy.Field()
+
+
+class sellRentCommercialItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptionHome=scrapy.Field()
+    article=scrapy.Field()
+
+    
+class buyersCommercialItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptionHome=scrapy.Field()
+    article=scrapy.Field()
+
+class tenantsCommercialItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptionHome=scrapy.Field()
+    article=scrapy.Field()
     
