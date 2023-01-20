@@ -23,6 +23,13 @@ DOWNLOADER_MIDDLEWARES = {
     # 'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
 }
 # Obey robots.txt rules
+
+FEEDS = {
+    'data/%(name)s/%(name)s_%(time)s_batch_%(batch_id)d.csv':{
+        'format' : 'csv',
+        'batch_item_count' : 500
+    }
+}
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
