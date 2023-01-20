@@ -6,7 +6,7 @@ import uuid
 from .file_downloader import img_downloader
 from .helpers2 import methods2
 from .helpers import methods
-import json 
+
 
 
 
