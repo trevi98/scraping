@@ -100,4 +100,20 @@ class HausLastesNewsItem(scrapy.Item):
     title=scrapy.Field()
     description=scrapy.Field()
     overview=scrapy.Field()
+
+
+class HausinvestmentItem(scrapy.Item):
+    # define the fields for your item here like:
+    title=scrapy.Field()
+    description=scrapy.Field()
+
+
+class HauswhyoffplanItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome=scrapy.Field()
+    descriptionHome=scrapy.Field()
+    title_choose_haus=scrapy.Field()
+    list_choose_haus=scrapy.Field()
+    article=scrapy.Field()
+    developers_overview=scrapy.Field()
     
