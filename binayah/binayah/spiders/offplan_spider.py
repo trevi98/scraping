@@ -77,14 +77,40 @@ class testingSpider(scrapy.Spider):
         items['images'] = methods.img_downloader_method_src(images,signature)
         # except:
         #     items['images'] = "N\A"
+        amenities_name=response.css(".wpb_column.vc_column_container.vc_col-sm-12 .wpb_wrapper h2.vc_custom_heading::text")[3].get()
+        amenities_description=BeautifulSoup(response.css(".wpb_text_column.wpb_content_element .wpb_wrapper").extract()[3],"lxml").text.replace("\n","").replace("  ","")
+        soup_amenities_list=response.css("div.vc_row.wpb_row.vc_inner.vc_row-fluid.lists").extract()
+        amenities_list=[]
+        for i in range(len(soup_amenities_list)-1):
+            one=BeautifulSoup(soup_amenities_list[i],"lxml")
+            amenities_list.append(one)
+        attractions=response.css("div.vc_row.wpb_row.vc_inner.vc_row-fluid div.wpb_column.vc_column_container.vc_col-sm-3 strong::text").extract()
+        payments_sizes_soup=response.css("div.vc_empty_space ~ h2 ~ div.vc_row.wpb_row.vc_inner.vc_row-fluid div.wpb_column.vc_column_container div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element.paymentplan div.wpb_wrapper").extract()
+        payments_sizes=[]
+        for i in range(len(payments_sizes_soup)-1):
+            one=BeautifulSoup(payments_sizes_soup[i],"lxml").text.replace("\n","")
+            payments_sizes.append(one)
+        floorplans=[]    
+        soup_images_floorplans=response.css("div.wpb_column.vc_column_container.vc_col-sm-6 figure img::attr('src')").extract()
+        soup_description_floorplans=response.css("div.wpb_column.vc_column_container.vc_col-sm-6 p").extract()
+        for i in range(len(soup_images_floorplans)-1):
+            des=BeautifulSoup(soup_description_floorplans[i],"lxml").text.replace("\n","").replace("  ","")
+            floorplans.append({soup_images_floorplans[i]:des})
+
+
+
+        
+
         
        
         # items['content'] = BeautifulSoup(response.css(".dpxi-post-content-2").get(),'lxml').text.replace("\n","").replace("  ","")
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['location'] = location
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
+       
+        items['amenities_name'] = amenities_name
+        items['amenities_description'] = amenities_description
+        items['amenities_list'] = amenities_list
+        items['attractions'] = attractions
+        items['payments_sizes'] = payments_sizes
+        items['floorplans'] = floorplans
         yield items
 
 
