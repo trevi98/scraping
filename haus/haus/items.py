@@ -25,6 +25,7 @@ class HausOffPlanItem(scrapy.Item):
     signature = scrapy.Field()
     amentities = scrapy.Field()
     payments = scrapy.Field()
+    video = scrapy.Field()
     # pass
 class HausBuyItem(scrapy.Item):
     # define the fields for your item here like:

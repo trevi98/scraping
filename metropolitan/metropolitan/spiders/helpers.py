@@ -91,6 +91,24 @@ class methods():
                 continue
         return data  
 
+    def img_downloader_method_src(elmnt,signature):
+        try:
+            data = []
+            soup = BeautifulSoup(elmnt,'lxml')
+            imgs = soup.find_all('img')
+            counter = 0
+            for img in imgs:
+                counter += 1
+                try:
+                    if 'svg' not in img['src']:
+                        data.append(img_downloader.download(img['src'],signature,counter))
+                except:
+                    continue
+            return data  
+        except:
+            return []
+ 
+
 
 
 

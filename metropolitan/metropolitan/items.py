@@ -33,3 +33,63 @@ class MetropolitanProjectItem(scrapy.Item):
     signature = scrapy.Field()
     brochour = scrapy.Field()
     images = scrapy.Field()
+
+class MetropolitanbuyItem(scrapy.Item):
+    # define the fields for your item here like:
+    images = scrapy.Field()
+    signature = scrapy.Field()
+    details = scrapy.Field()
+    title = scrapy.Field()
+    location = scrapy.Field()
+    price = scrapy.Field()
+    price_per_sqft = scrapy.Field()
+    project_details = scrapy.Field()
+    amentities = scrapy.Field()
+    developer = scrapy.Field()
+    information = scrapy.Field()
+
+class MetropolitanrentItem(scrapy.Item):
+    # define the fields for your item here like:
+    images = scrapy.Field()
+    signature = scrapy.Field()
+    details = scrapy.Field()
+    title = scrapy.Field()
+    location = scrapy.Field()
+    price = scrapy.Field()
+    price_per_sqft = scrapy.Field()
+    project_details = scrapy.Field()
+    amentities = scrapy.Field()
+    developer = scrapy.Field()
+    information = scrapy.Field()
+
+class propertyBuyItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome = scrapy.Field()
+    descriptions = scrapy.Field()
+    buying_property = scrapy.Field()
+    helping = scrapy.Field()
+    buying_on_the_secondary_market = scrapy.Field()
+    buying_property = scrapy.Field()
+    buying_off_plan_properties = scrapy.Field()
+    Off_plan_purchase_explained = scrapy.Field()
+
+class propertSellItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome = scrapy.Field()
+    marketing = scrapy.Field()
+
+class propertRentItem(scrapy.Item):
+    # define the fields for your item here like:
+    titleHome = scrapy.Field()
+    descriptions = scrapy.Field()
+    market_analysis = scrapy.Field()
+    Rental_Process_Going = scrapy.Field()
+    costs_renting = scrapy.Field()
+    description_Rental_Process_Going = scrapy.Field()
+    
+class areaItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    content = scrapy.Field()
+   
+    
