@@ -43,10 +43,10 @@ class methods():
         for elmnt in elmnts:
             soup = BeautifulSoup(elmnt,'lxml')
             for param in params:
-                try:
-                    data[soup.find(param['title_elmnt'],class_=param['title_selector']).get_text()] = soup.find(param['content_elmnt'],class_=param['content_selector']).get_text()
-                except:
-                    continue
+                # try:
+                data[soup.find(param['title_elmnt'],class_=param['title_selector']).get_text()] = soup.find(param['content_elmnt'],class_=param['content_selector']).get_text().replace(soup.find(param['title_elmnt'],class_=param['title_selector']).get_text(),"")
+                # except:
+                    # continue
         return data
 
     def get_pares_from_elmnt_if_contains(elmnts,params):
