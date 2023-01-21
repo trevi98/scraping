@@ -16,7 +16,7 @@ class PropertyfinderBlogItem(scrapy.Item):
     # name = scrapy.Field()
     title = scrapy.Field()
     content = scrapy.Field()
-    html = scrapy.Field()
+    # html = scrapy.Field()
 
 class PropertyfinderBuyItem(scrapy.Item):
     # define the fields for your item here like:
@@ -37,7 +37,8 @@ class PropertyfinderBuyItem(scrapy.Item):
     # agentbrn = scrapy.Field()
     trakheesi_permit = scrapy.Field()
     tags = scrapy.Field()
-    link = scrapy.Field()
+    # link = scrapy.Field()
+    floor_plans = scrapy.Field()
 
 class PropertyfinderAreaItem(scrapy.Item):
     # define the fields for your item here like:
@@ -50,6 +51,7 @@ class PropertyfinderAreaItem(scrapy.Item):
 class PropertyfinderProjectItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    floor_plans = scrapy.Field()
     title = scrapy.Field()
     description = scrapy.Field()
     # starting_price = scrapy.Field()
@@ -57,7 +59,8 @@ class PropertyfinderProjectItem(scrapy.Item):
     # delivery_date = scrapy.Field()
     property_info = scrapy.Field()
     payment_plans = scrapy.Field()
+    images = scrapy.Field()
     area = scrapy.Field()
-    link = scrapy.Field()
+    # link = scrapy.Field()
     developer = scrapy.Field()
     amenities = scrapy.Field()

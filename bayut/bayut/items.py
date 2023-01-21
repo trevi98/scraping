@@ -16,8 +16,8 @@ class BayutBlogItem(scrapy.Item):
     # name = scrapy.Field()
     title = scrapy.Field()
     content = scrapy.Field()
-    html = scrapy.Field()
-    link = scrapy.Field()
+    # html = scrapy.Field()
+    # link = scrapy.Field()
 
 class BayutBuildingItem(scrapy.Item):
     # define the fields for your item here like:
@@ -48,7 +48,7 @@ class BayutBuyItem(scrapy.Item):
     plot_area = scrapy.Field()
     builtup_area = scrapy.Field()
     usage = scrapy.Field()
-    link = scrapy.Field()
+    # link = scrapy.Field()
     # tags = scrapy.Field()
 
 class BayutAreaItem(scrapy.Item):
@@ -59,8 +59,8 @@ class BayutAreaItem(scrapy.Item):
     property = scrapy.Field()
     payment = scrapy.Field()
     location = scrapy.Field()
-    link = scrapy.Field()
-    html = scrapy.Field()
+    # link = scrapy.Field()
+    # html = scrapy.Field()
 
 class BayutProjectItem(scrapy.Item):
     # define the fields for your item here like:

@@ -24,28 +24,20 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("bayut_blog.csv", "rb")
-            # Create a CSV reader
-            # reader = list(csv.reader(file))
-            headersx = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {
-                "file_name" : "bayut_blog",
-                "site" : "bayut",
-            }
-            files = {"file": ("bayut_blog.csv", file)}
-            # response = requests.post("https://notifaier.abdullatif-treifi.com/", data=data,files=files)
+             data = {"message":'bayut blog'}
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
         items = BayutBlogItem()
-        title = response.css(".post_header_single h1.entry-title::text").get()
-        html = response.css(".blog_post_text").get()
+        title = response.css(".post_header_single h1.entry-title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        # html = response.css(".blog_post_text").get()
         content = response.css(".blog_post_text").get()
         soup = BeautifulSoup(content, 'lxml')
-        content = soup.get_text()
+        content = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         # description = response.css(".author-description::text").get()
         items['title'] = title
         items['content'] = content
-        items['html'] = html
-        items['link'] = self.link
+        # items['html'] = html
+        # items['link'] = self.link
         yield items

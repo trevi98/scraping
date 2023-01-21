@@ -35,6 +35,7 @@ class testingSpider(scrapy.Spider):
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
+        signature = uuid.uuid1()
         items = PropertyfinderProjectItem()
         title = response.css("._14Az7GMC::text").get().replace("\n","").replace("  ","")
         developer = response.css("._1KmX3mFx::text").get().replace("\n","").replace("  ","")
@@ -45,7 +46,11 @@ class testingSpider(scrapy.Spider):
         description = response.css("._3RInl69y").get().replace("\n","").replace("  ","")
         soup = BeautifulSoup(description, 'lxml')
         description = soup.get_text().replace("\n","").replace("  ","")
-        area = response.css("._3XeJbDEl span::text").get().replace("\n","").replace("  ","")
+        area = ""
+        try:
+            area = response.css("._3XeJbDEl span::text").get().replace("\n","").replace("  ","")
+        except:
+            area = "N\A"
         amenities = methods2.get_text_as_list_form_simeler_elmnts(response.css(".Rg_Gr9Bz .tFA-5K61").extract())
         property_info = methods2.get_text_from_same_element_multiple_and_seperate_to_key_value(response.css("._3cmr8pr- ._1-jqWgJk").extract(),{'keys':['Price From','Price per sqft','Status','Delivery Date','Total units','Bedrooms']})
 
@@ -53,6 +58,9 @@ class testingSpider(scrapy.Spider):
 
         # content = response.css(".entry-content ::text").extract()
         # description = response.css(".author-description::text").get()
+        items['floor_plans'] = methods.get_img_with_content(response.css("._3aGmg8xc").extract(),signature)
+        # items['floor_plans'] = methods.get_img_src_with_content(response.css("._3aGmg8xc").extract())
+        items['images'] = methods.img_downloader_method_src(response.css("._3ln2ZAA3").get(),signature)
         items['title'] = title
         items['developer'] = developer
         # items['starting_price'] = starting_price
@@ -62,7 +70,7 @@ class testingSpider(scrapy.Spider):
         items['description'] = description.replace("\n","").replace("  ","").replace("\t","").replace("\r","")
         items['area'] = area
         items['payment_plans'] = methods2.get_text_as_list_form_simeler_elmnts(response.css("._3JgIBxPe .WXs_a4IU").extract())
-        items['link'] = self.link
+        # items['link'] = self.link
         items['amenities'] = amenities
 
         yield items

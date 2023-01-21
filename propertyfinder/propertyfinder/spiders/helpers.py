@@ -61,19 +61,40 @@ class methods():
                     continue
         return data
 
-    def get_img_with_content(elmnts,params):
+    def get_img_with_content(elmnts,signature):
+        data = []
+        for elmnt in elmnts:
+           
+            soup = BeautifulSoup(elmnt,'lxml')
+            counter = 0
+            # for param in params:
+            # try:
+            if soup.get_text():
+                data.append({soup.get_text():methods.img_downloader_method_src(elmnt,signature)})
+                counter += 1
+            # except:
+            #     continue
+        return data  
+
+    def get_img_src_with_content(elmnts ):
         data = {}
         for elmnt in elmnts:
             soup = BeautifulSoup(elmnt,'lxml')
-            counter = 0
-            for param in params:
-                try:
-                    if soup.find(param['target_element'],class_=param['target_selector']).get_text():
-                        data[soup.find(param['target_element'],class_=param['target_selector']).get_text()] = soup.get_text()
-                        data[soup.find(param['target_element'],class_=param['target_selector']).get_text() + ' image'] = methods.img_downloader_method(elmnt,param['signature'])
-                        counter += 1
-                except:
-                    continue
+            # counter = 0
+            # for param in params:
+            try:
+                if soup.get_text():
+                    imgs = soup.find_all('img')
+                    # print("//////////////________////////////////")
+                    # print(imgs)
+                    # print("//////////////________////////////////")
+                    data[soup.get_text()] = []
+                    for img in imgs:
+                        if 'svg' not in img['src']:
+                            data[soup.get_text()].append(img['src'])
+                    # counter += 1
+            except:
+                continue
         return data  
   
 

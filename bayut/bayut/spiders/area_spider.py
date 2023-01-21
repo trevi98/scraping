@@ -27,32 +27,31 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("bayut_area.csv", "rb")
-            # Create a CSV reader
-            # reader = list(csv.reader(file))
-            headersx = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {
-                "file_name" : "bayut_area",
-                "site" : "bayut",
-
-            }
-            files = {"file": ("bayut_area.csv", file)}
-            response = requests.post("https://notifaier.abdullatif-treifi.com/", data=data,files=files)
+            data = {"message":'bayut area'}
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
         items = BayutAreaItem()
-        title = response.css(".entry-title::text").get()
-        html = response.css(".blog_post_text").get()
+        title = response.css(".entry-title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        # html = response.css(".blog_post_text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         # soup = BeautifulSoup(html, 'lxml')
         soup = BeautifulSoup(response.css("#highlights").get(),'lxml')
-        highlights = soup.get_text()
-        soup = BeautifulSoup(response.css("#property").get(),'lxml')
-        property = soup.get_text()
-        soup = BeautifulSoup(response.css("#paymentplan").get(),'lxml')
-        payment = soup.get_text()
+        highlights = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        property = ""
+        try:
+            soup = BeautifulSoup(response.css("#property").get(),'lxml')
+            property = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        except:
+            property = "N\A"
+        payment = ""
+        try:
+            soup = BeautifulSoup(response.css("#paymentplan").get(),'lxml')
+            payment = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        except:
+            payment = "N\A"
         soup = BeautifulSoup(response.css("#location").get(),'lxml')
-        location = soup.get_text()
+        location = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         # description = soup.get_text()
         
         # description = response.css(".author-description::text").get()
@@ -61,6 +60,6 @@ class testingSpider(scrapy.Spider):
         items['property'] = property
         items['payment'] = payment
         items['location'] = location
-        items['html'] = html
-        items['link'] = self.link
+        # items['html'] = html
+        # items['link'] = self.link
         yield items
