@@ -3,14 +3,12 @@ from scrapy.http import FormRequest
 from ..items import PropertyfinderBuyItem
 import requests
 from bs4 import BeautifulSoup
-from .helpers import methods
-import uuid
 
 
 class testingSpider(scrapy.Spider):
     link = ""
-    name = 'rent_m'
-    start_urls = ["https://www.propertyfinder.ae/en/search?c=2&l=1&ob=mr&page=200&rp=m"]
+    name = 'commercial_rent'
+    start_urls = ["https://www.propertyfinder.ae/en/commercial-rent/properties-for-rent.html"]
     page_number = 2
 
 
@@ -22,19 +20,21 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow(one,callback = self.page)
 
-        next_page = f"https://www.propertyfinder.ae/en/search?c=2&l=1&ob=mr&page={self.page_number}&rp=m"
-        if next_page is not None and self.page_number < 201:
+        next_page = f"https://www.propertyfinder.ae/en/commercial-rent/properties-for-rent.html?page={self.page_number}"
+        if next_page is not None and self.page_number < 405:
 
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
-          
-            data = {"message":'property finder rent m'}
+            file = open("propertyfinder_rent_y.csv", "rb")
+            # Create a CSV reader
+            # reader = list(csv.reader(file))
+
+            data = {"message": "prop finder rent y"}
             # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
-        signature = uuid.uuid1()
         items = PropertyfinderBuyItem()
         title = response.css("h2.property-page__sub-title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         tags = response.css("h1.property-page__title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
@@ -56,19 +56,18 @@ class testingSpider(scrapy.Spider):
                 property_type = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Property size")) > -1:
                 size = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
-        price = response.css(".property-price__price").getall()[1]
+        price = response.css(".property-price__price").getall()[1].replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(price,'lxml')
         price = soup.text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         description = response.css(".property-description__text-trim").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(description, 'lxml')
         description = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
-        # link = self.link
+        link = self.link
         area = response.css(".property-location__tower-name::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         temp = response.css(".property-amenities__list::text").extract()
         amenities = []
         for amenity in temp:
             amenities.append(amenity.replace("\n","").replace("\t","").replace("\r","").replace("  ",""))
-
             
 
         # content = response.css(".entry-content ::text").extract()
@@ -84,6 +83,6 @@ class testingSpider(scrapy.Spider):
         # items['link'] = link
         items['amenities'] = amenities
         items['size'] = size
-        items['floor_plans'] = methods.get_img_with_content(response.css("._3aGmg8xc").extract(),signature)
+        items['floor_plans'] = response.css(".property-floor-plan-gallery__image::attr(src)").extract()
 
         yield items

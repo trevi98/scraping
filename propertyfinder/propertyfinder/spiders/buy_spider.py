@@ -3,6 +3,8 @@ from scrapy.http import FormRequest
 from ..items import PropertyfinderBuyItem
 import requests
 from bs4 import BeautifulSoup
+from .helpers import methods
+import uuid
 
 
 class testingSpider(scrapy.Spider):
@@ -26,24 +28,16 @@ class testingSpider(scrapy.Spider):
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("propertyfinder_buy.csv", "rb")
-            # Create a CSV reader
-            # reader = list(csv.reader(file))
-            headersx = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {
-                "file_name" : "propertyfinder_buy",
-                "site" : "property_finder",
-
-            }
-            files = {"file": ("propertyfinder_buy.csv", file)}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data,files=files)
+            data = {"message":"property finder buy"}
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
+        signature = uuid.uuid1()
         items = PropertyfinderBuyItem()
-        title = response.css("h2.property-page__sub-title::text").get()
-        tags = response.css("h1.property-page__title::text").get()
-        property_facts = response.css("ul.property-facts").get()
+        title = response.css("h2.property-page__sub-title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        tags = response.css("h1.property-page__title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        property_facts = response.css("ul.property-facts").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(property_facts, 'lxml')
 
         # property_type = property_facts[0].css(".property-facts__value::text").get()
@@ -60,27 +54,30 @@ class testingSpider(scrapy.Spider):
         size = "N/A"
         for li in lis:
             if (li.find_all("div")[0].text.find("Bedrooms")) > -1:
-                bedrooms = li.find_all("div")[1].text
+                bedrooms = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Bathrooms")) > -1:
-                bathrooms = li.find_all("div")[1].text
+                bathrooms = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Property type")) > -1:
-                property_type = li.find_all("div")[1].text
+                property_type = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Property size")) > -1:
-                size = li.find_all("div")[1].text
+                size = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Property age")) > -1:
-                property_age = li.find_all("div")[1].text
+                property_age = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Service Charges")) > -1:
-                service_charge = li.find_all("div")[2].text
+                service_charge = li.find_all("div")[2].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         price = response.css(".property-price__price").getall()[1]
         soup = BeautifulSoup(price,'lxml')
-        price = soup.text
-        description = response.css(".property-description__text-trim").get()
+        price = soup.text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        description = response.css(".property-description__text-trim").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(description, 'lxml')
-        description = soup.get_text()
+        description = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         link = self.link
-        area = response.css(".property-location__tower-name::text").get()
-        amenities = response.css(".property-amenities__list::text").extract()
-        lis = response.css('.property-page__legal-list-area').get()
+        area = response.css(".property-location__tower-name::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        temp = response.css(".property-amenities__list::text").extract()
+        amenities = []
+        for amenity in temp:
+            amenities.append(amenity.replace("\n","").replace("\t","").replace("\r","").replace("  ",""))
+        lis = response.css('.property-page__legal-list-area').get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(lis, 'lxml')
         lis = ""
         lis = soup.find_all('li')
@@ -88,11 +85,11 @@ class testingSpider(scrapy.Spider):
         for li in lis:
             # print()
             if (li.find_all("div")[0].text.find("Reference")) > -1:
-                reference = li.find_all("div")[1].text
+                reference = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Ownership")) > -1:
-                ownership = li.find_all("div")[1].text
+                ownership = li.find_all("div")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find_all("div")[0].text.find("Trakheesi Permit")) > -1:
-                trakheesi_permit = li.find_all("div")[4].text
+                trakheesi_permit = li.find_all("div")[4].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
 
             
 
@@ -106,7 +103,7 @@ class testingSpider(scrapy.Spider):
         items['price'] = price
         items['description'] = description
         items['area'] = area
-        items['link'] = link
+        # items['link'] = link
         items['amenities'] = amenities
         items['size'] = size
         items['property_age'] = property_age
@@ -114,4 +111,6 @@ class testingSpider(scrapy.Spider):
         items['ownership'] = ownership
         items['reference'] = reference
         items['trakheesi_permit'] = trakheesi_permit
+        # items['floor_plans'] = response.css(".property-floor-plan-gallery__image::attr(src)").extract()
+        items['floor_plans'] = methods.get_img_with_content(response.css("._3aGmg8xc").extract(),signature)
         yield items

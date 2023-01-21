@@ -21,25 +21,22 @@ class testingSpider(scrapy.Spider):
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("propertyfinder_area.csv", "rb")
-            # Create a CSV reader
-            # reader = list(csv.reader(file))
-            headersx = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {
-                "file_name" : "propertyfinder_area",
-                "site" : "property_finder",
-
-            }
-            files = {"file": ("propertyfinder_area.csv", file)}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data,files=files)
+             data = {"message":'property finder area'}
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
         items = PropertyfinderAreaItem()
-        title = response.css(".community-guide__title::text").get()
-        description = response.css("div.community-guide__description-content p::text").get()
-        questions = response.css("div.accordion .accordion__title ::text").extract()
-        answers = response.css("div.accordion .accordion__content ::text").extract()
+        title = response.css(".community-guide__title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        description = response.css("div.community-guide__description-content p::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        temp = response.css("div.accordion .accordion__title ::text").extract()
+        questions = []
+        for question in temp:
+            questions.append(question.replace("\n","").replace("\t","").replace("\r","").replace("  ",""))
+        temp = response.css("div.accordion .accordion__content ::text").extract()
+        answers = []
+        for answer in temp:
+            answers.append(answer.replace("\n","").replace("\t","").replace("\r","").replace("  ",""))
         # description = response.css(".author-description::text").get()
         items['title'] = title
         items['description'] = description

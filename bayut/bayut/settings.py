@@ -17,6 +17,12 @@ NEWSPIDER_MODULE = 'bayut.spiders'
 #USER_AGENT = 'bayut (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
+FEEDS = {
+    'data/%(name)s/%(name)s_%(time)s_batch_%(batch_id)d.csv':{
+        'format' : 'csv',
+        'batch_item_count' : 500
+    }
+}
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)

@@ -27,24 +27,16 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("bayut_buy.csv", "rb")
-            # Create a CSV reader
-            # reader = list(csv.reader(file))
-            headersx = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {
-                "file_name" : "bayut_buy",
-                "site" : "bayut",
-
-            }
-            files = {"file": ("bayut_buy.csv", file)}
-            response = requests.post("https://notifaier.abdullatif-treifi.com/", data=data,files=files)
+            data = {"message":'bayut buy'}
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # sys.path.append('/c/Python310/Scripts/scrapy')
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
         items = BayutBuyItem()
-        title = response.css("h1.fcca24e0::text").get()
-        price = response.css("span._105b8a67::text").get()
-        area = response.css("div._1f0f1758::text").get()
+        title = response.css("h1.fcca24e0::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        price = response.css("span._105b8a67::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
+        area = response.css("div._1f0f1758::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         # soup = BeautifulSoup(property_facts, 'lxml')
         icons_info = response.css("span.cfe8d274 span::text").extract()
         bathrooms = "N/A"
@@ -52,13 +44,13 @@ class testingSpider(scrapy.Spider):
         size = "N/A"
         for li in icons_info:
             if (li.find("Beds")) > -1:
-                bedrooms = li
+                bedrooms = li.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find("Baths")) > -1:
-                bathrooms = li
+                bathrooms = li.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             if (li.find("sqft")) > -1:
-                size = li
+                size = li.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(response.css("div._2015cd68 div").get(),'lxml')
-        description = soup.get_text()
+        description = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         property_type = "N/A"
         furnishing = "N/A"
         completion = "N/A"
@@ -68,11 +60,11 @@ class testingSpider(scrapy.Spider):
         for li in lis:
             try:
                 if (li.find_all("span")[0].text.find("Type")) > -1:
-                    property_type = li.find_all("span")[1].text
+                    property_type = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                 if (li.find_all("span")[0].text.find("Furnishing")) > -1:
-                    furnishing = li.find_all("span")[1].text
+                    furnishing = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                 if (li.find_all("span")[0].text.find("Completion")) > -1:
-                    completion = li.find_all("span")[1].text
+                    completion = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                 
             except:
                 continue
@@ -90,15 +82,15 @@ class testingSpider(scrapy.Spider):
             for li in lis:
                 try:
                     if (li.find_all("span")[0].text.find("Developer")) > -1:
-                        developer = li.find_all("span")[1].text
+                        developer = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Ownership")) > -1:
-                        ownership = li.find_all("span")[1].text
+                        ownership = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Plot Area")) > -1:
-                        plot_area = li.find_all("span")[1].text
+                        plot_area = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Built-up Area")) > -1:
-                        builtup_area = li.find_all("span")[1].text
+                        builtup_area = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Usage")) > -1:
-                        usage = li.find_all("span")[1].text
+                        usage = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     
                 except:
                     continue
@@ -122,5 +114,5 @@ class testingSpider(scrapy.Spider):
         items['plot_area'] = plot_area
         items['builtup_area'] = builtup_area
         items['usage'] = usage
-        items['link'] = self.link
+        # items['link'] = self.link
         yield items

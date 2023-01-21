@@ -27,17 +27,9 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("bayut_rent.csv", "rb")
-            # Create a CSV reader
-            # reader = list(csv.reader(file))
-            headersx = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {
-                "file_name" : "bayut_rent",
-                "site" : "bayut",
-
-            }
-            files = {"file": ("bayut_rent.csv", file)}
-            response = requests.post("https://notifaier.abdullatif-treifi.com/", data=data,files=files)
+            data = {"message":'bayut rent'}
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # sys.path.append('/c/Python310/Scripts/scrapy')
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -68,11 +60,11 @@ class testingSpider(scrapy.Spider):
         for li in lis:
             try:
                 if (li.find_all("span")[0].text.find("Type")) > -1:
-                    property_type = li.find_all("span")[1].text
+                    property_type = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                 if (li.find_all("span")[0].text.find("Furnishing")) > -1:
-                    furnishing = li.find_all("span")[1].text
+                    furnishing = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                 if (li.find_all("span")[0].text.find("Completion")) > -1:
-                    completion = li.find_all("span")[1].text
+                    completion = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                 
             except:
                 continue
@@ -90,15 +82,15 @@ class testingSpider(scrapy.Spider):
             for li in lis:
                 try:
                     if (li.find_all("span")[0].text.find("Developer")) > -1:
-                        developer = li.find_all("span")[1].text
+                        developer = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Ownership")) > -1:
-                        ownership = li.find_all("span")[1].text
+                        ownership = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Plot Area")) > -1:
-                        plot_area = li.find_all("span")[1].text
+                        plot_area = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Built-up Area")) > -1:
-                        builtup_area = li.find_all("span")[1].text
+                        builtup_area = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     if (li.find_all("span")[0].text.find("Usage")) > -1:
-                        usage = li.find_all("span")[1].text
+                        usage = li.find_all("span")[1].text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
                     
                 except:
                     continue
@@ -122,5 +114,5 @@ class testingSpider(scrapy.Spider):
         items['plot_area'] = plot_area
         items['builtup_area'] = builtup_area
         items['usage'] = usage
-        items['link'] = self.link
+        # items['li.replace("\n","").replace("\t","").replace("\r","").replace("  ","")nk'] = self.link
         yield items

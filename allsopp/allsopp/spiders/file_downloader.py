@@ -3,14 +3,13 @@ import os
 class img_downloader():
 
     def download(url, signature, idd):
-        # User-Agent string
-        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
+
 
         extension = url.rsplit(".", 1)
         new_name = f"{signature}-_-{idd}.{extension[1]}"
         try:
             # Create a Request object with the User-Agent header
-            req = urllib.request.Request(url, headers={'User-Agent': user_agent})
+            req = urllib.request.Request(url)
             
             # Open the URL with the Request object
             with urllib.request.urlopen(req) as url:

@@ -24,29 +24,21 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("bayut_building.csv", "rb")
-            # Create a CSV reader
-            # reader = list(csv.reader(file))
-            headersx = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {
-                "file_name" : "bayut_building",
-                "site" : "bayut",
-
-            }
-            files = {"file": ("bayut_building.csv", file)}
-            response = requests.post("https://notifaier.abdullatif-treifi.com/", data=data,files=files)
+            data = {"message":'bayut building guide'}
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # sys.path.append('/c/Python310/Scripts/scrapy')
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
         items = BayutBuildingItem()
-        title = response.css("h1.title::text").get()
+        title = response.css("h1.title::text").get().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         # soup = BeautifulSoup(html, 'lxml')
         soup = BeautifulSoup(response.css("#highlights").get(),'lxml')
-        highlights = soup.get_text()
+        highlights = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(response.css("#details").get(),'lxml')
-        details = soup.get_text()
+        details = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
         soup = BeautifulSoup(response.css("#amenities").get(),'lxml')
-        amenities = soup.get_text()
+        amenities = soup.get_text().replace("\n","").replace("\t","").replace("\r","").replace("  ","")
 
         # description = soup.get_text()
         
@@ -55,5 +47,5 @@ class testingSpider(scrapy.Spider):
         items['highlights'] = highlights
         items['details'] = details
         items['amenities'] = amenities
-        items['link'] = self.link
+        # items['link'] = self.link
         yield items
