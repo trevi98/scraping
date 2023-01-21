@@ -65,3 +65,24 @@ class ejariItem(scrapy.Item):
     titles = scrapy.Field()
     content = scrapy.Field()
     # pass
+
+class expoItem(scrapy.Item):
+    # define the fields for your item here like:
+    qustions_answers = scrapy.Field()
+    title = scrapy.Field()
+    description = scrapy.Field()
+    # pass
+
+class residenceVisaItem(scrapy.Item):
+    # define the fields for your item here like:
+    qustions_answers = scrapy.Field()
+    title = scrapy.Field()
+    description = scrapy.Field()
+
+
+class bitcoinItem(scrapy.Item):
+    # define the fields for your item here like:
+    titles_description = scrapy.Field()
+    questions_answers = scrapy.Field()
+
+    # pass

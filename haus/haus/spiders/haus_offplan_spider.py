@@ -79,7 +79,11 @@ class HausspiderSpider(scrapy.Spider):
             key_payments[i]=key_payments[i].split()[-1]
         value_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li::text").extract()
         for i in range(len(value_payments)-1):
-            payments.append({key_payments[i]:value_payments[i]})     
+            payments.append({key_payments[i]:value_payments[i]})
+        try: 
+            video=response.css("div.section-embedvideo iframe::attr('src')").get() 
+        except:
+            video="N/A"            
 
        
         items['images'] = methods.img_downloader_method_src(images,signature)
@@ -95,5 +99,6 @@ class HausspiderSpider(scrapy.Spider):
         items['amentities'] = amentities
         items['description'] = description
         items['payments'] = payments
+        items['video'] = video
         yield items
 
