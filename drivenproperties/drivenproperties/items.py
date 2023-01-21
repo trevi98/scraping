@@ -50,3 +50,9 @@ class AreaItem(scrapy.Item):
     questions = scrapy.Field()
     answers = scrapy.Field()
 
+class developersItem(scrapy.Item):
+    # define the fields for your item here like:
+    about = scrapy.Field()
+    CEO = scrapy.Field()
+
+    # pass

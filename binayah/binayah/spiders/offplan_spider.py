@@ -96,6 +96,10 @@ class testingSpider(scrapy.Spider):
         for i in range(len(soup_images_floorplans)-1):
             des=BeautifulSoup(soup_description_floorplans[i],"lxml").text.replace("\n","").replace("  ","")
             floorplans.append({soup_images_floorplans[i]:des})
+        try:
+            video=response.css("div.rll-youtube-player::attr('data-src')").get()
+        except:
+            video="N/A"        
 
 
 
@@ -111,6 +115,7 @@ class testingSpider(scrapy.Spider):
         items['attractions'] = attractions
         items['payments_sizes'] = payments_sizes
         items['floorplans'] = floorplans
+        items['video'] = video
         yield items
 
 
