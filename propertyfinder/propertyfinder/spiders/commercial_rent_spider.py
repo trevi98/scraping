@@ -26,12 +26,12 @@ class testingSpider(scrapy.Spider):
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
-            file = open("propertyfinder_rent_y.csv", "rb")
+            # file = open("propertyfinder_rent_y.csv", "rb")
             # Create a CSV reader
             # reader = list(csv.reader(file))
 
-            data = {"message": "prop finder rent y"}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            data = {"message": "prop finder commercial_rent"}
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):

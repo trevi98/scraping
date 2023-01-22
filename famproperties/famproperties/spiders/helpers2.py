@@ -34,3 +34,27 @@ class methods2():
             return data
         except:
             return []
+
+    def handle_table_rows(row):
+        soup = BeautifulSoup(row,'lxml')
+        tds = soup.findAll('td')
+        data = []
+        for td in tds:
+            data.append({td['headers'][0].replace("\n","").replace("  ","").replace("\r","").replace("\t",""):td.text.replace("\n","").replace("  ","").replace("\r","").replace("\t","")})
+        return data
+
+    def handle_table_rows_w_precent(row):
+        # soup = BeautifulSoup(row,'lxml')
+        tds = row.find_all('td')
+        data = []
+        for td in tds:
+            try:
+                try:
+                    data.append({td['headers'][0].replace("\n","").replace("  ","").replace("\r","").replace("\t",""):td.text.replace("\n","").replace("  ","").replace("\r","").replace("\t","")})
+                except:
+                    data.append({td['headers'][0].replace("\n","").replace("  ","").replace("\r","").replace("\t",""):td.find('div',class_='a-Report-percentChart-fill')['aria-valuenow'].replace("\n","").replace("  ","").replace("\r","").replace("\t","")})
+            except:
+                print("/////////////////_____________________/////////////////////////////")
+                print(td)
+                print("/////////////////_____________________/////////////////////////////")
+        return data

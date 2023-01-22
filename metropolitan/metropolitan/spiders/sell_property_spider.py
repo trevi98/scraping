@@ -5,7 +5,7 @@ import requests
 
 
 class HausspiderSpider(scrapy.Spider):
-    name = 'propertySell'
+    name = 'sell_guide'
     start_urls = ['https://metropolitan.realestate/services/buy/']
     def parse(self, response ):
         items=propertSellItem()

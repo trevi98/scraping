@@ -32,7 +32,7 @@ class testingSpider(scrapy.Spider):
 
     def page(self,response):
         items = MetropolitanProjectItem()
-        title = response.css(".project-header__title::text").get()
+        title = response.css(".offplan__header-title::text").get()
         elmnts = response.css('li.as_lits-item').extract()
         signature = uuid.uuid1()
 
@@ -92,13 +92,21 @@ class testingSpider(scrapy.Spider):
         dat = response.css(".gallerySlider").get()
         soup = BeautifulSoup(dat,'lxml')
         dat = soup.find('img',class_='owl-lazy')['data-src'].split('uploads/')[1].split('/')[0]+'/'+soup.find('img',class_='owl-lazy')['data-src'].split('uploads/')[1].split('/')[1]
-        brochour = "https://metropolitan.realestate/wp-content/uploads/" + dat + '/' + title.replace(" ", "-") + '.pdf'
+        try:
+            brochour = "https://metropolitan.realestate/wp-content/uploads/" + str(dat) + '/' + title.replace(" ", "-") + '.pdf'
+            brochour = img_downloader.download(brochour,signature,99)
+        except:
+            # print("//////////________________/////////////////////")
+            # print(response)
+            # print(dat)
+            # print(title.replace(" ", "-") + '.pdf')
+            # print("//////////________________/////////////////////")
+            pass
         elmnt = response.css('.gallerySlider').get()
         images = methods.img_downloader_method(elmnt,signature)
-        brochour = img_downloader.download(brochour,signature,99)
         items['property_info'] = property_info
         items['additional_info'] = additional_info
-        items['property_prices'] = text
+        items['property_prices'] = response.css(".container .row.advRow.as_grid .as_grid-cell.col-2 .as_grid-item .as_grid-params::text").get()
         items['paragraphs'] = pares
         items['payments'] = payments
         items['location_details'] = location_details

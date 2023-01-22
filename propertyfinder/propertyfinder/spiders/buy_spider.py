@@ -29,7 +29,7 @@ class testingSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             data = {"message":"property finder buy"}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):

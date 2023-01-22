@@ -14,13 +14,27 @@ class BlogItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     description = scrapy.Field()
-    # pass
+class TallestItem(scrapy.Item):
+    # define the fields for your item here like:
+    row = scrapy.Field()	
+class guidetItem(scrapy.Item):
+    # define the fields for your item here like:
+    content = scrapy.Field()	
+class faqtItem(scrapy.Item):
+    # define the fields for your item here like:
+    question = scrapy.Field()	
+    answer = scrapy.Field()	
+
 class ProjectItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     price = scrapy.Field()
     info = scrapy.Field()
-    amenities = scrapy.Field()
+    # amenities = scrapy.Field()
+    # buildings = scrapy.Field()
     overview = scrapy.Field()
-    views = scrapy.Field()
+    images = scrapy.Field()
+    answers = scrapy.Field()
+    questions = scrapy.Field()
+    # views = scrapy.Field()
     # pass

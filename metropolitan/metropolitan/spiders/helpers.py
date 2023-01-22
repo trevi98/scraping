@@ -8,7 +8,7 @@ class methods():
             for param in params:
                 try:
                     if soup.find(param['nabor_element'],class_=param['nabor_selector']).get_text() == param['nabor_value']:
-                        data[param['name']] = soup.find(param['target_element'],class_=param['target_selector']).get_text()
+                        data[param['name']] = soup.find(param['target_element'],class_=param['target_selector']).get_text().replace("\n","").replace("  ","").replace("\t","").replace("\r","")
                 except:
                     continue
         return data
@@ -20,7 +20,7 @@ class methods():
             for param in params:
                 try:
                     if soup.find(param['checker_element'],class_=param['checker_selector']).get_text() == param['checker_value']:
-                        data[param['name']] = soup.get_text()
+                        data[param['name']] = soup.get_text().replace("\n","").replace("  ","").replace("\t","").replace("\r","")
                 except:
                     continue
         return data
@@ -32,7 +32,7 @@ class methods():
             for param in params:
                 try:
                     if soup.find(param['target_element'],class_=param['target_selector']).get_text():
-                        data[soup.find(param['target_element'],class_=param['target_selector']).get_text()] = soup.get_text()
+                        data[soup.find(param['target_element'],class_=param['target_selector']).get_text()] = soup.get_text().replace("\n","").replace("  ","").replace("\t","").replace("\r","")
                 except:
                     continue
 
@@ -56,7 +56,7 @@ class methods():
             for param in params:
                 try:
                     if param['title_value'] in soup.find(param['title_elmnt'],class_=param['title_selector']).get_text():
-                        data[soup.find(param['title_elmnt'],class_=param['title_selector']).get_text()] = soup.find(param['content_elmnt'],class_=param['content_selector']).get_text()
+                        data[soup.find(param['title_elmnt'],class_=param['title_selector']).get_text()] = soup.find(param['content_elmnt'],class_=param['content_selector']).get_text().replace("\n","").replace("  ","").replace("\t","").replace("\r","")
                 except:
                     continue
         return data

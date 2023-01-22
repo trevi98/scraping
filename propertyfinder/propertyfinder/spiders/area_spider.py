@@ -21,8 +21,8 @@ class testingSpider(scrapy.Spider):
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
-             data = {"message":'property finder area'}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            data = {"message":'property finder area'}
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
