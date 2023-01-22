@@ -30,6 +30,7 @@ class OffplanItem(scrapy.Item):
     property_info = scrapy.Field()
     title = scrapy.Field()
     description = scrapy.Field()
+    video = scrapy.Field()
     # pass
 
 class buyItem(scrapy.Item):
@@ -86,3 +87,5 @@ class bitcoinItem(scrapy.Item):
     questions_answers = scrapy.Field()
 
     # pass
+
+

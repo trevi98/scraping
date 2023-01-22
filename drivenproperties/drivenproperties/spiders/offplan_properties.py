@@ -78,6 +78,10 @@ class testingSpider(scrapy.Spider):
                 unit_sizes.append({'bedrooms':tds[0].text.replace("\n",""),'size':tds[1].text.replace("\n",""),'price':tds[2].text.replace("\n","")})
         except:
             unit_sizes = "N\A"
+        try:
+            video=response.css("iframe::attr('src')").get()
+        except:
+            video="N/A"         
         # description = soup.find_all('p')
        
         # images = methods.img_downloader_method(elmnt,signature)
