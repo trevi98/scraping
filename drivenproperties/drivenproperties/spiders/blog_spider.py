@@ -27,7 +27,7 @@ class testingSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'driven blog done'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -35,11 +35,6 @@ class testingSpider(scrapy.Spider):
 
         items['title'] = BeautifulSoup(response.css(".dpxi-post-area-2 h1").get(),"lxml").text.replace("\n","")
         items['content'] = BeautifulSoup(response.css(".dpxi-post-content-2").get(),'lxml').text.replace("\n","").replace("  ","")
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['location'] = location
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
         yield items
 
 

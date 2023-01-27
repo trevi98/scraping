@@ -27,7 +27,7 @@ class testingSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'driven area done'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -38,14 +38,8 @@ class testingSpider(scrapy.Spider):
         items['questions'] = response.css(".col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12 h3.dpxi-accordion::text").extract()
         items['answers'] = response.css(".col-xl-12.col-lg-12.col-md-12.col-sm-12.col-12 div.dpxi-panel p::text").extract()
 
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['location'] = location
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
+        
         yield items
 
 
-    def get_text(self,elmnt):
-        soup = BeautifulSoup(elmnt,'lxml')
-        return soup.get_text()
+    

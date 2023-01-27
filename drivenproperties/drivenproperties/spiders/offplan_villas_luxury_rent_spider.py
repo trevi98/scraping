@@ -1,5 +1,5 @@
 import scrapy
-from ..items import BuyItem
+from ..items import RentVillaLuxuryItem
 import requests
 from bs4 import BeautifulSoup
 from .helpers import methods
@@ -9,8 +9,8 @@ import uuid
 
 
 class testingSpider(scrapy.Spider):
-    name = 'buy'
-    start_urls = ["https://www.drivenproperties.com/dubai/properties-for-sale?page=1"]
+    name = 'villa_luxury_rent'
+    start_urls = ["https://www.drivenproperties.com/dubai/luxury-villas-for-rent"]
     page_number = 2
     link = ""
 
@@ -23,18 +23,18 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow(one,callback = self.page)
 
-        next_page = f"https://www.drivenproperties.com/dubai/properties-for-sale?page={self.page_number}/"
-        if next_page is not None and self.page_number < 126:
+        next_page = f"https://www.drivenproperties.com/dubai/luxury-villas-for-rent?page={self.page_number}/"
+        if next_page is not None and self.page_number < 1:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'driven buy done'}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            data = {'message': 'driven done'}
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
-        items = BuyItem()
+        items = RentVillaLuxuryItem()
         signature = uuid.uuid1()
 
         title = "N/A"
@@ -83,6 +83,3 @@ class testingSpider(scrapy.Spider):
         yield items
 
 
-    def get_text(self,elmnt):
-        soup = BeautifulSoup(elmnt,'lxml')
-        return soup.get_text()
