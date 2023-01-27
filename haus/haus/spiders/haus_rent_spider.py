@@ -29,7 +29,7 @@ class HausspiderSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'machine 2 | haus rent done (;'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -49,16 +49,19 @@ class HausspiderSpider(scrapy.Spider):
         unit_sizes = []
         video = "N/A"
         images = "N/A"
-        amentities = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-features ul li::text").extract()
+        features =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-features ul li::text").extract()
         bedrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").get().replace("\n","").replace("  ","")
         bathrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[2].replace("\n","").replace("  ","")
         size=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[4].replace("\n","").replace("  ","")
-        images=response.css("div.main section.section-details.section-details-1 div.section-gallery.js-animate-top div.section-gallery-wrapper.new.instruction").get().replace("\n","").replace("  ","")
+        images=response.css("div.section-gallery.js-animate-top").get()
         title = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading::text").get().replace("\n","").replace("  ","")
         brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
-        brochure=img_downloader.download(brochure_link,signature,99)
+        if "pdf" in brochure_link:
+            brochure=img_downloader.download(brochure_link,signature,99)
+        else:
+            brochure=brochure_link    
         price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get().replace("\n","").replace("  ","")
-        description =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text::text").get().replace("\n","")
+        overview =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text::text").get().replace("\n","").replace("  ","").replace("\r","").replace("\t","")
     
 
 
@@ -70,8 +73,8 @@ class HausspiderSpider(scrapy.Spider):
         items['brochure'] = brochure
         items['signature'] = signature
         items['price'] = price
-        items['description'] = description
-        items['amentities'] = amentities
+        items['overview'] = overview
+        items['features'] = features
 
 
         yield items

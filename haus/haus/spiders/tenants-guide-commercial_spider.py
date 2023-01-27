@@ -12,12 +12,12 @@ class HausspiderSpider(scrapy.Spider):
         titleHome=response.css("div.article-head h1::text").get().replace("\n","").replace("\t","")
         soup_description=response.css("div.article-head p").extract()
         descriptionHome=""
-        for i in range(len(soup_description)-1):
+        for i in range(len(soup_description)):
             one=BeautifulSoup(soup_description[i],"lxml").text.replace("\n","").replace("\t","").replace("  ","")
             descriptionHome+=one
         all_article=""
         soup_article=response.css("div.article-body.remove-border.js-animate-left div.row p").extract()
-        for i in range(len(soup_article)-1):
+        for i in range(len(soup_article)):
             one=BeautifulSoup(soup_article[i],"lxml").text.replace("\n","").replace("\t","").replace("  ","")
             all_article+=one
              

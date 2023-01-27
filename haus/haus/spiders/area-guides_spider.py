@@ -21,7 +21,7 @@ class HausspiderSpider(scrapy.Spider):
             self.link = one
             yield response.follow('https://www.hausandhaus.com/'+one,callback = self.page)
 
-        next_page = f"https://www.hausandhaus.com/property-sales/properties-available-for-sale-in-dubai/page-{self.page_number}/"
+        next_page = f"https://www.hausandhaus.com/living-in-dubai/area-guides?start={self.page_number}/"
         if next_page is not None and self.page_number < 20:
             print("next_page",next_page)
             self.page_number +=10
@@ -29,7 +29,7 @@ class HausspiderSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'machine 2 | haus areae done (;'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -51,11 +51,8 @@ class HausspiderSpider(scrapy.Spider):
         images = "N/A"
         title = response.css("div.intro-content h1::text").get().replace("\n","").replace("  ","")
         about = response.css(" div.article-head div.introtext.row.js-animate-right div.col-sm-12 p::text").get().replace("\n","").replace("  ","")
-        soup=response.css(" div.article-entry div.row div.col-sm-6 p").extract()
-        description=""
-        for i in range(len(soup)):
-            one=BeautifulSoup(soup[i],"lxml").text.replace("\n","").replace("  ","")
-            description+=one
+        description=BeautifulSoup( response.css("div.article-body.js-animate-left").get(),"lxml").text.replace("\n","").replace("  ","").replace("\r","").replace("\t","")
+
     
         items['title'] = title
         items['about'] = about

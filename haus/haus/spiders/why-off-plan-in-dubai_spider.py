@@ -15,12 +15,12 @@ class HausspiderSpider(scrapy.Spider):
         list_choose_haus= response.css("section.section-off-plan-service.animate-right p::text").extract()
         all_article=""
         soup_article=response.css("section.off-plan-article-content.js-animate-left p").extract()
-        for i in range(len(soup_article)-1):
+        for i in range(len(soup_article)):
             one=BeautifulSoup(soup_article[i],"lxml").text.replace("\n","").replace("\t","").replace("  ","")
             all_article+=one
         all_developers_overview=""
         soup_developers_overview=response.css("section.section-off-plan-logos.animate-right div.container").extract()
-        for i in range(len(soup_developers_overview)-1):
+        for i in range(len(soup_developers_overview)):
             one= BeautifulSoup(soup_developers_overview[i],"lxml").text.replace("\n","").replace("\t","").replace("  ","")
             all_developers_overview+=one       
        

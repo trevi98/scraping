@@ -17,6 +17,7 @@ class HausspiderSpider(scrapy.Spider):
     def parse(self,response):
         all = response.css("div.card.card-primary.property.results-property div.col-sm-6.col-xs-12.card-content.box.box-2 div.content-wrapper a.btn.btn-black.btn-details.btn-animate::attr('href')").extract()
 
+
         for one in all:
             self.link = one
             yield response.follow('https://www.hausandhaus.com/'+one,callback = self.page)
@@ -28,7 +29,7 @@ class HausspiderSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'machine 2 | haus offplan done (;'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -50,9 +51,17 @@ class HausspiderSpider(scrapy.Spider):
         images = "N/A"
         images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
         title = response.css("div.intro-content div.titile::text").get().replace("\n","").replace("  ","")
-        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header p.lead::text").get().replace("\n","").replace("  ","")
+        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header p.lead::text").get().replace("\n","").replace("  ","").replace("\r","").replace("\t","")
         brochure_link=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.btn-group a::attr('href')")[1].get()
-        brochure=img_downloader.download(brochure_link,signature,99)
+        try:
+            brochure=img_downloader.download(brochure_link,signature,99)
+        except:
+            brochure="N/A"    
+        floorplan_link=response.css("ul.list-inline.btnulli li a::attr('href')")[2].get()
+        try:
+            floorplan=img_downloader.download(floorplan_link,signature,99)
+        except:
+            floorplan="N/A"    
         location=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-location::text").get().replace("\n","").replace("  ","")
         developer=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-developer::text").get().replace("\n","").replace("  ","")
         develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get().replace("\n","").replace("  ","")
@@ -63,25 +72,16 @@ class HausspiderSpider(scrapy.Spider):
             price=price_name+price_number
         except:
             price = price_name
-        description_details =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 p::text").extract()
-        description =response.css("div.section-description div.container div.description.col-md-12 div.item-description div.col-md-6 strong::text").extract()
-        if "Amenities" in description:
-            description.remove("Amenities")
-        for i in range(len(description)-1):
-            try:
-                description[i]+=description_details[i]
-            except:
-                description[i] = description[i]
-        description=','.join([str(i) for i in description]).replace("\n","")
+        description=BeautifulSoup(response.css("div.description.col-md-12").get(),"lxml").text.replace("\n","").replace("  ","")
         payments=[]
         key_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li strong::text").extract()
-        for i in range(len(key_payments)-1):
-            key_payments[i]=key_payments[i].split()[-1]
+        # for i in range(len(key_payments)-1):
+        #     key_payments[i]=key_payments[i].split()[-1]
         value_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li::text").extract()
         for i in range(len(value_payments)-1):
             payments.append({key_payments[i]:value_payments[i]})
         try: 
-            video=response.css("div.section-embedvideo iframe::attr('src')").get() 
+            video=response.css("div.embed-video-top iframe::attr('src')").get() 
         except:
             video="N/A"            
 
@@ -89,16 +89,16 @@ class HausspiderSpider(scrapy.Spider):
         items['images'] = methods.img_downloader_method_src(images,signature)
         items['title'] = title
         items['overview'] = overview
-        # items['brochure'] = brochure
+        items['brochure'] = brochure
         items['location'] = location
         items['developer'] = developer
         items['develpment_type'] = develpment_type
         items['completion_date'] = completion_date
         items['signature'] = signature
         items['price'] = price
-        items['amentities'] = amentities
         items['description'] = description
         items['payments'] = payments
         items['video'] = video
+        items['floorplan'] = floorplan
         yield items
 

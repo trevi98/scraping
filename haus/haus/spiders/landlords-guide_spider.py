@@ -20,5 +20,5 @@ class HausspiderSpider(scrapy.Spider):
         items["descriptionHome"]=descriptionHome
         yield items
         data = {'message': 'machine 2 | haus land lord guid done (;'}
-        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+        # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
        

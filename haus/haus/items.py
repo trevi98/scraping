@@ -23,8 +23,8 @@ class HausOffPlanItem(scrapy.Item):
     price = scrapy.Field()
     images = scrapy.Field()
     signature = scrapy.Field()
-    amentities = scrapy.Field()
     payments = scrapy.Field()
+    floorplan = scrapy.Field()
     video = scrapy.Field()
     # pass
 class HausBuyItem(scrapy.Item):
@@ -37,8 +37,8 @@ class HausBuyItem(scrapy.Item):
     bedrooms = scrapy.Field()
     bathrooms = scrapy.Field()
     size = scrapy.Field()
-    description = scrapy.Field()
-    amentities = scrapy.Field()
+    overview = scrapy.Field()
+    features = scrapy.Field()
 
 class HausRentItem(scrapy.Item):
     # define the fields for your item here like:
@@ -50,8 +50,8 @@ class HausRentItem(scrapy.Item):
     bedrooms = scrapy.Field()
     bathrooms = scrapy.Field()
     size = scrapy.Field()
-    description = scrapy.Field()
-    amentities = scrapy.Field()
+    overview = scrapy.Field()
+    features = scrapy.Field()
 
     
 class HausTenantsGuideItem(scrapy.Item):

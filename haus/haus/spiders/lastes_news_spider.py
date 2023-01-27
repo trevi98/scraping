@@ -22,14 +22,14 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow('https://www.hausandhaus.com/'+one,callback = self.page)
 
         next_page = f"https://www.hausandhaus.com/latest-news?start={self.page_number}/"
-        if next_page is not None and self.page_number < 310:
+        if next_page is not None and self.page_number < 325:
             print("next_page",next_page)
             self.page_number +=13
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
             data = {'message': 'driven offplan villa done'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):

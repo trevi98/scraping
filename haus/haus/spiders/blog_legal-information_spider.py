@@ -28,7 +28,7 @@ class HausspiderSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'driven offplan villa done'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -48,15 +48,11 @@ class HausspiderSpider(scrapy.Spider):
         video = "N/A"
         images = "N/A"
         title=response.css("div.article-head h1::text").get().replace("\n","").replace("  ","")
-        all_overview=""
-        overview =response.css("div.article-head div.introtext.row.js-animate-right div.col-sm-12 p").extract()
-        for i in range(len(overview)):
-            one=BeautifulSoup(overview[i],"lxml").text
-            all_overview+=one
+        overview =BeautifulSoup(response.css("div.introtext.row.js-animate-right").get(),"lxml").text.replace("\n","").replace("  ","").replace("\t","").replace("\r","")
         all_description=""
         description=response.css("div.article-entry div.row div.col-sm-6 p").extract()
         for i in range(len(description)-1):
-                one=BeautifulSoup(description[i],"lxml").text
+                one=BeautifulSoup(description[i],"lxml").text.replace("\n","").replace("  ","").replace("\t","").replace("\r","")
                 all_description+=one
 
     
@@ -64,7 +60,7 @@ class HausspiderSpider(scrapy.Spider):
 
         items['title'] = title        
         items['description'] = all_description
-        items['overview'] = all_overview
+        items['overview'] = overview
         
 
 

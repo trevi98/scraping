@@ -6,7 +6,7 @@ import requests
 
 class HausspiderSpider(scrapy.Spider):
     name = 'hausSellersGuideSpider'
-    start_urls = ['https://www.hausandhaus.com/property-leasing/tenants-guide']
+    start_urls = ['https://www.hausandhaus.com/property-sales/sellers-guide']
     def parse(self, response ):
         items=HausSellersGuideItem()
         titleHome=response.css("div.article-head h1::text").get().replace("\n","").replace("  ","")
@@ -20,6 +20,6 @@ class HausspiderSpider(scrapy.Spider):
         items["descriptions"]=all_descriptions
         items["descriptionHome"]=descriptionHome
         yield items
-        data = {'message': 'machine 2 | haus seller guid done (;'}
+        data = {'message': 'machine 2 | all haus done (;'}
         response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
        
