@@ -27,7 +27,7 @@ class testingSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'metro project done'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -92,15 +92,20 @@ class testingSpider(scrapy.Spider):
         dat = response.css(".gallerySlider").get()
         soup = BeautifulSoup(dat,'lxml')
         dat = soup.find('img',class_='owl-lazy')['data-src'].split('uploads/')[1].split('/')[0]+'/'+soup.find('img',class_='owl-lazy')['data-src'].split('uploads/')[1].split('/')[1]
+        brochour = ""
         try:
-            brochour = "https://metropolitan.realestate/wp-content/uploads/" + str(dat) + '/' + title.replace(" ", "-") + '.pdf'
+            try:
+                brochour = "https://metropolitan.realestate/wp-content/uploads/" + str(dat) + '/' + response.css(".breadcrumbs__current::text").get().replace(" ", "-") + '.pdf'
+            except:
+                brochour = "https://metropolitan.realestate/wp-content/uploads/" + str(dat) + '/' + response.css(".breadcrumbs__current::text").get() + '.pdf'
             brochour = img_downloader.download(brochour,signature,99)
         except:
-            # print("//////////________________/////////////////////")
-            # print(response)
-            # print(dat)
-            # print(title.replace(" ", "-") + '.pdf')
-            # print("//////////________________/////////////////////")
+            print("//////////________________/////////////////////")
+            print(response)
+            print(dat)
+            print(title)
+            print(title.replace(" ", "-") + '.pdf')
+            print("//////////________________/////////////////////")
             pass
         elmnt = response.css('.gallerySlider').get()
         images = methods.img_downloader_method(elmnt,signature)

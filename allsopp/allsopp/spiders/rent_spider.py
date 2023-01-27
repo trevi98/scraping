@@ -36,7 +36,7 @@ class testingSpider(scrapy.Spider):
 
         else:
             # pass
-            data = {'message': 'machine 1 | allsop rent done (;'}
+            data = {'message': 'allsop rent done (;'}
             response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 

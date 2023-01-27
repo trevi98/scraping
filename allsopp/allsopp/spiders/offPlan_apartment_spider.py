@@ -53,6 +53,6 @@ class AllsoppspiderSpider(scrapy.Spider):
                 floor_plans = []
             items['floor_plans'] = methods.img_downloader_method_from_list(floor_plans,signature)
             yield items
-        data = {'message': 'machine 1 | allsop offplan done (;'}
+        data = {'message': 'allsop offplan done (;'}
         response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
      

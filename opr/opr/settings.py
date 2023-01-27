@@ -11,7 +11,7 @@ BOT_NAME = 'opr'
 # DOWNLOAD_RETRY = 10
 # DOWNLOAD_DELAY = 1
 FEEDS = {
-    'data/%(name)s/%(name)s_%(time)s_batch_%(batch_id)d.txt':{
+    'data/%(name)s/%(name)s_%(time)s_batch_%(batch_id)d.csv':{
         'format' : 'csv',
         'batch_item_count' : 500
     }

@@ -29,7 +29,7 @@ class testingSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'driven offplan properties done'}
+            data = {'message': 'driven developers done'}
             response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 

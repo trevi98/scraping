@@ -16,8 +16,12 @@ class img_downloader():
             with urllib.request.urlopen(req) as url:
                 s = url.read()
         except urllib.error.HTTPError as e:
+            print("/////////////////////////////////________________//////////////////////////")
+            print(url)
             print(f'HTTP Error: {e.code}')
         except urllib.error.URLError as e:
+            print("/////////////////////////////////________________//////////////////////////")
+            print(url)
             print(f'URL Error: {e.reason}')
         else:
             directory = "./files"

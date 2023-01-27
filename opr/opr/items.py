@@ -13,4 +13,14 @@ class OprItem(scrapy.Item):
 class OprProjectItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
+    details = scrapy.Field()
+    price = scrapy.Field()
+    area = scrapy.Field()
+    location_details = scrapy.Field()
+    developer = scrapy.Field()
+    brochour = scrapy.Field()
+    amenities = scrapy.Field()
+    nearby = scrapy.Field()
+    payment_plan = scrapy.Field()
+
     # pass

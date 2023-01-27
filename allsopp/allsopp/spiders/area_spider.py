@@ -20,8 +20,8 @@ class AllsoppspiderSpider(scrapy.Spider):
         # for page in range(1,2):
         yield FormRequest(url=self.start_urls[0], callback=self.parse, method='GET', formdata={},headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0","Accept": "*/*","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate, br","Referer": "https://opr.ae/","Origin": "https://opr.ae","Connection": "keep-alive","Sec-Fetch-Dest": "empty","Sec-Fetch-Mode": "no-cors","Sec-Fetch-Site": "same-site","TE": "trailers","Content-Type": "application/x-www-form-urlencoded; charset=UTF-8","Pragma": "no-cache","Cache-Control": "no-cache"})
         # else:
-            # data = {'message': 'opr project done'}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+        data = {'message': 'allsopp area done'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
 
 
     def parse(self, response):
