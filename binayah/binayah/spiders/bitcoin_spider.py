@@ -38,7 +38,7 @@ class testingSpider(scrapy.Spider):
                 one+=add
             all_descriptions.append(one)
         titles_description=[]
-        for i in range(len(subtitles)-1):
+        for i in range(len(subtitles)):
             titles_description.append({subtitles[i]:all_descriptions[i]})
         answers=response.css("div.elementor-tab-content.elementor-clearfix").extract()
         questions=response.css("section.elementor-section a.elementor-accordion-title::text").extract()

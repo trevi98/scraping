@@ -47,7 +47,7 @@ class testingSpider(scrapy.Spider):
         property_value=response.css("div.property-overview-wrap.property-section-wrap div.block-wrap div.d-flex.property-overview-data ul li strong::text").extract()
         property=[]
         property.append({"Property ID:",id})
-        for i in range(len(property_key)-1):
+        for i in range(len(property_key)):
             property.append({property_key[i]+":":property_value[i]})
         
 
