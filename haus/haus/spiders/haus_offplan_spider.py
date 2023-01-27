@@ -75,10 +75,8 @@ class HausspiderSpider(scrapy.Spider):
         description=BeautifulSoup(response.css("div.description.col-md-12").get(),"lxml").text.replace("\n","").replace("  ","")
         payments=[]
         key_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li strong::text").extract()
-        # for i in range(len(key_payments)-1):
-        #     key_payments[i]=key_payments[i].split()[-1]
         value_payments=response.css("section.payment-details.pay-margin-top div.container ul.payment-list.list-inline li::text").extract()
-        for i in range(len(value_payments)-1):
+        for i in range(len(value_payments)):
             payments.append({key_payments[i]:value_payments[i]})
         try: 
             video=response.css("div.embed-video-top iframe::attr('src')").get() 
