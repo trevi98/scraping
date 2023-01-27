@@ -28,7 +28,7 @@ class HausspiderSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'prov buy (;'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -50,23 +50,25 @@ class HausspiderSpider(scrapy.Spider):
         features = "N/A"
         images = "N/A"
 
-        images=response.css("div.iwp-flexslider").get() 
+        # images=methods.img_downloader_method_src(response.css("div.iwp-flexslider").get(),signature)
         title=response.css("div.page-title div.iw-heading-title h1::text").get()
-        location=response.css("div.page-title div.iw-heading-title h2 span::text").get().split('in')[-1].replace(" ","")
+        try:
+            location=response.css("div.page-title div.iw-heading-title h2 span::text").get().split('in')[-1].replace("  ","")
+        except:
+            location="N/A"    
         price=response.css("div.property-price  div::text").get().replace("\n","").replace("\t","")
         developer=response.css("aside#iwp-property-author-infomation-2 div.agent-info .agent-name::text").get()
         property_details=[]
         property_value=response.css("div.iwp-single-property-detail div.iwp-property-block-content div.row div.col-sm-6.col-xs-12.col-lg-6.col-md-6 div.iwp-items div.iwp-item").extract()
-        for i in range(len(property_value)-1):
-            one=BeautifulSoup(property_value[i],"lxml").text
-            one=one.replace("\n","").replace("  ","")
+        for i in range(len(property_value)):
+            one=BeautifulSoup(property_value[i],"lxml").text.replace("\n","").replace("  ","")
             property_details.append(one)
-        soup_description=response.css("div.iwp-single-property-description").get().replace("\n","")
-        description=BeautifulSoup(soup_description,"lxml").text  
+        soup_description=response.css("div.iwp-single-property-description").get()
+        description=BeautifulSoup(soup_description,"lxml").text.replace("\n","").replace("  ","")
         features=response.css("div.iwp-single-property-features div.iwp-property-block-content ul li::text").extract()  
 
        
-        items['images'] = methods.img_downloader_method_src(images,signature)
+        # items['images'] = images
         items['title'] = title
         items['location'] = location
         items['price'] = price

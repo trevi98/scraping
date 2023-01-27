@@ -45,11 +45,10 @@ class OffplanSpider(scrapy.Spider):
         except:
             title=""
         sub_titles=response.css("div.wpb_wrapper h3::text").extract()
-        souo_description=response.css("div.vc_row.wpb_row.vc_row-fluid.vc_custom_1548935055607.vc_row-has-fill").extract()
+        soup_description=response.css("div.vc_row.wpb_row.vc_row-fluid.vc_custom_1548935055607.vc_row-has-fill").extract()
         description=[]
-        for i in range(len(souo_description)-1):
-            one=BeautifulSoup(souo_description[i],"lxml").text
-            one=one.replace("\n","").replace("  ","")
+        for i in soup_description:
+            one=BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ","")
             description.append(one)
       
         images_cont = json.loads(response.css(".vc_grid-container.vc_clearfix.wpb_content_element.vc_media_grid::attr(data-vc-grid-settings)").get())
