@@ -21,8 +21,8 @@ class HausspiderSpider(scrapy.Spider):
             self.link = one
             yield response.follow('https://www.hausandhaus.com/'+one,callback = self.page)
 
-        next_page = f"https://www.hausandhaus.com/property-sales/properties-available-for-sale-in-dubai/page-{self.page_number}/"
-        if next_page is not None and self.page_number < 6:
+        next_page = f"https://www.hausandhaus.com/property-leasing/properties-available-for-rent-in-dubai/page-{self.page_number}/"
+        if next_page is not None and self.page_number < 150:
             print("next_page",next_page)
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
