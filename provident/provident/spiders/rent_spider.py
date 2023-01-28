@@ -22,7 +22,7 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow(one,callback = self.page)
 
         next_page = f"https://www.providentestate.com/all-properties-for-rent.html/page/{self.page_number}/"
-        if next_page is not None and self.page_number <10:
+        if next_page is not None and self.page_number <11:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
