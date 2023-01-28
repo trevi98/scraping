@@ -23,7 +23,7 @@ class testingSpider(scrapy.Spider):
         questions= response.css("section.elementor-section.elementor-top-section.elementor-element.elementor-element-89dd289.elementor-section-boxed.elementor-section-height-default.elementor-section-height-default a.elementor-accordion-title").extract()
         answers=response.css("section.elementor-section.elementor-top-section.elementor-element.elementor-element-89dd289.elementor-section-boxed.elementor-section-height-default.elementor-section-height-default div.elementor-tab-content.elementor-clearfix").extract()
         all=[]
-        for i in range(len(questions)-1):
+        for i in range(len(questions)):
              all.append({BeautifulSoup(questions[i],"lxml").text.replace("\n","").replace("  ",""):BeautifulSoup(answers[i],"lxml").text.replace("\n","").replace("  ","")})
         titles=response.css("section h2::text").extract()
         content=response.css("section p::text").extract()     

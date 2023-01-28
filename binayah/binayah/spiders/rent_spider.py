@@ -5,7 +5,7 @@ import uuid
 from .file_downloader import img_downloader
 from .helpers2 import methods2
 from .helpers import methods
-import json 
+import requests 
 
 
 
@@ -30,8 +30,8 @@ class testingSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'driven blog done'}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            data = {'message': 'binayah done'}
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
