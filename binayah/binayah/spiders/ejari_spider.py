@@ -23,13 +23,21 @@ class testingSpider(scrapy.Spider):
         questions= response.css("a.elementor-accordion-title").extract()
         answers=response.css("div.elementor-tab-content.elementor-clearfix").extract()
         all=[]
-        for i in range(len(questions)-1):
+        for i in range(len(questions)):
             all.append({BeautifulSoup(questions[i],"lxml").text.replace("\n","").replace("  ",""):BeautifulSoup(answers[i],"lxml").text.replace("\n","").replace("  ","")})
-        titles=BeautifulSoup(response.css("div.elementor-widget-heading div.elementor-widget-container").extract(),"lxml").text.replace("\n","").replace("  ","")
-        content=BeautifulSoup(response.css("div.elementor-widget-text-editor").extract(),"lxml").text.replace("\n","").replace("  ","")   
+        soup_titles=response.css("div.elementor-widget-heading div.elementor-widget-container").extract()
+        sub_titles=[]
+        for i in soup_titles: 
+            one=BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ","")
+            sub_titles.append(one)
+        content=""
+        content_soup=response.css("div.elementor-widget-text-editor").extract()
+        for i in content_soup:  
+            one=BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ","")
+            content+=one  
 
         items['qustions_answers'] = all
-        items['titles'] = titles
+        items['titles'] = sub_titles
         items['content'] = content
         yield items
 

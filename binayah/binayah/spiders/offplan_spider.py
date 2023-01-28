@@ -19,13 +19,13 @@ class testingSpider(scrapy.Spider):
 
     def parse(self,response):
         # items = TestscrapyItem()
-        all = response.css(" #module_properties .item-listing-wrap.hz-item-gallery-js.item-listing-wrap-v3.card .listing-image-wrap a.listing-featured-thumb.hover-effect::attr(href)").extract()
+        all = response.css("#module_properties .item-listing-wrap.hz-item-gallery-js.item-listing-wrap-v3.card .listing-image-wrap a.listing-featured-thumb.hover-effect::attr(href)").extract()
 
         for one in all:
             self.link = one
             yield response.follow(one,callback = self.page)
 
-        next_page = f"https://www.drivenproperties.com/blog?page={self.page_number}/"
+        next_page = f"https://www.binayah.com/off-plan-properties-dubai/?page={self.page_number}/"
         if next_page is not None and self.page_number < 1:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)

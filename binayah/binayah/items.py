@@ -83,8 +83,8 @@ class residenceVisaItem(scrapy.Item):
 
 class bitcoinItem(scrapy.Item):
     # define the fields for your item here like:
-    titles_description = scrapy.Field()
-    questions_answers = scrapy.Field()
+    description = scrapy.Field()
+    sub_titles = scrapy.Field()
 
     # pass
 
