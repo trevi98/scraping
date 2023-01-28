@@ -71,11 +71,11 @@ class testingSpider(scrapy.Spider):
         if len(near_by_places) == 0:
             near_by_places = methods2.get_text_as_list_form_simeler_elmnts(response.css(".dpx-project-privileged-location-area ul li").extract())
         try:
-            table = response.css(".dpx-project-unit-sizes- tr").extract()
-            for row in table:
-                soup = BeautifulSoup(row,'lxml')
-                tds = soup.find_all('td')
-                unit_sizes.append({'bedrooms':tds[0].text.replace("\n",""),'size':tds[1].text.replace("\n",""),'price':tds[2].text.replace("\n","")})
+            table = response.css(".dpx-project-unit-sizes- tr td").extract()
+            i=0
+            while i<len(table):
+                unit_sizes.append({BeautifulSoup(table[i],'lxml').text.replace("\n","").replace("  ",""),BeautifulSoup(table[i+1],'lxml').text.replace("\n","").replace("  ","")})
+                i+=2
         except:
             unit_sizes = "N\A"
         # description = soup.find_all('p')
