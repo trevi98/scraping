@@ -21,7 +21,7 @@ class testingSpider(scrapy.Spider):
             yield response.follow(one,callback = self.page)
 
         next_page = f"https://www.drivenproperties.com/blog?page={self.page_number}/"
-        if next_page is not None and self.page_number < 11:
+        if next_page is not None and self.page_number < 12:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:

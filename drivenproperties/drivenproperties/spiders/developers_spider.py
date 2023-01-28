@@ -23,7 +23,7 @@ class testingSpider(scrapy.Spider):
             self.link = one
             yield response.follow('https://www.drivenproperties.com/'+one,callback = self.page)
 
-        next_page = f"https://www.drivenproperties.com/dubai/off-plan-properties-and-projects-for-sale?page={self.page_number}/"
+        next_page = f"https://www.drivenproperties.com/dubai/real-estate-developers?page={self.page_number}/"
         if next_page is not None and self.page_number < 1:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
