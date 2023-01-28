@@ -50,7 +50,7 @@ class HausspiderSpider(scrapy.Spider):
         features = "N/A"
         images = "N/A"
 
-        # images=methods.img_downloader_method_src(response.css("div.iwp-flexslider").get(),signature)
+        images=methods.img_downloader_method_src(response.css("div.iwp-flexslider").get(),signature)
         title=response.css("div.page-title div.iw-heading-title h1::text").get()
         try:
             location=response.css("div.page-title div.iw-heading-title h2 span::text").get().split('in')[-1].replace("  ","")
@@ -68,7 +68,7 @@ class HausspiderSpider(scrapy.Spider):
         features=response.css("div.iwp-single-property-features div.iwp-property-block-content ul li::text").extract()  
 
        
-        # items['images'] = images
+        items['images'] = images
         items['title'] = title
         items['location'] = location
         items['price'] = price

@@ -22,7 +22,7 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow(one,callback = self.page)
 
         next_page = f"https://www.providentestate.com/all-properties-for-rent.html/page/{self.page_number}/"
-        if next_page is not None and self.page_number <1:
+        if next_page is not None and self.page_number <10:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
@@ -50,7 +50,7 @@ class HausspiderSpider(scrapy.Spider):
         features = "N/A"
         images = "N/A"
 
-        images=response.css("div.iwp-flexslider").get() 
+        images= methods.img_downloader_method_src(response.css("div.iwp-flexslider").get(),signature)
         title=response.css("div.page-title div.iw-heading-title h1::text").get()
         location=response.css("div.page-title div.iw-heading-title h2 span::text").get().split('in')[-1].replace(" ","")
         price=response.css("div.property-price  div::text").get().replace("\n","").replace("\t","")
@@ -66,7 +66,7 @@ class HausspiderSpider(scrapy.Spider):
         features=response.css("div.iwp-single-property-features div.iwp-property-block-content ul li::text").extract()  
 
        
-        items['images'] = methods.img_downloader_method_src(images,signature)
+        items['images'] = images
         items['title'] = title
         items['location'] = location
         items['price'] = price
