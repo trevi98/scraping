@@ -28,15 +28,6 @@ class testingSpider(scrapy.Spider):
         titles=response.css("section h2::text").extract()
         content=response.css("section p::text").extract()     
 
-
-     
-
-
-
-        
-
-        
-       
         items['qustions_answers'] = all
         items['titles'] = titles
         items['content'] = content
