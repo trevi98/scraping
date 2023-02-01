@@ -1,10 +1,10 @@
 import subprocess
 
 # Run the first spider
-subprocess.call(["scrapy", "crawl", "offplan"])
 subprocess.call(["scrapy", "crawl", "buy"])
 subprocess.call(["scrapy", "crawl", "rent"])
 subprocess.call(["scrapy", "crawl", "communities"])
+subprocess.call(["scrapy", "crawl", "offplan"])
 # subprocess.call(["scrapy", "crawl", "why_dubai"])
 # subprocess.call(["scrapy", "crawl", "offplan_villa"])
 # subprocess.call(["scrapy", "crawl", "apartment_offplan"])

@@ -31,3 +31,5 @@ class HausspiderSpider(scrapy.Spider):
         items["article"]=all_article
         items["developers_overview"]=all_developers_overview
         yield items
+        data = {'message': 'machine 1 | whyoffpllan (;'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)

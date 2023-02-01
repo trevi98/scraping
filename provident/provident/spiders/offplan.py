@@ -83,3 +83,5 @@ class OffplanSpider(scrapy.Spider):
         items['description'] = description
         items['signature'] = signature
         yield items
+        data = {'message': 'prov all (;'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)

@@ -27,7 +27,7 @@ class testingSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'metro area done'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -51,9 +51,6 @@ class testingSpider(scrapy.Spider):
         content=BeautifulSoup(response.css("div.body-mpp.pdd").get(),"lxml").text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
   
 
-
-
-        
         items['content'] = content
         items['title'] = title
         yield items
