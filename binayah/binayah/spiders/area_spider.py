@@ -28,31 +28,41 @@ class testingSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'binaya buy done'}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            data = {'message': 'binaya area done'}
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
         items = AreaItem()
         signature = uuid.uuid1()
-
+        
+        items["coverImage"]=img_downloader.download(response.css("div.banner-inner.parallax::attr('data-parallax-bg-image')").get(),signature,111)
         items['signature'] = signature
         items['title'] = response.css("title::text").get().replace("\n","").replace("  ","")
         try:
-            items['description'] = BeautifulSoup(response.css(".elementor-section-wrap").get(),'lxml').text.replace("\n","").replace("  ","")
+            description = BeautifulSoup(response.css("div.wpb_text_column.wpb_content_element div.wpb_wrapper").get(),'lxml').text.replace("\n","").replace("  ","")
         except:
-            items['description'] = BeautifulSoup(response.css(".vc_column-inner").get(),'lxml').text.replace("\n","").replace("  ","")
+            description=""
+            description_soup= response.css("div.elementor-widget-container").extract()[3]
+            for i in description_soup:
+                description+=BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ","")
+
         try:
             items['map_plan'] = img_downloader.download(BeautifulSoup(response.css("div.mega_wrap").get(),'lxml').find('img')['data-src'],signature,99)
         except:
             items['map_plan'] = "N\A"
+        amenities=[]    
+        try:
+            amenities_soup=response.css("div.vc_info_list_outer li").extract()
+            for i in amenities_soup:
+                one=BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ","")
+                amenities.append(one)
+        except:
+            amenities="N/A"
+        items["amenities"]=amenities
+        items["description"]=description
+                        
        
-        # items['content'] = BeautifulSoup(response.css(".dpxi-post-content-2").get(),'lxml').text.replace("\n","").replace("  ","")
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['location'] = location
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
         yield items
 
 

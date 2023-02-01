@@ -75,11 +75,6 @@ class testingSpider(scrapy.Spider):
         items['area'] = area
         items['images'] = images
         items['amentities'] = amentities
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['location'] = location
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
         yield items
 
 

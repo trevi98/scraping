@@ -39,13 +39,35 @@ class testingSpider(scrapy.Spider):
         items = OffplanItem()
         signature = uuid.uuid1()
 
-        items['signature'] = signature
-        items['title'] = response.css(".wpb_column.vc_column_container.vc_col-sm-6 .wpb_wrapper h2.vc_custom_heading::text").get().replace("\n","").replace("  ","")
-        property_info = methods2.get_text_from_same_element_multiple_and_seperate_to_key_value(response.css(".property-address-wrap .block-wrap .block-content-wrap ul li").extract(),{'keys':['Property Type','Unit Type','Size','Area','Title type','Downpayment','Payment Plan','Completion date','Developer','Starting price']})
         try:
-            items['description'] = BeautifulSoup(response.css(".wpb_text_column.wpb_content_element .wpb_wrapper").extract()[2],'lxml').text.replace("\n","").replace("  ","")
+            type=response.css("div.breadcrumb-wrap nav ol li span::text")[1].get()
         except:
-            items['description'] = BeautifulSoup(response.css(".vc_column-inner").get(),'lxml').text.replace("\n","").replace("  ","")
+            type="N/A"    
+
+        
+        title = response.css(".wpb_column.vc_column_container.vc_col-sm-6 .wpb_wrapper h2.vc_custom_heading::text").get().replace("\n","").replace("  ","")
+        property_info_key_soup= response.css("div#property-address-wrap ul li strong").extract()
+        property_info_value_soup = response.css("div#property-address-wrap ul li span").extract()
+        property_info_key=[]
+        property_info_value=[]
+        for i in property_info_key_soup:
+            property_info_key.append(BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ",""))
+        for i in property_info_value_soup:
+            property_info_value.append(BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ",""))
+            
+        property_info=[]
+        if len(property_info_key)==len(property_info_key):
+            for i in range(len(property_info_key)):
+                property_info.append({property_info_key[i]:property_info_value[i]})
+        # else:
+        #     property_info.append({property_info_key:property_info_value})
+        description=""            
+        try:
+            soup_description=response.css(".wpb_text_column.wpb_content_element .wpb_wrapper").extract()[2]
+            for i in soup_description:
+                description+= BeautifulSoup(i,'lxml').text.replace("\n","").replace("  ","")
+        except:
+            description = BeautifulSoup(response.css(".vc_column-inner").get(),'lxml').text.replace("\n","").replace("  ","")
 
         images_cont = json.loads(response.css(".vc_grid-container.vc_clearfix.wpb_content_element.vc_media_grid::attr(data-vc-grid-settings)").get())
         page_id = images_cont['page_id']
@@ -77,30 +99,53 @@ class testingSpider(scrapy.Spider):
         items['images'] = methods.img_downloader_method_src(images,signature)
         # except:
         #     items['images'] = "N\A"
-        amenities_name=response.css(".wpb_column.vc_column_container.vc_col-sm-12 .wpb_wrapper h2.vc_custom_heading::text")[3].get()
-        amenities_description=BeautifulSoup(response.css(".wpb_text_column.wpb_content_element .wpb_wrapper").extract()[3],"lxml").text.replace("\n","").replace("  ","")
+        image_location=methods.img_downloader_method(response.css("div.vc_single_image-wrapper.vc_box_border_grey").get(),signature)
         soup_amenities_list=response.css("div.vc_row.wpb_row.vc_inner.vc_row-fluid.lists").extract()
         amenities_list=[]
-        for i in range(len(soup_amenities_list)-1):
-            one=BeautifulSoup(soup_amenities_list[i],"lxml")
+        for i in soup_amenities_list:
+            one=BeautifulSoup(i,"lxml")
             amenities_list.append(one)
-        attractions=response.css("div.vc_row.wpb_row.vc_inner.vc_row-fluid div.wpb_column.vc_column_container.vc_col-sm-3 strong::text").extract()
-        payments_sizes_soup=response.css("div.vc_empty_space ~ h2 ~ div.vc_row.wpb_row.vc_inner.vc_row-fluid div.wpb_column.vc_column_container div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element.paymentplan div.wpb_wrapper").extract()
-        payments_sizes=[]
-        for i in range(len(payments_sizes_soup)-1):
-            one=BeautifulSoup(payments_sizes_soup[i],"lxml").text.replace("\n","")
-            payments_sizes.append(one)
-        floorplans=[]    
-        soup_images_floorplans=response.css("div.wpb_column.vc_column_container.vc_col-sm-6 figure img::attr('src')").extract()
-        soup_description_floorplans=response.css("div.wpb_column.vc_column_container.vc_col-sm-6 p").extract()
-        for i in range(len(soup_images_floorplans)-1):
-            des=BeautifulSoup(soup_description_floorplans[i],"lxml").text.replace("\n","").replace("  ","")
-            floorplans.append({soup_images_floorplans[i]:des})
+        try:
+            attractions=response.css("div.wpb_column.vc_column_container.vc_col-sm-3 div.wpb_single_image.wpb_content_element.vc_align_center + div.wpb_text_column.wpb_content_element strong::text").extract()
+        except:
+            attractions="N/A"
+        try:
+            payment_plan_all=response.css("div.wpb_text_column.wpb_content_element.paymentplan p strong::text").extract() 
+            payment_plan=[]
+            i=0
+            while i < len(payment_plan_all):
+                payment_plan.append({payment_plan_all[i]:payment_plan_all[i+1]})
+                i+=2
+        except:
+            payment_plan="N/A"        
+        try:
+            type_size_all=response.css("div.wpb_text_column.wpb_content_element.bedroom p strong::text").extract() 
+            type_size=[]
+            i=0
+            while i < len(type_size_all):
+                type_size.append({type_size_all[i]:type_size_all[i+1]})
+                i+=2
+        except:
+            type_size="N/A"        
+        try:
+            floor_plans=response.css("div.wpb_column.vc_column_container.vc_col-sm-4").get()
+            images_floor_plan=methods.img_downloader_method(floor_plans,signature)
+        except:
+            try:
+                floor_plans=response.css("div.wpb_column.vc_column_container.vc_col-sm-6 ").get()
+                images_floor_plan=methods.img_downloader_method(floor_plans,signature)
+            except:
+                floor_plans="N/A"
+        
+        else:
+            images_floor_plan="N/A"                
         try:
             video=response.css("div.rll-youtube-player::attr('data-src')").get()
         except:
             video="N/A"        
 
+        # h2=response.css("div.vc_row.wpb_row.vc_row-fluid h2.vc_custom_heading::text").extract()
+        # des=response.css("h2.vc_custom_heading + div.wpb_text_column.wpb_content_element").extract()[5]
 
 
         
@@ -109,13 +154,18 @@ class testingSpider(scrapy.Spider):
        
         # items['content'] = BeautifulSoup(response.css(".dpxi-post-content-2").get(),'lxml').text.replace("\n","").replace("  ","")
        
-        items['amenities_name'] = amenities_name
-        items['amenities_description'] = amenities_description
-        items['amenities_list'] = amenities_list
+        items['title'] = title
+        items['description'] = description
+        items['type'] = type
+        items['property_info'] = property_info
+        items['image_location'] = image_location
+        items['payment_plan'] = payment_plan
+        items['amenities'] = amenities_list
         items['attractions'] = attractions
-        items['payments_sizes'] = payments_sizes
-        items['floorplans'] = floorplans
         items['video'] = video
+        items['type_size'] = type_size
+        items['images_floor_plan'] = images_floor_plan
+        items['signature'] = signature
         yield items
 
 

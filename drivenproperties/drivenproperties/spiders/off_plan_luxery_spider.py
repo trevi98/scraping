@@ -35,7 +35,7 @@ class testingSpider(scrapy.Spider):
 
     def page(self,response):
         items = ApartmentOffplanItem()
-        title = response.css(".project-header__title::text").get()
+        
         elmnts = response.css('li.as_lits-item').extract()
         signature = uuid.uuid1()
 
@@ -84,10 +84,22 @@ class testingSpider(scrapy.Spider):
 
         items['title'] = title
         items['description'] = description
-        items['price'] = highlights['price']
-        items['developer'] = highlights['developer']
-        items['area'] = highlights['area']
-        items['bedrooms'] = highlights['bedrooms']
+        try:
+            items['price'] = highlights['price']
+        except:
+            items['price']="N/A"   
+        try:
+            items['developer'] = highlights['developer']
+        except:
+            items['developer']="N/A"   
+        try:
+            items['area'] = highlights['area']
+        except:
+            items['area']="N/A"   
+        try:
+            items['bedrooms'] = highlights['bedrooms']
+        except:
+            items['bedrooms']="N/A"   
         items['amentities'] = amentities
         items['images'] = images
         items['payment_plan'] = payment_plan
