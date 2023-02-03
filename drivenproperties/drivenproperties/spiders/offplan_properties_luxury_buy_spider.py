@@ -63,8 +63,13 @@ class testingSpider(scrapy.Spider):
         # description = soup.find_all('p')
        
         images = methods.img_downloader_method_src(response.css(".carousel-inner").get(),signature)
+        try:
+            developer=response.css('div.dpx-aside-box-content a::text').get()
+        except:
+            developer="N/A"
 
         items['title'] = title
+        items['developer'] = developer
         items['type'] = type
         items['price'] = prop_info['price']
         items['size'] = prop_info['size']
@@ -75,11 +80,7 @@ class testingSpider(scrapy.Spider):
         items['area'] = area
         items['images'] = images
         items['amentities'] = amentities
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['location'] = location
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
+        
         yield items
 
 

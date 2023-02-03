@@ -37,7 +37,20 @@ class BuyItem(scrapy.Item):
     signature = scrapy.Field()
     area = scrapy.Field()
     amentities = scrapy.Field()
-    images = scrapy.Field()
+    # images = scrapy.Field()
+    description = scrapy.Field()
+
+class RentItem(scrapy.Item):
+    title = scrapy.Field()
+    type = scrapy.Field()
+    bedrooms = scrapy.Field()
+    bathrooms = scrapy.Field()
+    size = scrapy.Field()
+    price = scrapy.Field()
+    signature = scrapy.Field()
+    area = scrapy.Field()
+    amentities = scrapy.Field()
+    # images = scrapy.Field()
     description = scrapy.Field()
 
 class BlogItem(scrapy.Item):
@@ -60,6 +73,7 @@ class developersItem(scrapy.Item):
 class appartmentBuyLuxuryItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
+    developer = scrapy.Field()
     type = scrapy.Field()
     bedrooms = scrapy.Field()
     bathrooms = scrapy.Field()
@@ -74,6 +88,7 @@ class appartmentBuyLuxuryItem(scrapy.Item):
 class BuypropertiesLuxuryItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
+    developer = scrapy.Field()
     type = scrapy.Field()
     bedrooms = scrapy.Field()
     bathrooms = scrapy.Field()
@@ -88,6 +103,7 @@ class BuypropertiesLuxuryItem(scrapy.Item):
 class villaBuyLuxuryItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
+    developer = scrapy.Field()
     type = scrapy.Field()
     bedrooms = scrapy.Field()
     bathrooms = scrapy.Field()
@@ -103,6 +119,7 @@ class villaBuyLuxuryItem(scrapy.Item):
 class RentapartmentLuxuryItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
+    developer = scrapy.Field()
     type = scrapy.Field()
     bedrooms = scrapy.Field()
     bathrooms = scrapy.Field()
@@ -118,6 +135,7 @@ class RentapartmentLuxuryItem(scrapy.Item):
 class RentVillaLuxuryItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
+    developer = scrapy.Field()
     type = scrapy.Field()
     bedrooms = scrapy.Field()
     bathrooms = scrapy.Field()

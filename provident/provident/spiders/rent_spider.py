@@ -1,5 +1,5 @@
 import scrapy
-from ..items import HausRenItem
+from ..items import ProvRenItem
 import uuid
 from .helpers import methods
 from .file_downloader import img_downloader
@@ -15,24 +15,24 @@ class HausspiderSpider(scrapy.Spider):
     page_number=2
 
     def parse(self,response):
-        all =response.css("div.iw-property-item.list-item div.iw-property-thumbnail.iw-image-holder.iw-effect-image-v1 a::attr('href')").extract()
+        all =response.css("div.iw-property-content.grid-1 div.content-top a::attr('href')").extract()
 
         for one in all:
             self.link = one
             yield response.follow(one,callback = self.page)
 
         next_page = f"https://www.providentestate.com/all-properties-for-rent.html/page/{self.page_number}/"
-        if next_page is not None and self.page_number <11:
+        if next_page is not None and self.page_number <12:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
             data = {'message': 'machine 2 | rent prov done (;'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
-        items = HausRenItem()
+        items = ProvRenItem()
         signature = uuid.uuid1()
 
         title = "N/A"
@@ -52,28 +52,37 @@ class HausspiderSpider(scrapy.Spider):
 
         images= methods.img_downloader_method_src(response.css("div.iwp-flexslider").get(),signature)
         title=response.css("div.page-title div.iw-heading-title h1::text").get()
-        location=response.css("div.page-title div.iw-heading-title h2 span::text").get().split('in')[-1].replace(" ","")
-        price=response.css("div.property-price  div::text").get().replace("\n","").replace("\t","")
+        try:
+            location=response.css("div.page-title div.iw-heading-title h2 span::text").get().split('in')[-1].replace(" ","")
+        except:
+            location="N/A"
+        try:         
+            price=response.css("div.property-price  div::text").get().replace("\n","").replace("\t","")
+        except:
+            price="N/A"    
         developer=response.css("aside#iwp-property-author-infomation-2 div.agent-info .agent-name::text").get()
         property_details=[]
         property_value=response.css("div.iwp-single-property-detail div.iwp-property-block-content div.row div.col-sm-6.col-xs-12.col-lg-6.col-md-6 div.iwp-items div.iwp-item").extract()
-        for i in range(len(property_value)-1):
+        for i in range(len(property_value)):
             one=BeautifulSoup(property_value[i],"lxml").text
             one=one.replace("\n","").replace("  ","")
             property_details.append(one)
-        soup_description=response.css("div.iwp-single-property-description").get().replace("\n","")
+        try:    
+            soup_description=response.css("div.iwp-single-property-description").get().replace("\n","")
+        except:
+            soup_description="hassan"+self.link    
         description=BeautifulSoup(soup_description,"lxml").text  
         features=response.css("div.iwp-single-property-features div.iwp-property-block-content ul li::text").extract()  
 
        
         items['images'] = images
-        items['title'] = title
-        items['location'] = location
-        items['price'] = price
-        items['developer'] = developer
-        items['property'] = property_details
-        items['signature'] = signature
-        items['description'] = description
-        items['features'] = features
+        # items['title'] = title
+        # items['location'] = location
+        # items['price'] = price
+        # items['developer'] = developer
+        # items['property'] = property_details
+        # items['signature'] = signature
+        # items['description'] = description
+        # items['features'] = features
         yield items
 

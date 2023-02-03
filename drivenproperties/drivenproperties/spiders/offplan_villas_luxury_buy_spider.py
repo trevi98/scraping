@@ -63,8 +63,13 @@ class testingSpider(scrapy.Spider):
         # description = soup.find_all('p')
        
         images = methods.img_downloader_method_src(response.css(".carousel-inner").get(),signature)
-
+        try:
+            developer=response.css('div.dpx-aside-box-content a::text').get()
+        except:
+            developer="N/A"
+            
         items['title'] = title
+        items['developer'] = developer
         items['type'] = type
         items['price'] = prop_info['price']
         items['size'] = prop_info['size']

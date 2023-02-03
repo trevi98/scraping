@@ -62,18 +62,30 @@ class testingSpider(scrapy.Spider):
         
         # description = soup.find_all('p')
        
-        images = methods.img_downloader_method_src(response.css(".carousel-inner").get(),signature)
+        # images = methods.img_downloader_method_src(response.css(".carousel-inner").get(),signature)
 
         items['title'] = title
         items['type'] = type
-        items['price'] = prop_info['price']
-        items['size'] = prop_info['size']
-        items['bedrooms'] = prop_info['bedrooms']
-        items['bathrooms'] = prop_info['bathrooms']
+        try:
+            items['price'] = prop_info['price']
+        except:
+            items["price"]="N/A"    
+        try:
+            items['size'] = prop_info['size']
+        except:
+            items["size"]="N/A"    
+        try:
+            items['bedrooms'] = prop_info['bedrooms']
+        except:
+            items["bedrooms"]="N/A"    
+        try:
+            items['bathrooms'] = prop_info['bathrooms']
+        except:
+            items["bathrooms"]="N/A"
         items['signature'] = signature
         items['description'] = description
         items['area'] = area
-        items['images'] = images
+        # items['images'] = images
         items['amentities'] = amentities
         yield items
 

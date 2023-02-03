@@ -81,6 +81,7 @@ class testingSpider(scrapy.Spider):
         # description = soup.find_all('p')
        
         # images = methods.img_downloader_method(elmnt,signature)
+            
 
         items['title'] = title
         items['description'] = description
@@ -98,6 +99,4 @@ class testingSpider(scrapy.Spider):
         yield items
 
 
-    def get_text(self,elmnt):
-        soup = BeautifulSoup(elmnt,'lxml')
-        return soup.get_text()
+    

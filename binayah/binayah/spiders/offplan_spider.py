@@ -59,13 +59,15 @@ class testingSpider(scrapy.Spider):
         if len(property_info_key)==len(property_info_key):
             for i in range(len(property_info_key)):
                 property_info.append({property_info_key[i]:property_info_value[i]})
-        # else:
-        #     property_info.append({property_info_key:property_info_value})
+        else:
+            property_info.append({property_info_key:property_info_value})
         description=""            
         try:
             soup_description=response.css(".wpb_text_column.wpb_content_element .wpb_wrapper").extract()[2]
             for i in soup_description:
-                description+= BeautifulSoup(i,'lxml').text.replace("\n","").replace("  ","")
+                one=BeautifulSoup(i,'lxml').text.replace("\n","").replace("  ","")
+                description+= one
+                
         except:
             description = BeautifulSoup(response.css(".vc_column-inner").get(),'lxml').text.replace("\n","").replace("  ","")
 
@@ -95,10 +97,10 @@ class testingSpider(scrapy.Spider):
         response_images = requests.request("POST", 'https://www.binayah.com/wp-admin/admin-ajax.php', headers=headers, data=payload)
         images = response_images.text
 
-        # try:
-        items['images'] = methods.img_downloader_method_src(images,signature)
-        # except:
-        #     items['images'] = "N\A"
+        try:
+            items['images'] = methods.img_downloader_method_src(images,signature)
+        except:
+            items['images'] = "N\A"
         image_location=methods.img_downloader_method(response.css("div.vc_single_image-wrapper.vc_box_border_grey").get(),signature)
         soup_amenities_list=response.css("div.vc_row.wpb_row.vc_inner.vc_row-fluid.lists").extract()
         amenities_list=[]
@@ -106,25 +108,24 @@ class testingSpider(scrapy.Spider):
             one=BeautifulSoup(i,"lxml")
             amenities_list.append(one)
         try:
-            attractions=response.css("div.wpb_column.vc_column_container.vc_col-sm-3 div.wpb_single_image.wpb_content_element.vc_align_center + div.wpb_text_column.wpb_content_element strong::text").extract()
+            attractions=[]
+            attractions_all=response.css("div.wpb_column.vc_column_container.vc_col-sm-3 div.wpb_single_image.wpb_content_element.vc_align_center + div.wpb_text_column.wpb_content_element strong").extract()
+            for i in attractions_all:
+                attractions.append(BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ",""))
         except:
             attractions="N/A"
         try:
-            payment_plan_all=response.css("div.wpb_text_column.wpb_content_element.paymentplan p strong::text").extract() 
+            payment_plan_all=response.css("div.wpb_text_column.wpb_content_element.paymentplan div.wpb_wrapper").extract() 
             payment_plan=[]
-            i=0
-            while i < len(payment_plan_all):
-                payment_plan.append({payment_plan_all[i]:payment_plan_all[i+1]})
-                i+=2
+            for i in payment_plan_all:
+                payment_plan.append(BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ",""))
         except:
             payment_plan="N/A"        
         try:
-            type_size_all=response.css("div.wpb_text_column.wpb_content_element.bedroom p strong::text").extract() 
+            type_size_all=response.css("div.wpb_text_column.wpb_content_element.bedroom div.wpb_wrapper").extract() 
             type_size=[]
-            i=0
-            while i < len(type_size_all):
-                type_size.append({type_size_all[i]:type_size_all[i+1]})
-                i+=2
+            for i in type_size_all:
+                type_size.append(BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ",""))
         except:
             type_size="N/A"        
         try:
