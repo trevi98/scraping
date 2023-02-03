@@ -29,7 +29,7 @@ class HausspiderSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'machine 2 | haus areae done (;'}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):

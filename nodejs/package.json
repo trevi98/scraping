@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "axios": "^1.2.3",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "got": "^10.4.0",
+    "nightmare": "^3.0.2",
+    "node-libcurl": "^3.0.0",
+    "puppeteer": "^19.6.0",
+    "request": "^2.88.2",
+    "user-agent": "^1.0.4"
+  },
+  "devDependencies": {
+    "jsdom": "21.1.0",
+    "jsdom-global": "3.0.2",
+    "puppeteer-core": "^19.6.1"
+  }
+}

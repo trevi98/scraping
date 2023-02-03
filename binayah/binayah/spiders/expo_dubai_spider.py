@@ -35,15 +35,17 @@ class testingSpider(scrapy.Spider):
             one=BeautifulSoup(i,"lxml").text.replace("\n","").replace("\t","").replace("\r","").replace("  ","")
             all_answers.append(one)
         questions_answers=[]
-        for i in range(len(questions)-1):
+        for i in range(len(questions)):
             questions_answers.append({questions[i]:all_answers[i]})
         questions2=response.css("h3 span::text").extract()
         answers2=response.css("p.elementor-icon-box-description::text").extract()
-        for i in range(len(questions2)-1):
+        for i in range(len(questions2)):
             questions_answers.append({questions2[i].replace("\n",""):answers2[i]})    
         items['qustions_answers'] = questions_answers
         items['title'] = title
         items['description'] = description
         yield items
+        data = {'message': 'binaya expo done'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
 
 

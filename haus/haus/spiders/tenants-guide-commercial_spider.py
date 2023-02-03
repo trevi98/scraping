@@ -26,3 +26,5 @@ class HausspiderSpider(scrapy.Spider):
         items["descriptionHome"]=descriptionHome
         items["article"]=all_article
         yield items
+        data = {'message': 'machine 1 | tenantsCommercial (;'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)

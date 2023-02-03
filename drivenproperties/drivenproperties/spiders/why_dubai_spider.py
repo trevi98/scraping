@@ -17,5 +17,7 @@ class testingSpider(scrapy.Spider):
         items = WhyDubaiItem()
         items['content'] = content
         yield items
+        data = {'message': 'why_dubao  done'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
 
    

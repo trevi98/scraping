@@ -27,7 +27,7 @@ class testingSpider(scrapy.Spider):
         else:
             # pass
             data = {'message': 'metro buy done'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -48,7 +48,7 @@ class testingSpider(scrapy.Spider):
         video = "N/A"
         images = "N/A"
 
-        images= response.css("section.featureProjects.object__gallery").get() 
+        images= response.css("div.modal__gallery-grid").get()
         title=response.css("div.main-info__col.main-info__col_left div.main-info__title-wrap h1::text").get().replace("\n","")
         location=response.css("div.main-info__col.main-info__col_left div.main-info__location-wrap.info-location a::text").get()
         price=response.css("div.main-info__col.main-info__col_left div.main-info__price-wrap.info-price div.info-price__col.info-price__col_price span::text").get()
@@ -60,7 +60,7 @@ class testingSpider(scrapy.Spider):
         information_value=response.css("div.main-info__details-wrap.info-details div.info-details__row div.info-details__col div.info-details__text-icon span::text").extract()
         information_key=response.css("div.main-info__details-wrap.info-details div.info-details__row div.info-details__col div.info-details__caption  span::text").extract()
         information=[]
-        for i in range(len(information_key)-1):
+        for i in range(len(information_key)):
             information.append({information_key[i]:information_value[i]})
         soup_details=response.css("div.main-info__writeup").extract()
         details=[]
@@ -70,13 +70,13 @@ class testingSpider(scrapy.Spider):
         project_details=response.css("div.project-details__table.project-table table td::text").extract()
         all_project_details=[]
         i = 0
-        while i < len(project_details)-1:
+        while i < len(project_details):
           all_project_details.append({project_details[i]:project_details[i+1]})
           i += 2
         amentities_value= response.css("div.facilities__lists div.facilities__item ul.facilities__item-list.list-facilities").extract()
         amentities_key=response.css("div.facilities__lists div.facilities__item h3::text").extract()
         amentities=[]
-        for i in range(len(amentities_key)-1):
+        for i in range(len(amentities_key)):
             one=BeautifulSoup(amentities_value[i],"lxml").text.replace("\n","").replace("  ","")
             amentities.append({amentities_key[i]:one})
 

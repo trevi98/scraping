@@ -33,5 +33,7 @@ class testingSpider(scrapy.Spider):
         items['sub_titles'] = all_descriptions
         
         yield items
+        data = {'message': 'binaya bitcoin done'}
+        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
 
 

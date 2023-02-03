@@ -13,6 +13,8 @@ class BinayahItem(scrapy.Item):
 class AreaItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
+    amenities = scrapy.Field()
+    coverImage = scrapy.Field()
     description = scrapy.Field()
     map_plan = scrapy.Field()
     signature = scrapy.Field()
@@ -21,34 +23,186 @@ class OffplanItem(scrapy.Item):
     # define the fields for your item here like:
     images = scrapy.Field()
     signature = scrapy.Field()
-    amenities_name = scrapy.Field()
-    amenities_description = scrapy.Field()
-    amenities_list = scrapy.Field()
+    amenities = scrapy.Field()
     attractions = scrapy.Field()
-    payments_sizes = scrapy.Field()
-    floorplans = scrapy.Field()
+    type_size = scrapy.Field()
+    images_floor_plan = scrapy.Field()
     property_info = scrapy.Field()
     title = scrapy.Field()
     description = scrapy.Field()
+    type = scrapy.Field()
     video = scrapy.Field()
+    image_location = scrapy.Field()
+    payment_plan = scrapy.Field()
     # pass
 
-class buyItem(scrapy.Item):
+class villas_saleItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     price = scrapy.Field()
     location = scrapy.Field()
     description = scrapy.Field()
-    property = scrapy.Field()
-    # pass
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
 
-class rentItem(scrapy.Item):
+    # pass
+    
+class apartments_saleItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     price = scrapy.Field()
     location = scrapy.Field()
     description = scrapy.Field()
-    property = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+
+    # pass
+
+
+class townhouses_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+
+    # pass
+
+
+class penthouses_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+
+    # pass
+
+class offices_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+
+    # pass
+
+class duplex_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+
+    # pass
+
+
+class Warehouse_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+
+    # pass
+
+class staff_accommodation_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+    # pass
+
+class land_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+    # pass
+
+class luxury_saleItem(scrapy.Item):
+    # define the fields for your item here like:
+    images = scrapy.Field()
+    title = scrapy.Field()
+    price = scrapy.Field()
+    project_details = scrapy.Field()
+    about = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    amenities_description = scrapy.Field()
+    life_at = scrapy.Field()
+    signature = scrapy.Field()
+    # pass
+
+class villas_rentItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+    # pass
+
+
+class apartments_rentItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
+    # pass
+
+class offices_rentItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    price = scrapy.Field()
+    location = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    type = scrapy.Field()
+    porpuse = scrapy.Field()
+    details = scrapy.Field()
     # pass
 
 

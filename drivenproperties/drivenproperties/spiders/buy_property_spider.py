@@ -29,8 +29,8 @@ class testingSpider(scrapy.Spider):
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
-            data = {'message': 'driven buy done'}
-            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            data = {'message': 'driven all done'}
+            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -75,11 +75,6 @@ class testingSpider(scrapy.Spider):
         items['area'] = area
         items['images'] = images
         items['amentities'] = amentities
-        # items['images'] = images
-        # items['payment_plan'] = payment_plan
-        # items['location'] = location
-        # items['near_by_places'] = near_by_places
-        # items['unit_sizes'] = unit_sizes
         yield items
 
 

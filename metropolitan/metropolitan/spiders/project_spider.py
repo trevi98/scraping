@@ -21,13 +21,13 @@ class testingSpider(scrapy.Spider):
             yield response.follow(one,callback = self.page)
 
         next_page = f"https://metropolitan.realestate/projects/page/{self.page_number}/"
-        if next_page is not None and self.page_number < 170:
+        if next_page is not None and self.page_number < 178:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
             data = {'message': 'metro project done'}
-            requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
