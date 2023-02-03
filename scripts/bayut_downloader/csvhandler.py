@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from file_downloader import img_downloader
+import uuid
 
 class csvHandler():
 # Read CSV file
@@ -19,7 +20,9 @@ class csvHandler():
             for column in columns:
                 for index, row in df.iterrows():
                     signaturea = row['signaturea']
-                    if ',' in row[column]:
+                    # if len(str(row[column])) == 0:
+                    #     continue
+                    if ',' in str(row[column]):
                         links = row[column].split(",")
                         res = self.download_array(links,signaturea)
                         df.at[index, column] = res
@@ -33,12 +36,16 @@ class csvHandler():
 
 
     def download(self,link,signaturea):
-        return img_downloader.download(link,signaturea,99)
+        if "800x600" not in str(link):
+            link = str(link).replace('120x90',"800x600").replace("600x450","800x600")
+        return img_downloader.download(link,signaturea,uuid.uuid1())
 
     def download_array(self,links,signaturea):
         counter = 1
         data = []
         for link in links:
-            data.append(img_downloader.download(link,signaturea,counter))
-            counter +=1
+            if "800x600" not in str(link):
+                link = str(link).replace('120x90',"800x600").replace("600x450","800x600")
+                data.append(img_downloader.download(link,signaturea,counter))
+                counter +=1
         return data
