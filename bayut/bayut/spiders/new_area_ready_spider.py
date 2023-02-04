@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from .file_downloader import img_downloader
 from .helpers import methods
 import uuid
+import sys
 
 class testingSpider(scrapy.Spider):
     name = 'area_ready'
@@ -40,301 +41,151 @@ class testingSpider(scrapy.Spider):
         signature = uuid.uuid1()
         title = response.css("h1.post_title::text").get().replace("\n","").replace("\r","").replace("\t","").replace("  ","")
         cover = img_downloader.download(response.css("figure.post_banner img::attr(src)").get(),signature,99)
-        temp = response.css("h3:contains(ABOUT) ~ p::text").extract()
-        if len(temp) == 0:
-            temp = response.css("h3:contains(about) ~ p::text").extract()
-        if len(temp) == 0:
-            temp = response.css("h3:contains(About) ~ p::text").extract()
-        res = ''
-        about = {}
-        for elmnt in temp:
-            res += elmnt.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                about = {self.get_text(response.css("h3:contains(ABOUT)").get()):res}
-            except:
-                try:
-                    about = {self.get_text(response.css("h3:contains(about)").get()):res}
-                except:
-                    about = {self.get_text(response.css("h3:contains(About)").get()):res}
 
+        # about
+        temp = response.css("h3:contains(ABOUT) ~ *").extract()
+        if len(temp) == 0:
+            temp = response.css("h3:contains(about) ~ *").extract()
+        if len(temp) == 0:
+            temp = response.css("h3:contains(About) ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        about = temp
 
         #  nutshell
-        temp = response.css("h3:contains('NUTSHELL') ~ ul, h3:contains('NUTSHELL') ~ p").extract()
+        temp = response.css("h3:contains('NUTSHELL') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('nutshell') ~ ul, h3:contains('nutshell') ~ p").extract()
+            temp = response.css("h3:contains('nutshell') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Nutshell') ~ ul, h3:contains('Nutshell') ~ p").extract()
-        res = ''
-        in_a_nutshell = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                in_a_nutshell = {self.get_text(response.css("h3:contains(NUTSHELL)").get()):res}
-            except:
-                try:
-                    in_a_nutshell = {self.get_text(response.css("h3:contains(nutshell)").get()):res}
-                except:
-                    in_a_nutshell = {self.get_text(response.css("h3:contains(Nutshell)").get()):res}
-
+            temp = response.css("h3:contains('Nutshell') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        in_a_nutshell = temp
         # community overview
-        temp = response.css("h3:contains('COMMUNITY') ~ ul, h3:contains('COMMUNITY') ~ p").extract()
+        temp = response.css("h3:contains('COMMUNITY') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('community') ~ ul, h3:contains('community') ~ p").extract()
+            temp = response.css("h3:contains('community') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Comunity') ~ ul, h3:contains('Comunity') ~ p").extract()
-        res = ''
-        community_overview = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                community_overview = {self.get_text(response.css("h3:contains(COMMUNITY)").get()):res}
-            except:
-                try:
-                    community_overview = {self.get_text(response.css("h3:contains(community)").get()):res}
-                except:
-                    community_overview = {self.get_text(response.css("h3:contains(Community)").get()):res}
+            temp = response.css("h3:contains('Comunity') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        community_overview = temp
 
 
         # PROPERTIES
-        temp = response.css("h3:contains('PROPERTIES') ~ ul, h3:contains('PROPERTIES') ~ p").extract()
+        temp = response.css("h3:contains('PROPERTIES') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('properties') ~ ul, h3:contains('properties') ~ p").extract()
+            temp = response.css("h3:contains('properties') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Properties') ~ ul, h3:contains('Properties') ~ p").extract()
-        res = ''
-        properties = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                properties = {self.get_text(response.css("h3:contains(PROPERTIES)").get()):res}
-            except:
-                try:
-                    properties = {self.get_text(response.css("h3:contains(properties)").get()):res}
-                except:
-                    properties = {self.get_text(response.css("h3:contains(Properties)").get()):res}
-
+            temp = response.css("h3:contains('Properties') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        properties = temp
 
         # SALE
-        temp = response.css("h4:contains('SALE') ~ ul, h4:contains('SALE') ~ p").extract()
+        temp = response.css("h4:contains('SALE') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('sale') ~ ul, h4:contains('sale') ~ p").extract()
+            temp = response.css("h4:contains('sale') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Sale') ~ ul, h4:contains('Sale') ~ p").extract()
-        res = ''
-        sale_trends = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                sale_trends = {self.get_text(response.css("h4:contains(SALE)").get()):res}
-            except:
-                try:
-                    sale_trends = {self.get_text(response.css("h4:contains(Sale)").get()):res}
-                except:
-                    sale_trends = {self.get_text(response.css("h4:contains(sale)").get()):res}
+            temp = response.css("h4:contains('Sale') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        sale_trends = temp
 
 
         # historical background
-        temp = response.css("h4:contains('HISTORICAL') ~ ul, h4:contains('HISTORICAL') ~ p").extract()
+        temp = response.css("h4:contains('HISTORICAL') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('historical') ~ ul, h4:contains('historical') ~ p").extract()
+            temp = response.css("h4:contains('historical') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Historical') ~ ul, h4:contains('Historical') ~ p").extract()
-        res = ''
-        historical_background = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                historical_background = {self.get_text(response.css("h4:contains(HISTORICAL)").get()):res}
-            except:
-                try:
-                    historical_background = {self.get_text(response.css("h4:contains(Historical)").get()):res}
-                except:
-                    historical_background = {self.get_text(response.css("h4:contains(historical)").get()):res}
+            temp = response.css("h4:contains('Historical') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        historical_background = temp
 
 
         # Master Development Plan
-        temp = response.css("h4:contains('MASTER') ~ ul, h4:contains('MASTER') ~ p").extract()
+        temp = response.css("h4:contains('MASTER') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Master') ~ ul, h4:contains('Master') ~ p").extract()
+            temp = response.css("h4:contains('Master') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('master') ~ ul, h4:contains('master') ~ p").extract()
-        res = ''
-        master_development_plan = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                master_development_plan = {self.get_text(response.css("h4:contains(MASTER)").get()):res}
-            except:
-                try:
-                    master_development_plan = {self.get_text(response.css("h4:contains(Master)").get()):res}
-                except:
-                    master_development_plan = {self.get_text(response.css("h4:contains(master)").get()):res}
+            temp = response.css("h4:contains('master') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        master_development_plan = temp
 
 
         # Hotels 
-        temp = response.css("h3:contains('HOTELS') ~ ul, h3:contains('HOTELS') ~ p").extract()
+        temp = response.css("h3:contains('HOTELS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Hotels') ~ ul, h3:contains('Hotels') ~ p").extract()
+            temp = response.css("h3:contains('Hotels') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('hotels') ~ ul, h3:contains('hotels') ~ p").extract()
-        res = ''
-        hotels = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                hotels = {self.get_text(response.css("h3:contains(HOTELS)").get()):res}
-            except:
-                try:
-                    hotels = {self.get_text(response.css("h3:contains(Hotels)").get()):res}
-                except:
-                    hotels = {self.get_text(response.css("h3:contains(hotels)").get()):res}
+            temp = response.css("h3:contains('hotels') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        hotels = temp
 
 
         # TRANSPORTATION  
-        temp = response.css("h3:contains('TRANSPORTATION') ~ ul, h3:contains('TRANSPORTATION') ~ p").extract()
+        temp = response.css("h3:contains('TRANSPORTATION') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('transportation') ~ ul, h3:contains('transportation') ~ p").extract()
+            temp = response.css("h3:contains('transportation') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Transportation') ~ ul, h3:contains('Transportation') ~ p").extract()
-        res = ''
-        transportation_and_parking = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                transportation_and_parking = {self.get_text(response.css("h3:contains(TRANSPORTATION)").get()):res}
-            except:
-                try:
-                    transportation_and_parking = {self.get_text(response.css("h3:contains(transportation)").get()):res}
-                except:
-                    transportation_and_parking = {self.get_text(response.css("h3:contains(Transportation)").get()):res}
+            temp = response.css("h3:contains('Transportation') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        transportation_and_parking = temp
 
 
         # Public TRANSPORTATION  
-        temp = response.css("h4:contains('PUBLIC') ~ ul, h4:contains('PUBLIC') ~ p").extract()
+        temp = response.css("h4:contains('PUBLIC') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Public') ~ ul, h4:contains('Public') ~ p").extract()
+            temp = response.css("h4:contains('Public') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Public') ~ ul, h4:contains('Public') ~ p").extract()
-        res = ''
-        public_transportation = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                public_transportation = {self.get_text(response.css("h4:contains(PUBLIC)").get()):res}
-            except:
-                try:
-                    public_transportation = {self.get_text(response.css("h4:contains(Public)").get()):res}
-                except:
-                    public_transportation = {self.get_text(response.css("h4:contains(public)").get()):res}
+            temp = response.css("h4:contains('Public') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        public_transportation = temp
 
 
         # MOSQUES    
-        temp = response.css("h4:contains('MOSQUES') ~ ul, h4:contains('MOSQUES') ~ p").extract()
+        temp = response.css("h4:contains('MOSQUES') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Mosques') ~ ul, h4:contains('Mosques') ~ p").extract()
+            temp = response.css("h4:contains('Mosques') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('mosques') ~ ul, h4:contains('mosques') ~ p").extract()
-        res = ''
-        mosques_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                mosques_near = {self.get_text(response.css("h4:contains(MOSQUES)").get()):res}
-            except:
-                try:
-                    mosques_near = {self.get_text(response.css("h4:contains(Mosques)").get()):res}
-                except:
-                    mosques_near = {self.get_text(response.css("h4:contains(mosques)").get()):res}
+            temp = response.css("h4:contains('mosques') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        mosques_near = temp
 
 
         # SUPERMARKETS    
-        temp = response.css("h4:contains('SUPERMARKETS') ~ ul, h4:contains('SUPERMARKETS') ~ p").extract()
+        temp = response.css("h4:contains('SUPERMARKETS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Supermarkets') ~ ul, h4:contains('Supermarkets') ~ p").extract()
+            temp = response.css("h4:contains('Supermarkets') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('supermarkets') ~ ul, h4:contains('supermarkets') ~ p").extract()
-        res = ''
-        supermarkets_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                supermarkets_near = {self.get_text(response.css("h4:contains(SUPERMARKETS)").get()):res}
-            except:
-                try:
-                    supermarkets_near = {self.get_text(response.css("h4:contains(Supermarkets)").get()):res}
-                except:
-                    supermarkets_near = {self.get_text(response.css("h4:contains(supermarkets)").get()):res}
+            temp = response.css("h4:contains('supermarkets') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        supermarkets_near = temp
 
 
         # WORSHIP     
-        temp = response.css("h4:contains('WORSHIP') ~ ul, h4:contains('WORSHIP') ~ p").extract()
+        temp = response.css("h4:contains('WORSHIP') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Worship') ~ ul, h4:contains('Worship') ~ p").extract()
+            temp = response.css("h4:contains('Worship') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('worship') ~ ul, h4:contains('worship') ~ p").extract()
-        res = ''
-        other_placesof_worship_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                other_placesof_worship_near = {self.get_text(response.css("h4:contains(WORSHIP)").get()):res}
-            except:
-                try:
-                    other_placesof_worship_near = {self.get_text(response.css("h4:contains(Worship)").get()):res}
-                except:
-                    other_placesof_worship_near = {self.get_text(response.css("h4:contains(worship)").get()):res}
+            temp = response.css("h4:contains('worship') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        other_placesof_worship_near = temp
 
 
         # SCHOOLS      
-        temp = response.css("h4:contains('SCHOOLS') ~ ul, h4:contains('SCHOOLS') ~ p").extract()
+        temp = response.css("h4:contains('SCHOOLS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Schools') ~ ul, h4:contains('Schools') ~ p").extract()
+            temp = response.css("h4:contains('Schools') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('schools') ~ ul, h4:contains('schools') ~ p").extract()
-        res = ''
-        schools_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                schools_near = {self.get_text(response.css("h4:contains(SCHOOLS)").get()):res}
-            except:
-                try:
-                    schools_near = {self.get_text(response.css("h4:contains(Schools)").get()):res}
-                except:
-                    schools_near = {self.get_text(response.css("h4:contains(schools)").get()):res}
+            temp = response.css("h4:contains('schools') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        schools_near = temp
 
 
         # CLINICS       
-        temp = response.css("h4:contains('CLINICS') ~ ul, h4:contains('CLINICS') ~ p").extract()
+        temp = response.css("h4:contains('CLINICS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Clinics') ~ ul, h4:contains('Clinics') ~ p").extract()
+            temp = response.css("h4:contains('Clinics') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('clinics') ~ ul, h4:contains('clinics') ~ p").extract()
-        res = ''
-        clinics_and_hospitals_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                clinics_and_hospitals_near = {self.get_text(response.css("h4:contains(CLINICS)").get()):res}
-            except:
-                try:
-                    clinics_and_hospitals_near = {self.get_text(response.css("h4:contains(Clinics)").get()):res}
-                except:
-                    clinics_and_hospitals_near = {self.get_text(response.css("h4:contains(clinics)").get()):res}
+            temp = response.css("h4:contains('clinics') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        clinics_and_hospitals_near = temp
 
 
         # AREAS       
@@ -343,58 +194,28 @@ class testingSpider(scrapy.Spider):
             temp = response.css("h3:contains('Areas') ~ ul li").extract()
         if len(temp) == 0:
             temp = response.css("h3:contains('areas') ~ ul li").extract()
-        res = ''
-        near_by_areas = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","") + '#/'
-            try:
-                near_by_areas = {self.get_text(response.css("h3:contains(AREAS)").get()):res}
-            except:
-                try:
-                    near_by_areas = {self.get_text(response.css("h3:contains(Areas)").get()):res}
-                except:
-                    near_by_areas = {self.get_text(response.css("h3:contains(areas)").get()):res}
+        temp = self.correctify_selection(temp,[])
+        near_by_areas = temp
 
 
         # MALLS       
-        temp = response.css("h4:contains('MALLS') ~ ul,h4:contains('MALLS') ~ p").extract()
+        temp = response.css("h4:contains('MALLS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Malls') ~ ul,h4:contains('Malls') ~ p").extract()
+            temp = response.css("h4:contains('Malls') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('malls') ~ ul,h4:contains('malls') ~ p").extract()
-        res = ''
-        malls_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                malls_near = {self.get_text(response.css("h4:contains(MALLS)").get()):res}
-            except:
-                try:
-                    malls_near = {self.get_text(response.css("h4:contains(Malls)").get()):res}
-                except:
-                    malls_near = {self.get_text(response.css("h4:contains(malls)").get()):res}
+            temp = response.css("h4:contains('malls') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        malls_near = temp
 
 
         # RESTAURANTS       
-        temp = response.css("h4:contains('RESTAURANTS') ~ ul, h4:contains('RESTAURANTS') ~ p").extract()
+        temp = response.css("h4:contains('RESTAURANTS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('Restaurants') ~ ul, h4:contains('Restaurants') ~ p").extract()
+            temp = response.css("h4:contains('Restaurants') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h4:contains('restaurants') ~ ul, h4:contains('restaurants') ~ p").extract()
-        res = ''
-        resturants_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                resturants_near = {self.get_text(response.css("h4:contains(RESTAURANTS)").get()):res}
-            except:
-                try:
-                    resturants_near = {self.get_text(response.css("h4:contains(Restaurants)").get()):res}
-                except:
-                    resturants_near = {self.get_text(response.css("h4:contains(restaurants)").get()):res}
+            temp = response.css("h4:contains('restaurants') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        resturants_near = temp
 
 
         # sale trends       
@@ -499,123 +320,63 @@ class testingSpider(scrapy.Spider):
 
 
         # BEACHES       
-        temp = response.css("h3:contains('BEACHES') ~ ul, h3:contains('BEACHES') ~ p").extract()
+        temp = response.css("h3:contains('BEACHES') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Beaches') ~ ul, h3:contains('Beaches') ~ p").extract()
+            temp = response.css("h3:contains('Beaches') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('beaches') ~ ul, h3:contains('beaches') ~ p").extract()
-        res = ''
-        beaches_near = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                beaches_near = {self.get_text(response.css("h3:contains(BEACHES)").get()):res}
-            except:
-                try:
-                    beaches_near = {self.get_text(response.css("h3:contains(Beaches)").get()):res}
-                except:
-                    beaches_near = {self.get_text(response.css("h3:contains(beaches)").get()):res}
+            temp = response.css("h3:contains('beaches') ~ *").extract()
+        temp = self.correctify_selection(temp,['p','ul'])
+        beaches_near = temp
 
 
         # LEISURE       
-        temp = response.css("h3:contains('LEISURE') ~ ul, h3:contains('LEISURE') ~ p").extract()
+        temp = response.css("h3:contains('LEISURE') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Leisure') ~ ul, h3:contains('Leisure') ~ p").extract()
+            temp = response.css("h3:contains('Leisure') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('leisure') ~ ul, h3:contains('leisure') ~ p").extract()
-        res = ''
-        liesure_activities_and_notable_landmarks = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                liesure_activities_and_notable_landmarks = {self.get_text(response.css("h3:contains(LEISURE)").get()):res}
-            except:
-                try:
-                    liesure_activities_and_notable_landmarks = {self.get_text(response.css("h3:contains(Leisure)").get()):res}
-                except:
-                    liesure_activities_and_notable_landmarks = {self.get_text(response.css("h3:contains(leisure)").get()):res}
+            temp = response.css("h3:contains('leisure') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        liesure_activities_and_notable_landmarks = temp
 
 
         # OUTDOOR       
-        temp = response.css("h3:contains('OUTDOOR') ~ ul, h3:contains('OUTDOOR') ~ p").extract()
+        temp = response.css("h3:contains('OUTDOOR') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Outdoor') ~ ul, h3:contains('Outdoor') ~ p").extract()
+            temp = response.css("h3:contains('Outdoor') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('outdoor') ~ ul, h3:contains('outdoor') ~ p").extract()
-        res = ''
-        outdoor_activities = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                outdoor_activities = {self.get_text(response.css("h3:contains(OUTDOOR)").get()):res}
-            except:
-                try:
-                    outdoor_activities = {self.get_text(response.css("h3:contains(Outdoor)").get()):res}
-                except:
-                    outdoor_activities = {self.get_text(response.css("h3:contains(outdoor)").get()):res}
+            temp = response.css("h3:contains('outdoor') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        outdoor_activities = temp
 
 
         # THINGS to consider       
-        temp = response.css("h3:contains('THINGS') ~ ul, h3:contains('THINGS') ~ p").extract()
+        temp = response.css("h3:contains('THINGS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Things') ~ ul, h3:contains('Things') ~ p").extract()
+            temp = response.css("h3:contains('Things') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('things') ~ ul, h3:contains('things') ~ p").extract()
-        res = ''
-        things_to_consider = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                things_to_consider = {self.get_text(response.css("h3:contains(THINGS)").get()):res}
-            except:
-                try:
-                    things_to_consider = {self.get_text(response.css("h3:contains(Things)").get()):res}
-                except:
-                    things_to_consider = {self.get_text(response.css("h3:contains(things)").get()):res}
+            temp = response.css("h3:contains('things') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        things_to_consider = temp
 
 
         # community EVENTS       
-        temp = response.css("h3:contains('EVENTS') ~ ul, h3:contains('EVENTS') ~ p").extract()
+        temp = response.css("h3:contains('EVENTS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Events') ~ ul, h3:contains('Events') ~ p").extract()
+            temp = response.css("h3:contains('Events') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('events') ~ ul, h3:contains('events') ~ p").extract()
-        res = ''
-        community_events = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                community_events = {self.get_text(response.css("h3:contains(EVENTS)").get()):res}
-            except:
-                try:
-                    community_events = {self.get_text(response.css("h3:contains(Events)").get()):res}
-                except:
-                    community_events = {self.get_text(response.css("h3:contains(events)").get()):res}
+            temp = response.css("h3:contains('events') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        community_events = temp
 
 
         # ATTRACTIONS       
-        temp = response.css("h3:contains('ATTRACTIONS') ~ ul, h3:contains('ATTRACTIONS') ~ p").extract()
+        temp = response.css("h3:contains('ATTRACTIONS') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('Attractions') ~ ul, h3:contains('Attractions') ~ p").extract()
+            temp = response.css("h3:contains('Attractions') ~ *").extract()
         if len(temp) == 0:
-            temp = response.css("h3:contains('attractions') ~ ul, h3:contains('attractions') ~ p").extract()
-        res = ''
-        attractions = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
-            try:
-                attractions = {self.get_text(response.css("h3:contains(ATTRACTIONS)").get()):res}
-            except:
-                try:
-                    attractions = {self.get_text(response.css("h3:contains(Attractions)").get()):res}
-                except:
-                    attractions = {self.get_text(response.css("h3:contains(attractions)").get()):res}
+            temp = response.css("h3:contains('attractions') ~ *").extract()
+        temp = self.correctify_selection(temp,[])
+        attractions = temp
 
 
         # LOCATION       
@@ -624,18 +385,8 @@ class testingSpider(scrapy.Spider):
             temp = response.css("h2:contains('Location') ~ ul li").extract()
         if len(temp) == 0:
             temp = response.css("h2:contains('location') ~ ul li").extract()
-        res = ''
-        location = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","") + '#/'
-            try:
-                location = {self.get_text(response.css("h2:contains(LOCATION)").get()):res}
-            except:
-                try:
-                    location = {self.get_text(response.css("h2:contains(Location)").get()):res}
-                except:
-                    location = {self.get_text(response.css("h2:contains(location)").get()):res}
+        temp = self.correctify_selection(temp,[])
+        location = temp
 
 
         # QUESTIONS       
@@ -646,21 +397,8 @@ class testingSpider(scrapy.Spider):
             temp = response.css("h3:contains('Faqs') ~ h4").extract()
         if len(temp) == 0:
             temp = response.css("h3:contains('FAQS') ~ h4").extract()
-        res = ''
-        questions = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","") + '#/'
-            try:
-                questions = {self.get_text(response.css("h3:contains(FAQs)").get()):res}
-            except:
-                try:
-                    questions = {self.get_text(response.css("h3:contains(faqs)").get()):res}
-                except:
-                    try:
-                        questions = {self.get_text(response.css("h3:contains(Faqs)").get()):res}
-                    except:
-                        questions = {self.get_text(response.css("h3:contains(FAQS)").get()):res}
+        temp = self.correctify_selection(temp,[])
+        questions = temp
 
 
         # ANSWERS       
@@ -671,21 +409,8 @@ class testingSpider(scrapy.Spider):
             temp = response.css("h3:contains('Faqs') ~ p").extract()
         if len(temp) == 0:
             temp = response.css("h3:contains('FAQS') ~ p").extract()
-        res = ''
-        answers = {}
-        for elmnt in temp:
-            soup = BeautifulSoup(elmnt,'lxml').get_text()
-            res += soup.replace("\n","").replace("\r","").replace("\t","").replace("  ","") + '#/'
-            try:
-                answers = {self.get_text(response.css("h3:contains(FAQs)").get()):res}
-            except:
-                try:
-                    answers = {self.get_text(response.css("h3:contains(faqs)").get()):res}
-                except:
-                    try:
-                        answers = {self.get_text(response.css("h3:contains(Faqs)").get()):res}
-                    except:
-                        answers = {self.get_text(response.css("h3:contains(FAQS)").get()):res}
+        temp = self.correctify_selection(temp,[])
+        answers = temp
 
 
         #images
@@ -734,3 +459,28 @@ class testingSpider(scrapy.Spider):
     def get_text(self,elmnt):
         soup = BeautifulSoup(elmnt,'lxml').get_text().replace("\n","").replace("\r","").replace("\t","").replace("  ","")
         return soup
+
+    def correctify_selection(self,selection,required):
+        result = ""
+        for tag in selection:
+            if tag.startswith("<figure"):
+                continue
+            if tag.startswith("<li"):
+                result += self.sanitize(BeautifulSoup(tag,'lxml').text) + '##/'
+                continue
+            if not (tag.startswith("<p") or tag.startswith("<ul")):
+                break
+            result += self.sanitize(BeautifulSoup(tag,'lxml').text)
+            result += ' '
+            # result = result.replace("\n","").replace("\r","").replace("\t","").replace("  ","")
+        print(result)
+        return result
+        # sys.exit()
+        
+    def sanitize(self,text):
+        res = ""
+        try:
+            res = text.replace("\n","") .replace("\t","").replace("\r","").replace("  ","")
+        except:
+            res = text
+        return res
