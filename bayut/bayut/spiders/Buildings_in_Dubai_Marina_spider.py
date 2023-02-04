@@ -162,7 +162,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Apartment Types in') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Apartment_Types={BeautifulSoup(response.css("h3:contains('Apartment Types in')").get(),"lxml").text:temp}
+        Apartment_Types=temp
 
         #1_Bedroom_Apartments_in                  
         temp = response.css("h4:contains('1-Bedroom Apartments in') ~ *").extract()
@@ -171,8 +171,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h4:contains('1-Bedroom Apartments in') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        one_Bedroom_Apartments_in={BeautifulSoup(response.css("h4:contains('1-Bedroom Apartments in')").get(),"lxml").text:temp}
-
+        one_Bedroom_Apartments_in=temp
         #2_Bedroom_Apartments_in                  
         temp = response.css("h4:contains('2-Bedroom Apartments in') ~ *").extract()
         if len(temp) == 0:
@@ -180,7 +179,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h4:contains('2-Bedroom Apartments in') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        two_Bedroom_Apartments_in={BeautifulSoup(response.css("h4:contains('2-Bedroom Apartments in')").get(),"lxml").text:temp}
+        two_Bedroom_Apartments_in=temp
 
         #3_Bedroom_Apartments_in                  
         # temp = response.css("h4:contains('3-Bedroom Apartments in') ~ *").extract()
@@ -198,7 +197,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h4:contains('4-Bedroom Apartments in') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        four_Bedroom_Apartments_in={BeautifulSoup(response.css("h4:contains('4-Bedroom Apartments in')").get(),"lxml").text:temp}
+        four_Bedroom_Apartments_in=temp
          
 
             
@@ -220,7 +219,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h4:contains('Villa') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Villas={BeautifulSoup(response.css("h4:contains('Villas')").get(),"lxml").text:temp}
+        Villas=temp
 
         #Most_Popular_Apartment_Types_in                   
         temp = response.css("h4:contains('MOST POPULAR') ~ *").extract()
@@ -229,7 +228,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h4:contains('Most Popular') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Most_Popular_Apartment_Types_in={BeautifulSoup(response.css("h4:contains('Most Popular')").get(),"lxml").text:temp}
+        Most_Popular_Apartment_Types_in=temp
 
         #Rental_Trends                  
         temp = response.css("h3:contains('RENTAL TRENDS') ~ *").extract()
@@ -240,7 +239,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Rentals Trends') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Rental_Trends={BeautifulSoup(response.css("h3:contains('Rental Trends')").get(),"lxml").text:temp}
+        Rental_Trends=temp
 
         #Sales Trends                   
         temp = response.css("h3:contains('SALE TRENDS') ~ *").extract()
@@ -251,7 +250,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Sales Trends') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Sales_Trends={BeautifulSoup(response.css("h3:contains('Sales Trends')").get(),"lxml").text:temp}
+        Sales_Trends=temp
 
         #Rental Yield                  
         temp = response.css("h3:contains('RENTAL YIELD') ~ *").extract()
@@ -260,7 +259,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Rental Yield') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Rental_Yield={BeautifulSoup(response.css("h3:contains('Rental Yield')").get(),"lxml").text:temp}
+        Rental_Yield=temp
 
         #Service Charges
         table=[]
@@ -268,8 +267,8 @@ class testingSpider(scrapy.Spider):
         table_value=response.css("h3:contains('Service Charges')~ table tr.content td div.values::text ").extract()
         for i in range(len(table_key)-2):
             table.append({table_key[i]:table_value[i]})
-        table.append({table_value[len(table_value-2)]:table_value[len(table_value-1)]})    
-        Service_harges={BeautifulSoup(response.css("h3:contains('Service Charges')").get(),"lxml").text:table}
+        table.append({table_value[len(table_value)-2]:table_value[len(table_value)-1]})    
+        Service_harges=temp
 
         #Transportation near                  
         temp = response.css("h3:contains('TRANSPORTATION NEAR') ~ *").extract()
@@ -278,7 +277,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Transportation near') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Transportation_near={BeautifulSoup(response.css("h3:contains('Transportation near')").get() ,"lxml").text:temp}
+        Transportation_near=temp
 
         #Bus Stations                  
         temp = response.css("h4:contains('BUS STATIONS') ~ *").extract()
@@ -287,7 +286,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h4:contains('Bus Stations') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Bus_Stations={BeautifulSoup(response.css("h4:contains('Bus Stations')").get(),"lxml").text:temp}
+        Bus_Stations=temp
 
         #Tram Stations                  
         temp = response.css("h4:contains('TRAM STATIONS') ~ *").extract()
@@ -296,7 +295,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h4:contains('Tram Stations') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Tram_Stations={BeautifulSoup(response.css("h4:contains('Tram Stations')").get(),"lxml").text:temp}
+        Tram_Stations=temp
 
         #Restaurants                  
         temp = response.css("h3:contains('RESTAURANTS') ~ *").extract()
@@ -305,7 +304,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Restaurants') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Restaurants={BeautifulSoup(response.css("h3:contains('Restaurants')").get(),"lxml").text:temp}
+        Restaurants=temp
 
         #Supermarkets                  
         temp = response.css("h3:contains('Supermarkets') ~ *").extract()
@@ -314,7 +313,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Supermarkets') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Supermarkets={BeautifulSoup(response.css("h3:contains('Supermarkets')").get(),"lxml").text:temp}
+        Supermarkets=temp
 
         #NEARBY BUILDINGS                  
         temp = response.css("h3:contains('NEARBY BUILDINGS') ~ *").extract()
@@ -323,7 +322,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Nearby Buildings') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        nearby_buildings={BeautifulSoup(response.css("h3:contains('NEARBY BUILDINGS')").get(),"lxml").text:temp}
+        nearby_buildings=temp
 
         #Major Landmarks                 
         temp = response.css("h3:contains('MAJO LANDMARKS') ~ *").extract()
@@ -332,7 +331,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Major Landmarks') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Major_Landmarks={BeautifulSoup(response.css("h3:contains('Major Landmarks')").get(),"lxml").text:temp}
+        Major_Landmarks=temp
 
         #CONSIDER                 
         temp = response.css("h3:contains('CONSIDER') ~ *").extract()
@@ -341,7 +340,7 @@ class testingSpider(scrapy.Spider):
         if len(temp) == 0:
             temp = response.css("h3:contains('Consider') ~ *").extract()
         temp=self.correctify_selection(temp,[])
-        Consider={BeautifulSoup(response.css("h3:contains('CONSIDER')").get(),"lxml").text:temp}
+        Consider=temp
 
         #imgs
         all_images=response.css("div.postMain").get()
