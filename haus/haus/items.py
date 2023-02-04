@@ -34,9 +34,7 @@ class HausBuyItem(scrapy.Item):
     brochure = scrapy.Field()
     signature = scrapy.Field()
     price = scrapy.Field()
-    bedrooms = scrapy.Field()
-    bathrooms = scrapy.Field()
-    size = scrapy.Field()
+    property_info = scrapy.Field()
     overview = scrapy.Field()
     features = scrapy.Field()
 
@@ -47,9 +45,7 @@ class HausRentItem(scrapy.Item):
     brochure = scrapy.Field()
     signature = scrapy.Field()
     price = scrapy.Field()
-    bedrooms = scrapy.Field()
-    bathrooms = scrapy.Field()
-    size = scrapy.Field()
+    property_info = scrapy.Field()
     overview = scrapy.Field()
     features = scrapy.Field()
 

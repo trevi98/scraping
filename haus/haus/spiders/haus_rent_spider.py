@@ -22,7 +22,7 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow('https://www.hausandhaus.com/'+one,callback = self.page)
 
         next_page = f"https://www.hausandhaus.com/property-leasing/properties-available-for-rent-in-dubai/page-{self.page_number}/"
-        if next_page is not None and self.page_number < 150:
+        if next_page is not None and self.page_number < 151:
             print("next_page",next_page)
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
@@ -49,10 +49,19 @@ class HausspiderSpider(scrapy.Spider):
         unit_sizes = []
         video = "N/A"
         images = "N/A"
-        features =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-features ul li::text").extract()
-        bedrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").get().replace("\n","").replace("  ","")
-        bathrooms=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[2].replace("\n","").replace("  ","")
-        size=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper ul.list-icons li span::text").extract()[4].replace("\n","").replace("  ","")
+        try:
+           features =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-features ul li::text").extract()
+        except:
+            features=[]   
+        property_info=[]
+        try:
+            property_info_soup=response.css("ul.list-icons li").extract()
+            for i in property_info_soup:
+                one=BeautifulSoup(i,"lxml").text.replace("\n","").replace("  ","").replace("\r","").replace("\t","")
+                property_info.append(one)
+        except:
+            property_info="N/A"   
+          
         images=response.css("div.section-gallery.js-animate-top").get()
         title = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading::text").get().replace("\n","").replace("  ","")
         brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
@@ -60,16 +69,21 @@ class HausspiderSpider(scrapy.Spider):
             brochure=img_downloader.download(brochure_link,signature,99)
         else:
             brochure=brochure_link    
-        price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get().replace("\n","").replace("  ","")
-        overview =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text::text").get().replace("\n","").replace("  ","").replace("\r","").replace("\t","")
+        try:
+            price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get().replace("\n","").replace("  ","")
+        except:
+            price="N/A"
+        try:        
+            overview =response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text::text").get().replace("\n","").replace("  ","").replace("\r","").replace("\t","")
+        except:
+            overview="N/A"    
     
 
 
         items['images'] = methods.img_downloader_method_src(images,signature)
         items['title'] = title
-        items['bedrooms'] = bedrooms
-        items['bathrooms'] = bathrooms
-        items['size'] = size
+        
+        items['property_info'] = property_info
         items['brochure'] = brochure
         items['signature'] = signature
         items['price'] = price

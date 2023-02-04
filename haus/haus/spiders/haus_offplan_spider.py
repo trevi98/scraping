@@ -23,13 +23,13 @@ class HausspiderSpider(scrapy.Spider):
             yield response.follow('https://www.hausandhaus.com/'+one,callback = self.page)
 
         next_page = f"https://www.hausandhaus.com/new-developments/developments-of-properties-in-dubai/page-{self.page_number}/"
-        if next_page is not None and self.page_number <22:
+        if next_page is not None and self.page_number <23:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
             data = {'message': 'machine 2 | haus all done (;'}
-            response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+            # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             # sys.path.append('/c/Python310/Scripts/scrapy')
 
     def page(self,response):
@@ -51,21 +51,37 @@ class HausspiderSpider(scrapy.Spider):
         images = "N/A"
         images=response.css("section.section-developments-details div.section-body div.section-slider div.container div.prop-slider-wrapper.prop-slider div.slider.slider-developments-details").get()
         title = response.css("div.intro-content div.titile::text").get().replace("\n","").replace("  ","")
-        overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header p.lead::text").get().replace("\n","").replace("  ","").replace("\r","").replace("\t","")
-        brochure_link=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.btn-group a::attr('href')")[1].get()
         try:
+            overview=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header p.lead::text").get().replace("\n","").replace("  ","").replace("\r","").replace("\t","")
+        except:
+            overview="N/A"    
+        try:
+            brochure_link=response.css("div.main section.section-developments-details div.section-body section.section-header div.container header div.btn-group a::attr('href')")[1].get()
             brochure=img_downloader.download(brochure_link,signature,99)
         except:
             brochure="N/A"    
-        floorplan_link=response.css("ul.list-inline.btnulli li a::attr('href')")[2].get()
         try:
+            floorplan_link=response.css("ul.list-inline.btnulli li a::attr('href')")[2].get()
             floorplan=img_downloader.download(floorplan_link,signature,99)
         except:
-            floorplan="N/A"    
-        location=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-location::text").get().replace("\n","").replace("  ","")
-        developer=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-developer::text").get().replace("\n","").replace("  ","")
-        develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get().replace("\n","").replace("  ","")
-        completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get().replace("\n","").replace("  ","")
+            floorplan="N/A"
+        try:        
+            location=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-location::text").get().replace("\n","").replace("  ","")
+        except:
+            location="N/A"
+        try:        
+            developer=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-developer::text").get().replace("\n","").replace("  ","")
+        except:
+            developer="N/A"
+        try:        
+            develpment_type=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-building::text").get().replace("\n","").replace("  ","")
+        except:
+            develpment_type="N/A"
+        try:        
+            completion_date=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-date::text").get().replace("\n","").replace("  ","")
+        except:
+            completion_date="N/A"
+
         price_name=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price::text").get().replace("\n","").replace("  ","")
         price_number=response.css("div.main section.section-developments-details div.section-body section.section-header div.container section.details.clearfix div.row.wrapper div.col-xs-12.contents div.item-details div.item-price span::text").get()
         try:
@@ -81,9 +97,9 @@ class HausspiderSpider(scrapy.Spider):
         try: 
             video=response.css("div.embed-video-top iframe::attr('src')").get() 
         except:
-            video="N/A"            
+            video="N/A"
 
-       
+            
         items['images'] = methods.img_downloader_method_src(images,signature)
         items['title'] = title
         items['overview'] = overview

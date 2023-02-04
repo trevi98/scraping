@@ -144,3 +144,16 @@ class BayutProjectItem(scrapy.Item):
     area = scrapy.Field()
     link = scrapy.Field()
     developer = scrapy.Field()
+
+class buildings_marinaItem(scrapy.Item):
+    # define the fields for your item here like:
+    # name = scrapy.Field()
+    title = scrapy.Field()
+    description = scrapy.Field()
+    starting_price = scrapy.Field()
+    status = scrapy.Field()
+    delivery_date = scrapy.Field()
+    bedrooms = scrapy.Field()
+    area = scrapy.Field()
+    link = scrapy.Field()
+    developer = scrapy.Field()

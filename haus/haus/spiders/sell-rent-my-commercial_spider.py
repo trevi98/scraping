@@ -27,4 +27,4 @@ class HausspiderSpider(scrapy.Spider):
         items["article"]=all_article
         yield items
         data = {'message': 'sellRentCommercial done'}
-        response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
+        # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
