@@ -8,7 +8,7 @@ function csv_handler (directory,batch){
     fs.mkdirSync(directory);
 }
 return createCsvWriter({
-  path: `${directory}/bayut_buy_offplan_${batch}.csv`,
+  path: `${directory}/metro_projects${batch}.csv`,
   header: [
     {id: 'title', title: 'title'},
   ]
@@ -30,8 +30,8 @@ return createCsvWriter({
 });
 }
 
-let csvErrr = csv_error_handler('offplan')
-let csvWriter = csv_handler('offplan',1)
+let csvErrr = csv_error_handler('projects')
+let csvWriter = csv_handler('projects',1)
 let batch = 0
 let j = 0
 let main_err_record = 0
@@ -47,64 +47,44 @@ async function clean(text){
 }
 
 async function visit_each(link,page){
+  await page.setCacheEnabled(false);
   await page.goto(link);
-  let btns = await page.evaluate(()=>{
-    let elmnts = Array.from(document.querySelectorAll("span._4b6fd844"))
-    let b = []
-    elmnts.forEach((elmnt)=>{
-        if(elmnt.textContent.includes('3D Image')){
-            elmnt.id = 'd3fd'
-            b.push('d3fd')
-            
-        }
-        else if(elmnt.textContent.includes('2D Image')){
-            elmnt.id = 'd2fd'
-            b.push('d2fd')
-            
-        }
-    })
-    return b
-})
-
-let plans = {
-    d3 : [],
-    d2 : []
-}
-
-if(btns.length>0){
-
-    for (let btn of btns){
-        await page.click(`#${btn}`)
-        const element = await page.waitForSelector('._50f15c14 img');
-        if(btn == 'd3fd'){
-
-            plans.d3.push(await page.evaluate(() => {
-                return Array.from(document.querySelectorAll("._50f15c14 img"),img => img.src.replace('\n','').replace('\r','').replace('\t','').replace('  ',''))
-            }))
-        }
-        else{
-
-            plans.d2.push(await page.evaluate(() => {
-                return Array.from(document.querySelectorAll("._50f15c14 img"),img => img.src.replace('\n','').replace('\r','').replace('\t','').replace('  ',''))
-            }))
-        }
+  await page.deleteCookie({name:'hkd'})
 
 
-    }
-}
-    if(plans.d3.length > 0){
 
-        data_plans_3d.push({plans_3d:plans.d3[0]})
 
-    }
-    if(plans.d2.length > 0){
 
-        data_plans_2d.push({plans_2d:plans.d2[0]})
 
-    }
 
-  await page.click('._35b183c9._39b0d6c4');
-  const element = await page.waitForSelector('._18c28cd2._277fb980');
+
+
+  
+  const exists = await page.evaluate(() => {
+    return document.querySelector('.project-header__btn.brochure') !== null;
+  });
+  if(exists){
+    console.log("xxxx")
+    await page.click('.project-header__btn.brochure')
+    await page.type('#download input[name="user-name"]', 'John');
+    await page.type('#download input[name="user-phone"]', '+968509465823');
+    await page.type('#download input[name="user-email"]', 'jhon@jmail.com');
+    // await page.evaluate(() => {
+    //   document.querySelector('input[name="acceptance-350"]').click();
+    // });
+    await page.evaluate(() => {
+      document.querySelector('#download button[type=submit]').click();
+    });
+    await page.waitForNavigation()
+    let url = await page.evaluate(() => document.location.href);
+    console.log(url)
+  }
+  else{
+    console.log("yyyy")
+  }
+  // await page.click('._35b183c9._39b0d6c4');
+  // const element = await page.waitForSelector('._18c28cd2._277fb980');
+  let data = []
   data.push(await page.evaluate(async ()=>{
     function extract_pare(elmnts,key){
       let pare = []
@@ -126,11 +106,7 @@ if(btns.length>0){
         return ""
       }
     }
-    const images = document.querySelectorAll('._18c28cd2._277fb980 img');
-    let imgs = Array.from(images, img => img.src.replace('\n','').replace('\r','').replace('\t','').replace('  ',''));
-    let title = document.querySelector("h1.fcca24e0").textContent.replace('\n','').replace('\r','').replace('\t','').replace('  ','')
-    let info = Array.from(document.querySelectorAll("div.ba1ca68e._0ee3305d"),elmnt=>elmnt.textContent.replace('\n','').replace('\r','').replace('\t','').replace('  ',''))
-    info = Array.from(document.querySelectorAll("._033281ab li"),elmnt=>elmnt.textContent.replace('\n','').replace('\r','').replace('\t','').replace('  ',''))
+    let title = 'dd'
    
   return({
       title: title,
@@ -140,11 +116,9 @@ if(btns.length>0){
 
   if((j%500) == 0){
     batch++
-    csvWriter = csv_handler('offplan',batch)
+    csvWriter = csv_handler('projects',batch)
   }
   
-  data[0].plans_2d = plans.d2[0]
-  data[0].plans_3d = plans.d3[0]
   csvWriter
   .writeRecords(data)
   .then(()=> console.log('The CSV file was written successfully'));
@@ -179,7 +153,7 @@ async function main_loop(page,i){
         await visit_each(link,page)
       }catch(err){
         csvErrr.writeRecords({link:link,error:err})
-        .then(()=> console.log('error logged'));
+        .then(()=> console.log('error logged main loop'));
         continue
       }
     }
@@ -191,7 +165,7 @@ async function main_loop(page,i){
 
 async function main(){
 
-  const browser = await puppeteer.launch({headless: true,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
+  const browser = await puppeteer.launch({headless: false,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
   const page = await browser.newPage();
   // let plans_data = {};
   for(let i=1 ; i<=180 ; i++){
@@ -202,7 +176,7 @@ async function main(){
         await main_loop(page,i)
       }catch(error){
         csvErrr.writeRecords({link:i,error:error})
-        .then(()=> console.log('error logged'));
+        .then(()=> console.log('error logged main'));
         continue
       }
     }

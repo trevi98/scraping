@@ -154,9 +154,9 @@ if(btns.length>0){
         return ""
       }
     }
-    const images = document.querySelectorAll('._18c28cd2._277fb980 img');
+    const images = document.querySelectorAll('.gallerySlider__item img');
     let imgs = Array.from(images, img => img.src.replace('\n','').replace('\r','').replace('\t','').replace('  ',''));
-    let title = document.querySelector("h1.fcca24e0").textContent.replace('\n','').replace('\r','').replace('\t','').replace('  ','')
+    let title = document.querySelector("h1.project-header__title").textContent.replace('\n','').replace('\r','').replace('\t','').replace('  ','')
     let info = Array.from(document.querySelectorAll("div.ba1ca68e._0ee3305d"),elmnt=>elmnt.textContent.replace('\n','').replace('\r','').replace('\t','').replace('  ',''))
     let bedrooms = extract_pare(info,'Beds')
     let bathrooms = extract_pare(info,'Baths')
