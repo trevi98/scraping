@@ -268,7 +268,7 @@ class testingSpider(scrapy.Spider):
         table_value=response.css("h3:contains('Service Charges')~ table tr.content td div.values::text ").extract()
         for i in range(len(table_key)-2):
             table.append({table_key[i]:table_value[i]})
-        table.append({table_value[len(table_value-2)]:table_value[len(table_value-1)]})    
+        # table.append({table_value[len(table_value-2)]:table_value[len(table_value-1)]})    
         Service_harges={BeautifulSoup(response.css("h3:contains('Service Charges')").get(),"lxml").text:table}
 
         #Transportation near                  
