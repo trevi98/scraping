@@ -23,8 +23,10 @@ class HausspiderSpider(scrapy.Spider):
 
         next_page = f"https://www.hausandhaus.com/property-sales/properties-available-for-sale-in-dubai/page-{self.page_number}/"
         if next_page is not None and self.page_number < 65:
-            print("next_page",next_page)
             self.page_number +=1
+            if(self.page_number%5==0):
+                data = {f"message': 'machine 2 | haus buy {self.page_number}"}
+                response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
             yield response.follow(next_page,callback = self.parse)
         else:
             # pass
@@ -62,13 +64,16 @@ class HausspiderSpider(scrapy.Spider):
         except:
             property_info="N/A"   
 
-        # images=response.css("div.section-gallery.js-animate-top").get()
+        images=response.css("div.section-gallery.js-animate-top").get()
         title = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading::text").get().replace("\n","").replace("  ","")
-        if "pdf" in brochure_link:
-            brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
-            brochure=img_downloader.download(brochure_link,signature,99)
-        else:
-            brochure=brochure_link
+        try:
+            if "pdf" in brochure_link:
+                brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
+                brochure=img_downloader.download(brochure_link,signature,99)
+            else:
+                brochure=brochure_link
+        except:
+            brochure="N/A"        
         try:     
             price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get().replace("\n","").replace("  ","")
         except:
@@ -88,7 +93,5 @@ class HausspiderSpider(scrapy.Spider):
         items['price'] = price
         items['overview'] = overview
         items['features'] = features
-
-
         yield items
 

@@ -1,6 +1,6 @@
 import scrapy
 from scrapy.http import FormRequest
-from ..items import buildings_marinaItem
+from ..items import Buildings_in_Business_BayItem
 import requests
 from bs4 import BeautifulSoup
 from .file_downloader import img_downloader
@@ -8,8 +8,8 @@ from .helpers import methods
 import uuid
 
 class testingSpider(scrapy.Spider):
-    name = 'buildings_marina'
-    start_urls = ["https://www.bayut.com/buildings/dubai-marina/"]
+    name = ' Buildings_in_Business_Bay'
+    start_urls = ["https://www.bayut.com/buildings/business-bay/"]
     page_number = 2
     link = ""
 
@@ -24,8 +24,8 @@ class testingSpider(scrapy.Spider):
             yield response.follow("https://www.bayut.com"+one,callback = self.page)
             
 
-        next_page = f"https://www.bayut.com/buildings/dubai-marina/page/{self.page_number}"
-        if next_page is not None and self.page_number < 18:
+        next_page = f"https://www.bayut.com/buildings/business-bay/page/{self.page_number}"
+        if next_page is not None and self.page_number < 15:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
@@ -35,7 +35,7 @@ class testingSpider(scrapy.Spider):
 
     def page(self,response):
 
-        items = buildings_marinaItem()
+        items = Buildings_in_Business_BayItem()
         signature = uuid.uuid1()
 
         #title
@@ -263,9 +263,7 @@ class testingSpider(scrapy.Spider):
         table_key=response.css("h3:contains('Service Charges')~ table tr.content td div.values > span::text").extract()
         table_value=response.css("h3:contains('Service Charges')~ table tr.content td div.values::text ").extract()
         if len(table)>0:
-            for i in range(len(table_key)-2):
-                table.append({table_key[i]:table_value[i]})
-            table.append({table_value[len(table_value)-2]:table_value[len(table_value)-1]})    
+            table.append({table_key:table_value})    
         Service_harges=table
 
         #Transportation near                  
@@ -331,16 +329,7 @@ class testingSpider(scrapy.Spider):
         temp=self.correctify_selection(temp,[])
         Major_Landmarks=temp
 
-        #CONSIDER                 
-        temp = response.css("h3:contains('CONSIDER') ~ *").extract()
-        if len(temp) == 0:
-            temp = response.css("h3:contains('consider') ~ *").extract()
-        if len(temp) == 0:
-            temp = response.css("h3:contains('Consider') ~ *").extract()
-        temp=self.correctify_selection(temp,[])
-        Consider=temp
-
-                
+        
         # community EVENTS       
         temp = response.css("h3:contains('EVENTS') ~ *").extract()
         if len(temp) == 0:
@@ -370,6 +359,14 @@ class testingSpider(scrapy.Spider):
         temp = self.correctify_selection(temp,[])
         location = temp
 
+        #CONSIDER                 
+        temp = response.css("h3:contains('CONSIDER') ~ *").extract()
+        if len(temp) == 0:
+            temp = response.css("h3:contains('consider') ~ *").extract()
+        if len(temp) == 0:
+            temp = response.css("h3:contains('Consider') ~ *").extract()
+        temp=self.correctify_selection(temp,[])
+        Consider=temp
 
         #schools                 
         temp = response.css("h3:contains('SCHOOLS AND NURSERIES') ~ *").extract()
@@ -402,6 +399,7 @@ class testingSpider(scrapy.Spider):
             temp = response.css("h3:contains('FAQS') ~ p").extract()
         temp = self.correctify_selection(temp,[])
         answers = temp
+
 
         #imgs
         all_images=response.css("div.postMain").get()

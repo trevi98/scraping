@@ -23,9 +23,11 @@ class HausspiderSpider(scrapy.Spider):
 
         next_page = f"https://www.hausandhaus.com/property-leasing/properties-available-for-rent-in-dubai/page-{self.page_number}/"
         if next_page is not None and self.page_number < 151:
-            print("next_page",next_page)
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
+            if(self.page_number%5==0):
+                data = {f"message': 'machine 2 | haus rent {self.page_number}"}
+                # response = requests.post("https://notifier.abdullatif-treifi.com/", data=data)
         else:
             # pass
             data = {'message': 'machine 2 | haus rent done (;'}
@@ -62,13 +64,16 @@ class HausspiderSpider(scrapy.Spider):
         except:
             property_info="N/A"   
           
-        images=response.css("div.section-gallery.js-animate-top").get()
+        # images=response.css("div.section-gallery.js-animate-top").get()
         title = response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading::text").get().replace("\n","").replace("  ","")
-        brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
-        if "pdf" in brochure_link:
-            brochure=img_downloader.download(brochure_link,signature,99)
-        else:
-            brochure=brochure_link    
+        # try:
+        #     brochure_link=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters ul.tabs-list li a::attr('href')")[2].get()
+        # except:
+        #     brochure_link="N/A"    
+        # if "pdf" in brochure_link:
+        #     brochure=img_downloader.download(brochure_link,signature,99)
+        # else:
+        #     brochure=brochure_link    
         try:
             price=response.css("div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price::text").get().replace("\n","").replace("  ","")
         except:
@@ -80,11 +85,12 @@ class HausspiderSpider(scrapy.Spider):
     
 
 
-        items['images'] = methods.img_downloader_method_src(images,signature)
+        # items['images'] = methods.img_downloader_method_src(images,signature)
+        items['images'] ="N/A"
         items['title'] = title
-        
         items['property_info'] = property_info
-        items['brochure'] = brochure
+        # items['brochure'] = brochure
+        items['brochure'] = "brochure"
         items['signature'] = signature
         items['price'] = price
         items['overview'] = overview
