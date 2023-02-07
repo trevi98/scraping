@@ -30,7 +30,7 @@ return createCsvWriter({
     {id: 'property_price', title: 'property_price'},
     {id: 'economic_apeal', title: 'economic_apeal'},
     {id: 'images', title: 'images'},
-    {id: 'near_by', title: 'near_by'},
+    {id: 'faq', title: 'faq'},
   ]
 });
 
@@ -67,9 +67,10 @@ let visit_err_record = 0
 // }
 
 async function visit_each(link,page){
-  await page.setCacheEnabled(false);
-  await page.deleteCookie({name:'hkd'})
+  // await page.setCacheEnabled(false);
   await page.goto(link);
+  // await page.waitForNavigation();
+  await page.deleteCookie({name:'hkd'})
 
 
 
@@ -86,11 +87,19 @@ async function visit_each(link,page){
   data.push(await page.evaluate(async ()=>{
 
     function extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(elmnts,key,value_selector){
-      let results = elmnts.filter(elmnt => {
-        if(elmnt.textContent.includes(key))
-          return true
-      })
-      let result = results[0].querySelector(value_selector).textContent
+      let results = []
+      let result = ''
+      try{
+
+        results = elmnts.filter(elmnt => {
+          if(elmnt.textContent.includes(key))
+            return true
+        })
+        result = results[0].querySelector(value_selector).textContent
+      }
+      catch(error){
+        console.error(error)
+      }
       return result
     }
 
@@ -112,34 +121,28 @@ async function visit_each(link,page){
       results.forEach(e => {
         let key = e.querySelector(key_selector).textContent
         let value = e.querySelector(value_selector).textContent
-        result.push(JSON.stringify({key,value}))
+        result.push({key,value})
       })
-      return result
+      return JSON.stringify(result)
     }
 
 
     function extract_text_from_pare_elements__section__(elmnts,search_key,value_selector){
-      let results = elmnts.filter(elmnt => {
+      results = ""
+      elmnts.forEach(t => {
         try{
-
-          if(elmnt.querySelector('.projectHeading').textContent.includes(search_key)){
-            return true
+  
+          if(t.querySelector(".container .projectHeading").textContent.includes(search_key)){
+            results = clean(t.querySelector(value_selector).innerText)
           }
-          return false
         }
-        catch(err){
-          return false
+        catch(error){
+  
+          console.error(error)
         }
+  
       })
-      let result = ''
-      try{
-
-        result = results[0].querySelector(value_selector).textContent
-      }
-      catch(err){
-        
-      }
-      return result
+      return results
     }
 
 
@@ -147,7 +150,7 @@ async function visit_each(link,page){
 
 
 
-    let title = clean(document.querySelector(".projectHeading  h2").textContent)
+    let title = clean(document.querySelector(".projectHeading  h2").textContent.replace("About",""))
 
     let price = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Starting Price from','span.as_grid-params')
     let size = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Area from (sq. ft.)','span.as_grid-params')
@@ -199,12 +202,20 @@ async function visit_each(link,page){
     let images = Array.from(document.querySelectorAll(".gallerySlider__item img"),img=>img.getAttribute('data-src'))
     temp = Array.from(document.querySelectorAll('.container .row.advRow.as_grid .as_grid-cell.col-1'))
     payment_plan = create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(temp,'%','.as_grid-title','.as_grid-params')
-    temp = Array.from(document.querySelectorAll('.contentSection.featureProjects'))
-    // console.log("!!!!!!!")
-    // console.log(temp)
-    location = extract_text_from_pare_elements__section__(temp,'Location','.container .two-col-text')
-    console.log('!!!!!!')
-    console.log(location)
+    temp = Array.from(document.querySelectorAll(".contentSection.featureProjects"))
+    x = extract_text_from_pare_elements__section__(temp,'Location','.container .two-col-text')
+    economic_apeal = extract_text_from_pare_elements__section__(temp,'Economic Appeal','.container .textBlock.pd30.full')
+    property_price = extract_text_from_pare_elements__section__(temp,'Property Prices','.container .textBlock.pd30.full')
+    let faq = []
+    temp = Array.from(document.querySelectorAll('.Faq .Faq_item'))
+    temp.forEach(t => {
+      let q = clean(t.querySelector('.Faq_title').innerText)
+      let a = clean(t.querySelector('.Faq_answer').innerText)
+      faq.push({question:q,answer:a})
+    })
+
+
+
 
 
 
@@ -225,7 +236,10 @@ async function visit_each(link,page){
       floor_plans:floor_plans,
       images:images,
       payment_plan:payment_plan,
-      location:location,
+      location:x,
+      economic_apeal:economic_apeal,
+      property_price:property_price,
+      faq:JSON.stringify(faq)
       // price: price,
     })
 
@@ -235,7 +249,43 @@ async function visit_each(link,page){
 
 
 
+
+//  ----------- pdf floor plan --------------
+const exists_plan_btn = await page.evaluate(() => {
+  return document.querySelector('.container.fp .fp__slider.fp-slider .fpSlider .owl-item:not(.cloned) .fpSlider__desc-btn.fpSlider__desc-btn--PDF') !== null;
+});
+if(exists_plan_btn){
+  await page.click('.container.fp .fp__slider.fp-slider .fpSlider .owl-item:not(.cloned) .fpSlider__desc-btn.fpSlider__desc-btn--PDF')
+  await page.type('#wpcf7-f84322-o4 input[name="user-name"]', 'John');
+  await page.type('#wpcf7-f84322-o4 input[name="user-phone"]', '+968509465823');
+  await page.type('#wpcf7-f84322-o4 input[name="user-email"]', 'jhon@jmail.com');
+  // await page.evaluate(() => {
+  //   document.querySelector('input[name="acceptance-350"]').click();
+  // });
+  await page.evaluate(() => {
+    document.querySelector('#wpcf7-f84322-o4 button[type=submit]').click();
+  });
+  await page.waitForNavigation()
+  let floor_plans_pdf = await page.evaluate(() => document.location.href)
+  data[0].floor_plans_pdf = floor_plans_pdf
+  await page.goBack();
+
+  // data.push({brochure:url})
+  // console.log(url)
+}
+else{
+  console.log("yyyy")
+}
+
+
+
+
+
+
+
+
   //  ----------- brochur --------------
+  await page.deleteCookie({name:'hkd'})
   const exists = await page.evaluate(() => {
     return document.querySelector('.project-header__btn.brochure') !== null;
   });
@@ -251,8 +301,10 @@ async function visit_each(link,page){
       document.querySelector('#download button[type=submit]').click();
     });
     await page.waitForNavigation()
-    let url = await page.evaluate(() => document.location.href);
-    console.log(url)
+    let brochure = await page.evaluate(() => document.location.href)
+    data[0].brochure = brochure
+    // data.push({brochure:url})
+    // console.log(url)
   }
   else{
     console.log("yyyy")
@@ -304,7 +356,7 @@ async function main_loop(page,i){
 
         }
         catch(error){
-
+          console.error(error)
           csvErrr.writeRecords({link:link,error:err})
           .then(()=> console.log('error logged main loop'));
           continue
@@ -329,6 +381,7 @@ async function main(){
       try{
         await main_loop(page,i)
       }catch(error){
+        console.error(error)
         csvErrr.writeRecords({link:i,error:error})
         .then(()=> console.log('error logged main'));
         continue
