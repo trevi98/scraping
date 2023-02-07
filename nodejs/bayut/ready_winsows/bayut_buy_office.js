@@ -263,7 +263,7 @@ async function main_loop(page,i){
 
 async function main(){
 
-  const browser = await puppeteer.launch({headless: true,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
+  const browser = await puppeteer.launch({headless: false,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
   const page = await browser.newPage();
   // let plans_data = {};
   for(let i=1 ; i<=75 ; i++){

@@ -11,6 +11,26 @@ return createCsvWriter({
   path: `${directory}/metro_projects${batch}.csv`,
   header: [
     {id: 'title', title: 'title'},
+    {id: 'price', title: 'price'},
+    {id: 'area', title: 'area'},
+    {id: 'size', title: 'size'},
+    {id: 'available_units', title: 'available_units'},
+    {id: 'units', title: 'units'},
+    {id: 'hand_over', title: 'hand_over'},
+    {id: 'description', title: 'description'},
+    {id: 'status', title: 'status'},
+    {id: 'developer', title: 'developer'},
+    {id: 'type', title: 'type'},
+    {id: 'amenities', title: 'amenities'},
+    {id: 'brochure', title: 'brochure'},
+    {id: 'floor_plans_pdf', title: 'floor_plans_pdf'},
+    {id: 'floor_plans', title: 'floor_plans'},
+    {id: 'payment_plan', title: 'payment_plan'},
+    {id: 'location', title: 'location'},
+    {id: 'property_price', title: 'property_price'},
+    {id: 'economic_apeal', title: 'economic_apeal'},
+    {id: 'images', title: 'images'},
+    {id: 'near_by', title: 'near_by'},
   ]
 });
 
@@ -37,20 +57,19 @@ let j = 0
 let main_err_record = 0
 let visit_err_record = 0
 
-async function clean(text){
-  try{
+// async function clean(text){
+//   try{
 
-    return text.replace('\n','').replace('\r','').replace('\t','').replace('  ','');
-  }catch(error){
-    return text;
-  }
-}
+//     return text.replace('\n','').replace('\r','').replace('\t','').replace('  ','');
+//   }catch(error){
+//     return text;
+//   }
+// }
 
 async function visit_each(link,page){
   await page.setCacheEnabled(false);
-  await page.goto(link);
   await page.deleteCookie({name:'hkd'})
-
+  await page.goto(link);
 
 
 
@@ -60,11 +79,167 @@ async function visit_each(link,page){
 
 
   
+
+  // await page.click('._35b183c9._39b0d6c4');
+  // const element = await page.waitForSelector('._18c28cd2._277fb980');
+  let data = []
+  data.push(await page.evaluate(async ()=>{
+
+    function extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(elmnts,key,value_selector){
+      let results = elmnts.filter(elmnt => {
+        if(elmnt.textContent.includes(key))
+          return true
+      })
+      let result = results[0].querySelector(value_selector).textContent
+      return result
+    }
+
+    function clean(text){
+      try{
+    
+        return text.replaceAll('\n','').replaceAll('\r','').replaceAll('\t','').replaceAll('  ','').trim();
+      }catch(error){
+        return text;
+      }
+    }
+
+    function create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(elmnts,search_key,key_selector,value_selector){
+      let results = elmnts.filter(elmnt => {
+        if(elmnt.textContent.includes(search_key))
+          return true
+      })
+      let result = []
+      results.forEach(e => {
+        let key = e.querySelector(key_selector).textContent
+        let value = e.querySelector(value_selector).textContent
+        result.push(JSON.stringify({key,value}))
+      })
+      return result
+    }
+
+
+    function extract_text_from_pare_elements__section__(elmnts,search_key,value_selector){
+      let results = elmnts.filter(elmnt => {
+        try{
+
+          if(elmnt.querySelector('.projectHeading').textContent.includes(search_key)){
+            return true
+          }
+          return false
+        }
+        catch(err){
+          return false
+        }
+      })
+      let result = ''
+      try{
+
+        result = results[0].querySelector(value_selector).textContent
+      }
+      catch(err){
+        
+      }
+      return result
+    }
+
+
+    // function get_text_from_section_if
+
+
+
+    let title = clean(document.querySelector(".projectHeading  h2").textContent)
+
+    let price = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Starting Price from','span.as_grid-params')
+    let size = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Area from (sq. ft.)','span.as_grid-params')
+    let available_units = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Available Units','span.as_grid-params')
+    let handover = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Handover','span.as_grid-params')
+    let area = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Location','span.as_lits-params')
+    let status = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Status','span.as_lits-params')
+    let developer = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Developer','span.as_lits-params')
+    let type = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Type','span.as_lits-params')
+    let units = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Units','span.as_lits-params')
+    let entire_description = ""
+    try{
+      entire_description = clean(Array.from(document.querySelectorAll(".contentSection.featureProjects"))[1].innerText)
+
+    }
+    catch(error){
+      entire_description = ""
+    }
+    let amenities = []
+
+    amenities = Array.from(document.querySelectorAll(".container .two-col-text .two-col-text-item.text-text ul li"),li => li.textContent)
+    if(amenities.length == 0){
+
+      amenities = Array.from(document.querySelectorAll(".container .two-col-text ul li"),li => li.textContent)
+    }
+    if(amenities.length == 0){
+      amenities = Array.from(document.querySelectorAll(".container .two-col-text .two-col-text-item.grid-text ul li"),li => li.textContent)
+    }
+    if(amenities.length == 0){
+      amenities = Array.from(document.querySelectorAll(".container .two-col-text .two-col-text-item.video-text ul li"),li => li.textContent)
+    }
+    let floor_plans = []
+    let temp = Array.from(document.querySelectorAll(".container.fp .fp__slider.fp-slider .fpSlider .owl-item:not(.cloned)"))
+    temp.forEach(t => {
+      let items_container = t.querySelector(".fpSlider__col.fpSlider__col--desc")
+      let title = clean(items_container.querySelector(".fpSlider__desc-head").textContent)
+      let pares = Array.from(items_container.querySelectorAll('.fpSlider__desc-item'))
+      let type = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(pares,'Type','span')
+      let total_area = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(pares,'Total Area','span')
+      let starting_price = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(pares,'Starting Price','span')
+      let image = t.querySelector('.fpSlider__col.fpSlider__col--image img').getAttribute('data-src')
+      // console.log("!!!!")
+      // console.log(image)
+
+      floor_plans.push(JSON.stringify({title,type,total_area,starting_price,image}))
+
+    })
+
+    let images = Array.from(document.querySelectorAll(".gallerySlider__item img"),img=>img.getAttribute('data-src'))
+    temp = Array.from(document.querySelectorAll('.container .row.advRow.as_grid .as_grid-cell.col-1'))
+    payment_plan = create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(temp,'%','.as_grid-title','.as_grid-params')
+    temp = Array.from(document.querySelectorAll('.contentSection.featureProjects'))
+    // console.log("!!!!!!!")
+    // console.log(temp)
+    location = extract_text_from_pare_elements__section__(temp,'Location','.container .two-col-text')
+    console.log('!!!!!!')
+    console.log(location)
+
+
+
+  return({
+      title: title,
+      price: price,
+      size: size,
+      hand_over: handover,
+      available_units: available_units,
+      available_units: available_units,
+      description: entire_description,
+      amenities: amenities,
+      area:area,
+      status: status,
+      developer: developer,
+      type: type,
+      units: units,
+      floor_plans:floor_plans,
+      images:images,
+      payment_plan:payment_plan,
+      location:location,
+      // price: price,
+    })
+
+  }))
+
+
+
+
+
+  //  ----------- brochur --------------
   const exists = await page.evaluate(() => {
     return document.querySelector('.project-header__btn.brochure') !== null;
   });
   if(exists){
-    console.log("xxxx")
     await page.click('.project-header__btn.brochure')
     await page.type('#download input[name="user-name"]', 'John');
     await page.type('#download input[name="user-phone"]', '+968509465823');
@@ -82,37 +257,9 @@ async function visit_each(link,page){
   else{
     console.log("yyyy")
   }
-  // await page.click('._35b183c9._39b0d6c4');
-  // const element = await page.waitForSelector('._18c28cd2._277fb980');
-  let data = []
-  data.push(await page.evaluate(async ()=>{
-    function extract_pare(elmnts,key){
-      let pare = []
-      pare = elmnts.filter((elmnt)=>{
-        try{
-          
-          if(elmnt.includes(key)){
-            return true
-          }
-        }catch(error){
-        }
-      })
-      try{
 
-        pare = pare[0].replace(key,'').replace(" ","").replace("\n","").replace("\t","").replace("\r","").replace("  ","")
-        return pare
-      }
-      catch(error){
-        return ""
-      }
-    }
-    let title = 'dd'
-   
-  return({
-      title: title,
-    })
 
-  }))
+
 
   if((j%500) == 0){
     batch++
@@ -152,9 +299,16 @@ async function main_loop(page,i){
       try{
         await visit_each(link,page)
       }catch(err){
-        csvErrr.writeRecords({link:link,error:err})
-        .then(()=> console.log('error logged main loop'));
-        continue
+        try{
+          await visit_each(link,page)
+
+        }
+        catch(error){
+
+          csvErrr.writeRecords({link:link,error:err})
+          .then(()=> console.log('error logged main loop'));
+          continue
+        }
       }
     }
   }

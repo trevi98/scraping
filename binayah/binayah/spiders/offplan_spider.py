@@ -64,38 +64,41 @@ class testingSpider(scrapy.Spider):
         description=""            
         try:
             soup_description=response.css(".wpb_text_column.wpb_content_element .wpb_wrapper").extract()[2]
-            for i in soup_description:
-                one=BeautifulSoup(i,'lxml').text.replace("\n","").replace("  ","")
-                description+= one
+            # for i in soup_description:
+            description=BeautifulSoup(soup_description,'lxml').text.replace("\n","").replace("  ","")
+            # description+= one
                 
         except:
             description = BeautifulSoup(response.css(".vc_column-inner").get(),'lxml').text.replace("\n","").replace("  ","")
+        images_cont = ""
+        try:
+            images_cont = json.loads(response.css(".vc_grid-container.vc_clearfix.wpb_content_element.vc_media_grid::attr(data-vc-grid-settings)").get())
+            page_id = images_cont['page_id']
+            short_code = images_cont['shortcode_id']
+            payload = "action=vc_get_vc_grid_data&vc_action=vc_get_vc_grid_data&tag=vc_media_grid&data%5Bvisible_pages%5D=5&data%5Bpage_id%5D="+str(page_id)+"&data%5Bstyle%5D=all&data%5Baction%5D=vc_get_vc_grid_data&data%5Bshortcode_id%5D="+str(short_code)+"&data%5Btag%5D=vc_media_grid&vc_post_id=80678&_vcnonce=822b58dfa6"
+            headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0',
+            'Accept': 'text/html, */*; q=0.01',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Referer': 'https://www.binayah.com/dubai-projects/samana-miami-2/',
+            'Origin': 'https://www.binayah.com',
+            'Connection': 'keep-alive',
+            'Cookie': '_gcl_au=1.1.387624197.1674022015; _ga_7TRND0TJ9X=GS1.1.1674127717.3.1.1674127753.0.0.0; _ga=GA1.2.1225947950.1674022016; _ym_uid=1674022117167424547; _ym_d=1674022117; wp-wpml_current_language=en; _gid=GA1.2.691371661.1674127718; _gat_gtag_UA_54276894_1=1; _ym_isad=1; _ym_visorc=w',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'no-cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'TE': 'trailers',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Alt-Used': 'www.binayah.com',
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache'
+            }
 
-        images_cont = json.loads(response.css(".vc_grid-container.vc_clearfix.wpb_content_element.vc_media_grid::attr(data-vc-grid-settings)").get())
-        page_id = images_cont['page_id']
-        short_code = images_cont['shortcode_id']
-        payload = "action=vc_get_vc_grid_data&vc_action=vc_get_vc_grid_data&tag=vc_media_grid&data%5Bvisible_pages%5D=5&data%5Bpage_id%5D="+str(page_id)+"&data%5Bstyle%5D=all&data%5Baction%5D=vc_get_vc_grid_data&data%5Bshortcode_id%5D="+str(short_code)+"&data%5Btag%5D=vc_media_grid&vc_post_id=80678&_vcnonce=822b58dfa6"
-        headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0',
-        'Accept': 'text/html, */*; q=0.01',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Referer': 'https://www.binayah.com/dubai-projects/samana-miami-2/',
-        'Origin': 'https://www.binayah.com',
-        'Connection': 'keep-alive',
-        'Cookie': '_gcl_au=1.1.387624197.1674022015; _ga_7TRND0TJ9X=GS1.1.1674127717.3.1.1674127753.0.0.0; _ga=GA1.2.1225947950.1674022016; _ym_uid=1674022117167424547; _ym_d=1674022117; wp-wpml_current_language=en; _gid=GA1.2.691371661.1674127718; _gat_gtag_UA_54276894_1=1; _ym_isad=1; _ym_visorc=w',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'no-cors',
-        'Sec-Fetch-Site': 'same-origin',
-        'TE': 'trailers',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Alt-Used': 'www.binayah.com',
-        'Pragma': 'no-cache',
-        'Cache-Control': 'no-cache'
-        }
-
-        response_images = requests.request("POST", 'https://www.binayah.com/wp-admin/admin-ajax.php', headers=headers, data=payload)
-        images = response_images.text
+            response_images = requests.request("POST", 'https://www.binayah.com/wp-admin/admin-ajax.php', headers=headers, data=payload)
+            images = response_images.text
+        except:
+            images_cont = ""
 
         try:
             items['images'] = methods.img_downloader_method_src(images,signature)
