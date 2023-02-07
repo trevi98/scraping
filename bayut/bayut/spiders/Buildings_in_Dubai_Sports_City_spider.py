@@ -1,6 +1,6 @@
 import scrapy
 from scrapy.http import FormRequest
-from ..items import buildings_marinaItem
+from ..items import Buildings_in_Dubai_Sports_CityItem
 import requests
 from bs4 import BeautifulSoup
 from .file_downloader import img_downloader
@@ -8,8 +8,8 @@ from .helpers import methods
 import uuid
 
 class testingSpider(scrapy.Spider):
-    name = 'buildings_marina'
-    start_urls = ["https://www.bayut.com/buildings/dubai-marina/"]
+    name = ' Buildings_in_Dubai_Sports_City'
+    start_urls = ["https://www.bayut.com/buildings/dubai-sports-city/"]
     page_number = 2
     link = ""
 
@@ -24,8 +24,8 @@ class testingSpider(scrapy.Spider):
             yield response.follow("https://www.bayut.com"+one,callback = self.page)
             
 
-        next_page = f"https://www.bayut.com/buildings/dubai-marina/page/{self.page_number}"
-        if next_page is not None and self.page_number < 18:
+        next_page = f"https://www.bayut.com/buildings/dubai-sports-city/page/{self.page_number}"
+        if next_page is not None and self.page_number < 7:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
@@ -35,7 +35,7 @@ class testingSpider(scrapy.Spider):
 
     def page(self,response):
 
-        items = buildings_marinaItem()
+        items = Buildings_in_Dubai_Sports_CityItem()
         signature = uuid.uuid1()
 
         #title
@@ -370,6 +370,14 @@ class testingSpider(scrapy.Spider):
         temp = self.correctify_selection(temp,[])
         location = temp
 
+        #CONSIDER                 
+        temp = response.css("h3:contains('CONSIDER') ~ *").extract()
+        if len(temp) == 0:
+            temp = response.css("h3:contains('consider') ~ *").extract()
+        if len(temp) == 0:
+            temp = response.css("h3:contains('Consider') ~ *").extract()
+        temp=self.correctify_selection(temp,[])
+        Consider=temp
 
         #schools                 
         temp = response.css("h3:contains('SCHOOLS AND NURSERIES') ~ *").extract()

@@ -2,13 +2,12 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
-
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/bayut_buy_office${batch}.csv`,
+    path: `${directory}/bayut_Factories_for_rent_comm${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "description", title: "description" },
@@ -17,6 +16,7 @@ function csv_handler(directory, batch) {
       { id: "size", title: "size" },
       { id: "area", title: "area" },
       { id: "type", title: "type" },
+      { id: "date", title: "date" },
       { id: "parking", title: "parking" },
       { id: "ownership", title: "ownership" },
       { id: "completion", title: "completion" },
@@ -53,8 +53,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("bayut_buy_office");
-let csvWriter = csv_handler("bayut_buy_office", 1);
+let csvErrr = csv_error_handler("bayut_Factories_for_rent_comm");
+let csvWriter = csv_handler("bayut_Factories_for_rent_comm", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -205,6 +205,12 @@ async function visit_each(link, page) {
         .replace("\r", "")
         .replace("\t", "")
         .replace("  ", "");
+      let date = document
+        .querySelector("span._56562304")
+        .textContent.replace("\n", "")
+        .replace("\r", "")
+        .replace("\t", "")
+        .replace("  ", "");
       info = Array.from(document.querySelectorAll("._033281ab li"), (elmnt) =>
         elmnt.textContent
           .replace("\n", "")
@@ -248,6 +254,7 @@ async function visit_each(link, page) {
         bathrooms: bathrooms,
         size: size,
         area: area,
+        date: date,
         type: type,
         parking: parking_availability,
         ownership: ownership,
@@ -273,7 +280,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("bayut_buy_office", batch);
+    csvWriter = csv_handler("bayut_Factories_for_rent_comm", batch);
   }
 
   data[0].plans_2d = plans.d2[0];
@@ -285,9 +292,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.bayut.com/for-sale/offices/dubai/page-${i}/`;
+  let target = `https://www.bayut.com/to-rent/factories/uae/page-${i}/?rent_frequency=any`;
   if (i == 1) {
-    target = "https://www.bayut.com/for-sale/offices/dubai/";
+    target = "https://www.bayut.com/to-rent/factories/uae/?rent_frequency=any";
   }
   console.log(target);
   await page.goto(target);
@@ -325,7 +332,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 75; i++) {
+  for (let i = 1; i <= 1; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

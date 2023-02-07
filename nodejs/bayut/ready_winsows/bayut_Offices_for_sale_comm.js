@@ -8,7 +8,7 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/bayut_buy_office${batch}.csv`,
+    path: `${directory}/bayut_Offices_for_sale_comm${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "description", title: "description" },
@@ -53,8 +53,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("bayut_buy_office");
-let csvWriter = csv_handler("bayut_buy_office", 1);
+let csvErrr = csv_error_handler("bayut_Offices_for_sale_comm");
+let csvWriter = csv_handler("bayut_Offices_for_sale_comm", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -273,7 +273,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("bayut_buy_office", batch);
+    csvWriter = csv_handler("bayut_Offices_for_sale_comm", batch);
   }
 
   data[0].plans_2d = plans.d2[0];
@@ -285,9 +285,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.bayut.com/for-sale/offices/dubai/page-${i}/`;
+  let target = `https://www.bayut.com/for-sale/offices/uae/page-${i}/`;
   if (i == 1) {
-    target = "https://www.bayut.com/for-sale/offices/dubai/";
+    target = "https://www.bayut.com/for-sale/offices/uae/";
   }
   console.log(target);
   await page.goto(target);
@@ -325,7 +325,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 75; i++) {
+  for (let i = 1; i <= 79; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

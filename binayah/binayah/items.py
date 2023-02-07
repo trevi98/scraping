@@ -21,19 +21,19 @@ class AreaItem(scrapy.Item):
 
 class OffplanItem(scrapy.Item):
     # define the fields for your item here like:
-    images = scrapy.Field()
+    # images = scrapy.Field()
     signature = scrapy.Field()
-    amenities = scrapy.Field()
-    attractions = scrapy.Field()
-    type_size = scrapy.Field()
+    # amenities = scrapy.Field()
+    # attractions = scrapy.Field()
+    # type_size = scrapy.Field()
     images_floor_plan = scrapy.Field()
-    property_info = scrapy.Field()
-    title = scrapy.Field()
-    description = scrapy.Field()
-    type = scrapy.Field()
-    video = scrapy.Field()
+    # property_info = scrapy.Field()
+    # title = scrapy.Field()
+    # description = scrapy.Field()
+    # type = scrapy.Field()
+    # video = scrapy.Field()
     image_location = scrapy.Field()
-    payment_plan = scrapy.Field()
+    # payment_plan = scrapy.Field()
     # pass
 
 class villas_saleItem(scrapy.Item):
