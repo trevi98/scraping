@@ -38,15 +38,17 @@ class MetropolitanbuyItem(scrapy.Item):
     # define the fields for your item here like:
     images = scrapy.Field()
     signature = scrapy.Field()
-    details = scrapy.Field()
+    bedrooms = scrapy.Field()
+    bathrooms = scrapy.Field()
+    size = scrapy.Field()
+    parking = scrapy.Field()
     title = scrapy.Field()
-    location = scrapy.Field()
+    area = scrapy.Field()
     price = scrapy.Field()
     price_per_sqft = scrapy.Field()
-    project_details = scrapy.Field()
-    amentities = scrapy.Field()
-    developer = scrapy.Field()
-    information = scrapy.Field()
+    description = scrapy.Field()
+    amenities = scrapy.Field()
+    status = scrapy.Field()
 
 class MetropolitanrentItem(scrapy.Item):
     # define the fields for your item here like:
