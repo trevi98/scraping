@@ -152,6 +152,7 @@ async function visit_each(link,page){
 
 
     let title = clean(document.querySelector("title").textContent)
+    let price = clean(document.querySelector('').textContent)
 
     // let price = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Starting Price from','span.as_grid-params')
     // let size = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Area from (sq. ft.)','span.as_grid-params')
@@ -222,6 +223,7 @@ async function visit_each(link,page){
 
   return({
       title: title,
+
     //   price: price,
     //   size: size,
     //   hand_over: handover,

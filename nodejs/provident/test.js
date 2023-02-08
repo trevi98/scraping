@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 async function run() {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     executablePath:
       "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     args: ["--enable-automation"],
@@ -11,7 +11,7 @@ async function run() {
     "https://www.providentestate.com/dubai-off-plan-properties.html"
   );
   const links = await page.evaluate(() => {
-    let as = Array.from(document.querySelectorAll(".item-post__image"));
+    let as = Array.from(document.querySelectorAll(".item-post__image"),a=>a.href);
     let uniqe = [...new Set(as)];
     return uniqe;
   });
