@@ -2,16 +2,16 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
+
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/opr_blog${batch}.csv`,
+    path: `${directory}/opr_faq${batch}.csv`,
     header: [
-      { id: "titles", title: "titles" },
-      { id: "description", title: "description" },
-      { id: "list", title: "list" },
+      { id: "qeustion", title: "qeustion" },
+      { id: "answer", title: "answer" },
     ],
   });
 }
@@ -29,48 +29,45 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("opr_blog");
-let csvWriter = csv_handler("opr_blog", 1);
+let csvErrr = csv_error_handler("opr_faq");
+let csvWriter = csv_handler("opr_faq", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
+// async function clean(text){
+//   try{
+
+//     return text.replace('\n','').replace('\r','').replace('\t','').replace('  ','');
+//   }catch(error){
+//     return text;
+//   }
+// }
+
 async function visit_each(link, page) {
+  // await page.setCacheEnabled(false);
   await page.goto(link);
   let data = [];
   data.push(
     await page.evaluate(async () => {
-      let titles = [];
-      let temp = Array.from(document.querySelectorAll("h2"));
-      temp.forEach((e) => titles.push(e.textContent));
-      let description = [];
-      temp = Array.from(
-        document.querySelectorAll(
-          "div.node.widget-text.cr-text.widget.links-on-black-text p"
-        )
-      );
-      temp.forEach((e) => {
-        description.push(e.textContent);
-      });
-      let list = [];
-      temp = Array.from(
-        document.querySelectorAll("div.node.widget-list.widget ul li")
-      );
-      temp.forEach((e) => {
-        list.push(e.textContent);
-      });
+      let qeustion = document.querySelector(
+        "div#header-menu-mobile ~ div.node.section-clear.section.menu2 div.node.widget-text.cr-text.widget.lg-hidden p.textable"
+      ).textContent;
+
+      let answer = document.querySelector(
+        "div.node.widget-text.cr-text.widget.links-on-black-text p"
+      ).textContent;
       return {
-        titles: titles,
-        description: description,
-        list: list,
+        qeustion: qeustion,
+        answer: answer,
       };
     })
   );
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("opr_blog", batch);
+    csvWriter = csv_handler("opr_faq", batch);
   }
 
   csvWriter
@@ -80,19 +77,19 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://opr.ae/blog-${i}/`;
+  let target = `https://opr.ae/faq/${i}`;
   if (i == 1) {
-    target = "https://opr.ae/blog";
+    target = "https://opr.ae/faq";
   }
   console.log(target);
   await page.goto(target);
   const links = await page.evaluate(() => {
+    let all = [];
     let link = Array.from(
       document.querySelectorAll(
-        "div.s-elements-grid.valign-top.halign-center.use-flex div.s-elements-cell div.s-elements-cellwrapper div.cont.cell div.node.widget-element.widget div.cont div.node.widget-element.widget div.cont div.node.widget-button.widget div.button-container div.button-wrapper"
+        "div.spoiler0-container.is-collapsed div.cont div#faq-more-link.node.widget-text.cr-text.widget.faq-more-link p"
       )
     );
-    let all = [];
     link.forEach((e) => {
       let a = e.querySelector("a").href;
       all.push(a);
@@ -108,10 +105,15 @@ async function main_loop(page, i) {
       try {
         await visit_each(link, page);
       } catch (err) {
-        csvErrr
-          .writeRecords({ link: link, error: err })
-          .then(() => console.log("error logged"));
-        continue;
+        try {
+          await visit_each(link, page);
+        } catch (error) {
+          console.error(error);
+          csvErrr
+            .writeRecords({ link: link, error: err })
+            .then(() => console.log("error logged main loop"));
+          continue;
+        }
       }
     }
   }
@@ -133,9 +135,10 @@ async function main() {
       try {
         await main_loop(page, i);
       } catch (error) {
+        console.error(error);
         csvErrr
           .writeRecords({ link: i, error: error })
-          .then(() => console.log("error logged"));
+          .then(() => console.log("error logged main"));
         continue;
       }
     }
