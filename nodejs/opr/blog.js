@@ -292,9 +292,7 @@ async function main_loop(page, i) {
   await page.goto(target);
   const links = await page.evaluate(() => {
     const anchors = Array.from(
-      document.querySelectorAll(
-        "div.s-elements-cell div.node.widget-button.widget div.button-container.left div.button-wrapper a"
-      ),
+      document.querySelectorAll("._357a9937 .ef447dde ._4041eb80 ._287661cb"),
       (a) => a.href
     );
     let uniqe_links = [...new Set(anchors)];

@@ -51,9 +51,6 @@ async function run() {
     temp.forEach((e) => {
       proprty_info.push(e.textContent);
     });
-    // images = Array.from(
-    //   document.querySelectorAll("div#gallery.node.section-clear.section")
-    // );
     let location = document.querySelector(
       "div#location.node.section-clear.section div.container.fullwidth div.cont div.node.widget-grid.widget div.grid.valign-top.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-text.cr-text.widget.links-on-black-text p.textable"
     ).textContent;
@@ -105,45 +102,46 @@ async function run() {
     };
   });
   console.log(links);
-  // const exists = await page.evaluate(() => {
-  //   return (
-  //     document.querySelector(
-  //       "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
-  //     ) !== null
-  //   );
-  // });
-  // if (exists) {
-  //   await page.click(
-  //     "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
-  //   );
-  //   await page.type(
-  //     " div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
-  //     "John"
-  //   );
-  //   await page.type(
-  //     "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div div.metahtml div.is-text div.input input[autocomplete='tel']",
-  //     "+968509465823"
-  //   );
-  //   await page.type(
-  //     "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='email']",
-  //     "jhon@jmail.com"
-  //   );
+  //############### brochure #####################
+  const exists = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
+      ) !== null
+    );
+  });
+  if (exists) {
+    await page.click(
+      "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
+    );
+    await page.type(
+      " div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
+      "John"
+    );
+    await page.type(
+      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div div.metahtml div.is-text div.input input[autocomplete='tel']",
+      "+968509465823"
+    );
+    await page.type(
+      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='email']",
+      "jhon@jmail.com"
+    );
 
-  //   await page.evaluate(() => {
-  //     document
-  //       .querySelector(
-  //         "div.form1-cover div div.cont div.node.widget-button.widget div.button-wrapper button"
-  //       )
-  //       .click();
-  //   });
-  //   await page.waitForNavigation();
-  //   let brochure = await page.evaluate(() => document.location.href);
-  //   console.log("yes");
-  //   // data.push({brochure:url})
-  //   console.log(brochure);
-  // } else {
-  //   console.log("yyyy");
-  // }
+    await page.evaluate(() => {
+      document
+        .querySelector(
+          "div.form1-cover div div.cont div.node.widget-button.widget div.button-wrapper button"
+        )
+        .click();
+    });
+    await page.waitForNavigation();
+    let brochure = await page.evaluate(() => document.location.href);
+    console.log("yes");
+    // data.push({brochure:url})
+    console.log(brochure);
+  } else {
+    console.log("yyyy");
+  }
   await browser.close();
 }
 run();
