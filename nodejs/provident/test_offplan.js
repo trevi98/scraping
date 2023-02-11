@@ -9,7 +9,7 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.providentestate.com/dubai-offplan/nara-the-valley.html"
+    "https://www.providentestate.com/dubai-offplan/address-beachfront.html"
   );
   const links = await page.evaluate(() => {
     let title = document.title;
@@ -226,22 +226,25 @@ async function run() {
   });
   if (exists) {
     await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
+    await page.waitForSelector(
+      'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]'
+    );
     await page.type(
-      'div.modal-content div.modal-body form input[name="your-name"]',
+      'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]',
       "John"
     );
     await page.type(
-      'div.modal-content div.modal-body form input[name="your-email"]',
+      'div.modal-content div.modal-body.listing-form-7 form input[name="your-email"]',
       "jhon@jmail.com"
     );
     await page.type(
-      'div.modal-content div.modal-body form textarea[name="your-message"]',
+      'div.modal-content div.modal-body.listing-form-7 form textarea[name="your-message"]',
       "Hello"
     );
     await page.evaluate(() => {
       document
         .querySelector(
-          "div.modal-content div.modal-body div form input[type=submit]"
+          "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
         )
         .click();
     });
