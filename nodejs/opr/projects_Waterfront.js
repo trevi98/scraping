@@ -8,29 +8,24 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/metro_projects${batch}.csv`,
+    path: `${directory}/projects_Waterfront${batch}.csv`,
     header: [
       { id: "title", title: "title" },
-      { id: "type", title: "type" },
       { id: "price", title: "price" },
-      { id: "area", title: "area" },
-      { id: "size", title: "size" },
-      { id: "available_units", title: "available_units" },
-      { id: "units", title: "units" },
-      { id: "hand_over", title: "hand_over" },
-      { id: "description", title: "description" },
-      { id: "status", title: "status" },
-      { id: "developer", title: "developer" },
-      { id: "amenities", title: "amenities" },
+      { id: "info", title: "info" },
+      { id: "handover", title: "handover" },
+      { id: "overview_title", title: "overview_title" },
+      { id: "overview", title: "overview" },
+      { id: "about", title: "about" },
+      { id: "proprty_info", title: "proprty_info" },
+      { id: "location", title: "location" },
+      { id: "nearby_place", title: "nearby_place" },
+      { id: "payment_plan", title: "payment_plan" },
+      { id: "all_images", title: "all_images" },
+      { id: "floor_plans", title: "floor_plans" },
       { id: "brochure", title: "brochure" },
       { id: "floor_plans_pdf", title: "floor_plans_pdf" },
-      { id: "floor_plans", title: "floor_plans" },
-      { id: "payment_plan", title: "payment_plan" },
-      { id: "location", title: "location" },
-      { id: "property_price", title: "property_price" },
-      { id: "economic_apeal", title: "economic_apeal" },
-      { id: "images", title: "images" },
-      { id: "faq", title: "faq" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -48,21 +43,12 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("projects");
-let csvWriter = csv_handler("projects", 1);
+let csvErrr = csv_error_handler("opr_projects_Waterfrontprojects");
+let csvWriter = csv_handler("projects_Waterfront", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
-
-// async function clean(text){
-//   try{
-
-//     return text.replace('\n','').replace('\r','').replace('\t','').replace('  ','');
-//   }catch(error){
-//     return text;
-//   }
-// }
 
 async function visit_each(link, page) {
   console.log(link.types);
@@ -223,13 +209,6 @@ async function visit_each(link, page) {
         "div#pp.node.section-clear.section div.container div.cont div.node.widget-grid.widget div.grid.valign-middle.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-element.widget div.cont"
       );
       temp.forEach((e) => payment_plan.push(e.textContent));
-      aaa = [];
-      floor_plans = Array.from(
-        document.querySelectorAll(
-          "div#fb.node.section-clear.section div.container.fullwidth div.cont div.node.widget-tabs.cr-tabs.widget div.metahtml div.tabs1-container.swiper-container.swiper-container-horizontal.swiper-container-autoheight div.tabs1-root div.swiper-wrapper div.swiper-slide"
-        )
-      );
-      floor_plans.forEach((e) => aaa.push(e.textContent));
 
       let images = Array.from(
         document.querySelectorAll(
@@ -255,53 +234,68 @@ async function visit_each(link, page) {
         nearby_place: nearby_place,
         payment_plan: payment_plan,
         all_images: all_images,
+        signaturea: Date.now(),
       };
     })
   );
 
+  //------------- floor plan------
+  const floor = await page.evaluate(() => {
+    let number = Array.from(document.querySelectorAll("#fp .tabs1-page"));
+    let f = [];
+    for (let i = 0; i < number.length; i++) {
+      number[i].id = `h${i + 1}`;
+      f.push(`h${i + 1}`);
+    }
+    return f;
+  });
+  let floor_plans = [];
+  if (floor.length > 0) {
+    for (let f of floor) {
+      await page.click(`#${f}`);
+      floor_plans.push(
+        await page.evaluate(() => {
+          let size = "";
+          let img = "";
+          let title = "";
+          try {
+            size = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active .node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
+            ).textContent;
+          } catch (error) {}
+
+          try {
+            img = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active a .fr-dib.fr-draggable"
+            ).src;
+          } catch (error) {}
+          try {
+            title = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active h3"
+            ).textContent;
+          } catch (error) {}
+          return {
+            title: title,
+            size: size,
+            img: img,
+          };
+        })
+      );
+    }
+  }
+  data[0].floor_plans = floor_plans;
   data[0].type = link.types;
 
-  //  ----------- pdf floor plan --------------
-  const exists_plan_btn = await page.evaluate(() => {
-    return (
-      document.querySelector(
-        ".container.fp .fp__slider.fp-slider .fpSlider .owl-item:not(.cloned) .fpSlider__desc-btn.fpSlider__desc-btn--PDF"
-      ) !== null
-    );
-  });
-  if (exists_plan_btn) {
-    await page.click(
-      ".container.fp .fp__slider.fp-slider .fpSlider .owl-item:not(.cloned) .fpSlider__desc-btn.fpSlider__desc-btn--PDF"
-    );
-    await page.type('#wpcf7-f84322-o4 input[name="user-name"]', "John");
-    await page.type(
-      '#wpcf7-f84322-o4 input[name="user-phone"]',
-      "+968509465823"
-    );
-    await page.type(
-      '#wpcf7-f84322-o4 input[name="user-email"]',
-      "jhon@jmail.com"
-    );
-    await page.evaluate(() => {
-      document.querySelector("#wpcf7-f84322-o4 button[type=submit]").click();
-    });
-    await page.waitForNavigation();
-    let floor_plans_pdf = await page.evaluate(() => document.location.href);
-    data[0].floor_plans_pdf = floor_plans_pdf;
-    await page.goBack();
-
-    data.push({ brochure: url });
-    console.log(url);
-  } else {
-    console.log("yyyy");
-  }
-
-  //  ----------- brochur --------------
-  //   await page.deleteCookie({name:'hkd'})
+  //  ----------- brochure --------------
   const exists = await page.evaluate(() => {
     return (
       document.querySelector(
         "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
+      ) &&
+      /brochure/i.test(
+        document.querySelector(
+          "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a span"
+        ).textContent
       ) !== null
     );
   });
@@ -309,7 +303,7 @@ async function visit_each(link, page) {
     await page.click(
       "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
     );
-    await page.waitForSelector(".modal.nocolors.active");
+    await page.waitForSelector(".modal6-root.is-active");
     await page.type(
       "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
       "John"
@@ -325,23 +319,71 @@ async function visit_each(link, page) {
 
     await page.evaluate(() => {
       document
-        .querySelector(
-          ".modal.nocolors.css156.active div.form1-cover div div.cont div.node.widget-button.widget div.button-wrapper button"
-        )
+        .querySelector(".modal.nocolors.active button:not(.modal6-close)")
         .click();
     });
     await page.waitForNavigation();
     let brochure = await page.evaluate(() => document.location.href);
-    data[0].brochure = brochure;
+    console.log("yes");
     // data.push({brochure:url})
-    // console.log(url)
+
+    await page.goto(link);
+    data[0].brochure = brochure;
+  } else {
+    console.log("yyyy");
+  }
+
+  // ----------- floor plan pdf  --------------
+
+  const exists_plan_btn = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
+      ) &&
+      /floor/i.test(
+        document.querySelector(
+          "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a span"
+        ).textContent
+      ) !== null
+    );
+  });
+  if (exists_plan_btn) {
+    await page.click(
+      "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
+    );
+    await page.waitForSelector(".modal6-root.is-active");
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="name"]',
+      "John"
+    );
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="tel"]',
+      "+968509465823"
+    );
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="email"]',
+      "jhon@jmail.com"
+    );
+    await page.evaluate(() => {
+      document
+        .querySelector(".modal6-root.is-active button:not(.modal6-close)")
+        .click();
+    });
+    await page.waitForNavigation();
+    let floor_plans_pdf = await page.evaluate(() => document.location.href);
+    // data[0].floor_plans_pdf = floor_plans_pdf;
+    // console.log("f  ", floor_plans_pdf);
+    console.log("yes");
+    data[0].floor_plans_pdf = floor_plans_pdf;
+
+    // data.push({ brochure: url });
   } else {
     console.log("yyyy");
   }
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("projects", batch);
+    csvWriter = csv_handler("projects_Waterfront", batch);
   }
 
   csvWriter
