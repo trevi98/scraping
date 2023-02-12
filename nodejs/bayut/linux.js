@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const csv = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
+const request = require('request');
 
 function csv_handler (directory,batch){
   if (!fs.existsSync(directory)) {
@@ -255,6 +256,16 @@ async function main_loop(page,i){
         continue
       }
     }
+  }
+  if( i == 1 || i%10 == 0){
+    
+    let data = { message: `bayut ready buy page ${i}` };
+    request.post({ url: 'https://notifier.abdullatif-treifi.com/', form: data }, (err, res, body) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
   }
 
 }
