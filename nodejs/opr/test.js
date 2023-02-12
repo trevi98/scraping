@@ -114,23 +114,24 @@ async function run() {
     await page.click(
       "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
     );
+    await page.waitForSelector(".modal.nocolors.css156.active");
     await page.type(
-      " div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
+      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
       "John"
     );
     await page.type(
-      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div div.metahtml div.is-text div.input input[autocomplete='tel']",
+      ".modal.nocolors.css156.active .form-control[autocomplete='tel']",
       "+968509465823"
     );
     await page.type(
-      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='email']",
+      ".modal.nocolors.css156.active .form-control[autocomplete='email']",
       "jhon@jmail.com"
     );
 
     await page.evaluate(() => {
       document
         .querySelector(
-          "div.form1-cover div div.cont div.node.widget-button.widget div.button-wrapper button"
+          ".modal.nocolors.css156.active div.form1-cover div div.cont div.node.widget-button.widget div.button-wrapper button"
         )
         .click();
     });
