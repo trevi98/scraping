@@ -15,14 +15,15 @@ async function run() {
     let aaa = [];
     // .node.section-clear.section div.container.fullwidth div.cont div.node.widget-tabs.cr-tabs.widget div.metahtml div.tabs1-container.swiper-container.swiper-container-horizontal.swiper-container-autoheight div.tabs1-root div.swiper-wrapper div.swiper-slide
     let floor_plans = Array.from(
-      document.querySelectorAll("#fp .swiper-slide p a .fr-dib.fr-draggable")
+      document.querySelectorAll("#fp .swiper-slide p a .fr-dib.fr-draggable"),a=>a.src
     );
-    floor_plans.forEach((e) => {
-      aaa.push(e.src);
-    });
+    // floor_plans.forEach((e) => {
+    //   aaa.push(e.src);
+    //   // console.log(e.src)
+    // });
 
     return {
-      floor_plans: aaa,
+      floor_plans,
       s: floor_plans.length,
     };
   });
