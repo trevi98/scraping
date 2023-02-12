@@ -8,8 +8,12 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/offplan_driven${batch}.csv`,
-    header: [{ id: "title", title: "title" }],
+    path: `${directory}/area_guides_haus${batch}.csv`,
+    header: [
+      { id: "title", title: "title" },
+      { id: "about", title: "about" },
+      { id: "all", title: "all" },
+    ],
   });
 }
 
@@ -26,8 +30,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("offplan");
-let csvWriter = csv_handler("offplan", 1);
+let csvErrr = csv_error_handler("area_guides_haus");
+let csvWriter = csv_handler("area_guides_haus", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -36,31 +40,9 @@ let visit_err_record = 0;
 async function visit_each(link, page) {
   // await page.setCacheEnabled(false);
   await page.goto(link);
-  // await page.waitForNavigation();
-
-  // await page.click('._35b183c9._39b0d6c4');
-  // const element = await page.waitForSelector('._18c28cd2._277fb980');
   let data = [];
   data.push(
     await page.evaluate(async () => {
-      function extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(
-        elmnts,
-        key,
-        value_selector
-      ) {
-        let results = [];
-        let result = "";
-        try {
-          results = elmnts.filter((elmnt) => {
-            if (elmnt.textContent.includes(key)) return true;
-          });
-          result = results[0].querySelector(value_selector).textContent;
-        } catch (error) {
-          console.error(error);
-        }
-        return result;
-      }
-
       function clean(text) {
         try {
           return text
@@ -74,53 +56,61 @@ async function visit_each(link, page) {
         }
       }
 
-      function create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(
-        elmnts,
-        search_key,
-        key_selector,
-        value_selector
-      ) {
-        let results = elmnts.filter((elmnt) => {
-          if (elmnt.textContent.includes(search_key)) return true;
-        });
-        let result = [];
-        results.forEach((e) => {
-          let key = e.querySelector(key_selector).textContent;
-          let value = e.querySelector(value_selector).textContent;
-          result.push({ key, value });
-        });
-        return JSON.stringify(result);
-      }
-
-      function extract_text_from_pare_elements__section__(
-        elmnts,
-        search_key,
-        value_selector
-      ) {
-        results = "";
-        elmnts.forEach((t) => {
-          try {
+      let title = clean(
+        document.querySelector("div.intro-content h1").textContent
+      );
+      let about = clean(
+        document.querySelector(
+          "div.article-head div.introtext.row.js-animate-right div.col-sm-12 p"
+        ).textContent
+      );
+      let temp = Array.from(
+        document.querySelectorAll("div.article-entry div.row div.col-sm-6 > *")
+      );
+      let all_title = [];
+      let all_description = [];
+      for (let i = 0; i < temp.length; i++) {
+        if (
+          temp[i].innerHTML.startsWith("<strong") ||
+          temp[i].innerHTML.startsWith("<b>")
+        ) {
+          all_title.push(temp[i].textContent);
+          let results = "";
+          let s = i + 1;
+          while (s < temp.length) {
             if (
-              t
-                .querySelector(".container .projectHeading")
-                .textContent.includes(search_key)
-            ) {
-              results = clean(t.querySelector(value_selector).innerText);
+              temp[s].innerHTML.startsWith("<strong") ||
+              temp[s].innerHTML.startsWith("<b>")
+            )
+              break;
+            else {
+              results += temp[s].textContent;
+              s += 1;
+              continue;
             }
-          } catch (error) {
-            console.error(error);
           }
-        });
-        return results;
+          i = s - 1;
+          all_description.push(clean(results));
+        } else {
+          continue;
+        }
+      }
+      all = {};
+      for (let i = 0; i < all_description.length; i++) {
+        all[all_title[i]] = all_description[i];
       }
 
-      // function get_text_from_section_if
+      return {
+        title: title,
+        about: about,
+        all: all,
+      };
     })
   );
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("offplan", batch);
+    csvWriter = csv_handler("area_guides_haus", batch);
   }
 
   csvWriter
@@ -130,20 +120,21 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.providentestate.com/dubai-off-plan-properties.html/page/${i}`;
+  let target = `https://www.hausandhaus.com/living-in-dubai/area-guides?start=${i}`;
   if (i == 1) {
-    target = "https://www.providentestate.com/dubai-off-plan-properties.html";
+    target = "https://www.hausandhaus.com/living-in-dubai/area-guides?start=1";
   }
   console.log(target);
   await page.goto(target);
   const links = await page.evaluate(() => {
-    const anchors = Array.from(
+    let all = [];
+    let link = Array.from(
       document.querySelectorAll(
-        "#projects-row .project__image-wrap .project__link"
-      ),
-      (a) => a.href
+        "div.category-items div.container div.card-wrapper.infinite-item div.areaguide-item.card.card-secondary-alt.col-xs-12.col-md-6.js-animate-bottom div.card-image.image-hover-zoom a"
+      )
     );
-    let uniqe_links = [...new Set(anchors)];
+    link.forEach((e) => all.push(e.href));
+    let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
 
@@ -177,7 +168,9 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 1; i++) {
+  let i = 1;
+  let s = 1;
+  for (; i <= 20; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {
@@ -191,6 +184,8 @@ async function main() {
         continue;
       }
     }
+    i = s * 10 - 1;
+    s++;
   }
   await browser.close();
 }
