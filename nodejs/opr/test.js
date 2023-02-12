@@ -102,7 +102,6 @@ async function run() {
     };
   });
   console.log(links);
-
   //############### brochure #####################
   const exists = await page.evaluate(() => {
     return (
@@ -115,23 +114,24 @@ async function run() {
     await page.click(
       "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
     );
-    await page.waitForSelector(".modal6-root.is-active");
     await page.type(
-      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
+      " div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
       "John"
     );
     await page.type(
-      ".modal.nocolors.active .form-control[autocomplete='tel']",
+      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div div.metahtml div.is-text div.input input[autocomplete='tel']",
       "+968509465823"
     );
     await page.type(
-      ".modal.nocolors.active .form-control[autocomplete='email']",
+      "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='email']",
       "jhon@jmail.com"
     );
 
     await page.evaluate(() => {
       document
-        .querySelector(".modal.nocolors.active button:not(.modal6-close)")
+        .querySelector(
+          "div.form1-cover div div.cont div.node.widget-button.widget div.button-wrapper button"
+        )
         .click();
     });
     await page.waitForNavigation();
@@ -139,52 +139,9 @@ async function run() {
     console.log("yes");
     // data.push({brochure:url})
     console.log(brochure);
-    await page.goBack();
   } else {
     console.log("yyyy");
   }
-
-  // floor###########
-  const exists_plan_btn = await page.evaluate(() => {
-    return (
-      document.querySelector(
-        "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-      ) !== null
-    );
-  });
-  if (exists_plan_btn) {
-    await page.click(
-      "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-    );
-    await page.waitForSelector(".modal6-root.is-active");
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="name"]',
-      "John"
-    );
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="tel"]',
-      "+968509465823"
-    );
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="email"]',
-      "jhon@jmail.com"
-    );
-    await page.evaluate(() => {
-      document
-        .querySelector(".modal6-root.is-active button:not(.modal6-close)")
-        .click();
-    });
-    await page.waitForNavigation();
-    let floor_plans_pdf = await page.evaluate(() => document.location.href);
-    // data[0].floor_plans_pdf = floor_plans_pdf;
-    console.log("f  ", floor_plans_pdf);
-    console.log("yes");
-
-    // data.push({ brochure: url });
-  } else {
-    console.log("yyyy");
-  }
-
   await browser.close();
 }
 run();
