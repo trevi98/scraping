@@ -150,11 +150,27 @@ async function visit_each(link, page) {
       // function get_text_from_section_if
 
       let title = clean(document.querySelector("title").textContent);
-      price_payment = [];
+      let price_payment = [];
       let temp = document.querySelectorAll(
         "#header-menu-desktop ~ div.node.section-zero.section div.zero-layer-axis.lg-left.lg-bottom strong"
       );
       temp.forEach((e) => price_payment.push(e.textContent));
+      let price = "";
+      price_payment.forEach((e) =>
+        /AED/i.test(e) ? (price = e) : (price = "")
+      );
+      price_payment = price_payment.filter((e) => {
+        return e !== price;
+      });
+      let info = [];
+      price_payment.forEach((e) => {
+        if (/price/i.test(e)) {
+          let p = e;
+          info = a.filter((e) => {
+            return e !== p;
+          });
+        }
+      });
       let handover = Array.from(
         document.querySelectorAll(
           "#header-menu-desktop ~ div.node.section-zero.section div.zero-layer-axis.lg-center.lg-bottom strong"
@@ -200,97 +216,45 @@ async function visit_each(link, page) {
           "div#location.node.section-clear.section div.node.widget-grid.widget.xs-hidden div.grid.valign-middle.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-element.widget div.cont"
         )
       );
-      temp.forEach((e) => place.push(e.textContent));
-      payment_plan = [];
+      temp.forEach((e) => nearby_place.push(e.textContent));
+
+      let payment_plan = [];
       temp = document.querySelectorAll(
         "div#pp.node.section-clear.section div.container div.cont div.node.widget-grid.widget div.grid.valign-middle.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-element.widget div.cont"
       );
       temp.forEach((e) => payment_plan.push(e.textContent));
-      // let price = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Starting Price from','span.as_grid-params')
-      // let size = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Area from (sq. ft.)','span.as_grid-params')
-      // let available_units = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Available Units','span.as_grid-params')
-      // let handover = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .row.advRow.as_grid .as_grid-item")),'Handover','span.as_grid-params')
-      // let area = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Location','span.as_lits-params')
-      // let status = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Status','span.as_lits-params')
-      // let developer = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Developer','span.as_lits-params')
-      // let type = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Type','span.as_lits-params')
-      // let units = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(Array.from(document.querySelectorAll(".container .as_lits li")),'Units','span.as_lits-params')
-      // let entire_description = ""
-      // try{
-      //   entire_description = clean(Array.from(document.querySelectorAll(".contentSection.featureProjects"))[1].innerText)
+      aaa = [];
+      floor_plans = Array.from(
+        document.querySelectorAll(
+          "div#fb.node.section-clear.section div.container.fullwidth div.cont div.node.widget-tabs.cr-tabs.widget div.metahtml div.tabs1-container.swiper-container.swiper-container-horizontal.swiper-container-autoheight div.tabs1-root div.swiper-wrapper div.swiper-slide"
+        )
+      );
+      floor_plans.forEach((e) => aaa.push(e.textContent));
 
-      // }
-      // catch(error){
-      //   entire_description = ""
-      // }
-      // let amenities = []
-
-      // amenities = Array.from(document.querySelectorAll(".container .two-col-text .two-col-text-item.text-text ul li"),li => li.textContent)
-      // if(amenities.length == 0){
-
-      //   amenities = Array.from(document.querySelectorAll(".container .two-col-text ul li"),li => li.textContent)
-      // }
-      // if(amenities.length == 0){
-      //   amenities = Array.from(document.querySelectorAll(".container .two-col-text .two-col-text-item.grid-text ul li"),li => li.textContent)
-      // }
-      // if(amenities.length == 0){
-      //   amenities = Array.from(document.querySelectorAll(".container .two-col-text .two-col-text-item.video-text ul li"),li => li.textContent)
-      // }
-      // let floor_plans = []
-      // let temp = Array.from(document.querySelectorAll(".container.fp .fp__slider.fp-slider .fpSlider .owl-item:not(.cloned)"))
-      // temp.forEach(t => {
-      //   let items_container = t.querySelector(".fpSlider__col.fpSlider__col--desc")
-      //   let title = clean(items_container.querySelector(".fpSlider__desc-head").textContent)
-      //   let pares = Array.from(items_container.querySelectorAll('.fpSlider__desc-item'))
-      //   let type = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(pares,'Type','span')
-      //   let total_area = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(pares,'Total Area','span')
-      //   let starting_price = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(pares,'Starting Price','span')
-      //   let image = t.querySelector('.fpSlider__col.fpSlider__col--image img').getAttribute('data-src')
-      //   // console.log("!!!!")
-      //   // console.log(image)
-
-      //   floor_plans.push(JSON.stringify({title,type,total_area,starting_price,image}))
-
-      // })
-
-      // let images = Array.from(document.querySelectorAll(".gallerySlider__item img"),img=>img.getAttribute('data-src'))
-      // temp = Array.from(document.querySelectorAll('.container .row.advRow.as_grid .as_grid-cell.col-1'))
-      // payment_plan = create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(temp,'%','.as_grid-title','.as_grid-params')
-      // temp = Array.from(document.querySelectorAll(".contentSection.featureProjects"))
-      // x = extract_text_from_pare_elements__section__(temp,'Location','.container .two-col-text')
-      // economic_apeal = extract_text_from_pare_elements__section__(temp,'Economic Appeal','.container .textBlock.pd30.full')
-      // property_price = extract_text_from_pare_elements__section__(temp,'Property Prices','.container .textBlock.pd30.full')
-      // let faq = []
-      // temp = Array.from(document.querySelectorAll('.Faq .Faq_item'))
-      // temp.forEach(t => {
-      //   let q = clean(t.querySelector('.Faq_title').innerText)
-      //   let a = clean(t.querySelector('.Faq_answer').innerText)
-      //   faq.push({question:q,answer:a})
-      // })
+      let images = Array.from(
+        document.querySelectorAll(
+          ".node.section-clear.section div.container.fullwidth div.cont div.node.widget-tabs.cr-tabs.widget div.metahtml div.tabs1-root div.swiper-wrapper div.swiper-slide .cont-wrapper .gallery1-image.fancybox "
+        )
+      );
+      let all_images = [];
+      images.forEach((e) => {
+        all_images.push(e.href);
+      });
+      all_images = [...new Set(all_images)];
 
       return {
         title: title,
-
-        //   price: price,
-        //   size: size,
-        //   hand_over: handover,
-        //   available_units: available_units,
-        //   available_units: available_units,
-        //   description: entire_description,
-        //   amenities: amenities,
-        //   area:area,
-        //   status: status,
-        //   developer: developer,
-        //   type: type,
-        //   units: units,
-        //   floor_plans:floor_plans,
-        //   images:images,
-        //   payment_plan:payment_plan,
-        //   location:x,
-        //   economic_apeal:economic_apeal,
-        //   property_price:property_price,
-        //   faq:JSON.stringify(faq)
-        // price: price,
+        price: price,
+        info: info,
+        handover: handover,
+        overview_title: overview_title,
+        overview: overview,
+        about: about,
+        proprty_info: proprty_info,
+        location: location,
+        nearby_place: nearby_place,
+        payment_plan: payment_plan,
+        all_images: all_images,
       };
     })
   );
