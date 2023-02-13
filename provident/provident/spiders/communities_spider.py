@@ -52,17 +52,54 @@ class HausspiderSpider(scrapy.Spider):
         images = "N/A"
 
         title= response.css("div.col-sm-12.col-xs-12.col-lg-9.col-md-9.container-contentbar h1.development-header::text").get()   
+        arr=response.css('div.wpb_text_column.wpb_content_element  div.wpb_wrapper .DB_content *').extract()
+        if len(arr)==0:
+            arr=response.css('div.wpb_text_column.wpb_content_element  div.wpb_wrapper *').extract()   
+        all_titles=[]
+        all_des=[]
+        for i in range(len(arr)):
+            if (arr[i].startswith("<h3") or arr[i].startswith("<h5")) and "<img" not in arr[i]:
+                title1=BeautifulSoup(arr[i],"lxml").text
+                all_titles.append(title1)
+                s=i+1
+                result=""
+                while s<len(arr):
+                    if ((arr[s].startswith("<h3") or arr[s].startswith("<h5")) and "<img" not in arr[s]):
+                        break
+                    else:
+                        try:
+                            one=BeautifulSoup(arr[s],"lxml").text
+                        except:
+                            one=""    
+                        result+=one
+                        s+=1
+                        continue
+                result=result.replace("\n","").replace("\t","").replace("  ","").replace("\r","")    
+                all_des.append(result)
+                i=s    
+            else:
+                continue
+        all_content=[]
+        if len(all_titles)==len(all_des) and len(all_des)>0:        
+            for i in range(len(all_titles)):
+                all_content.append({all_titles[i]:all_des[i]})
+        else:
+            article=BeautifulSoup(response.css("article.dubai-developments.type-dubai-developments.status-publish.has-post-thumbnail.hentry .entry-content").get(),"lxml").text.replace("\n","").replace("\t","").replace("  ","").replace("\r","")   
+            if(len(article)>0):
+                all_content.append(article)
+                          
+
+
         
-        soup_description=response.css("article").get()    
-
-        description=BeautifulSoup(soup_description,"lxml").text.replace("\n","").replace("  ","").replace("\t","").replace("\r","")
        
-
+      
          
 
        
         items['title'] = title
-        items['description'] = description
+        items['all_content'] = all_content
 
         yield items
 
+# https://www.providentestate.com/dubai-developments/al-badaa-218.html
+# https://www.providentestate.com/dubai-developments/al-garhoud-231.html

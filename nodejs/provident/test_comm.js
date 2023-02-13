@@ -14,7 +14,7 @@ async function run() {
   const links = await page.evaluate(() => {
     let arr = Array.from(
       document.querySelectorAll(
-        "div.wpb_text_column.wpb_content_element  div.wpb_wrapper *"
+        "div.wpb_text_column.wpb_content_element  div.wpb_wrapper "
       )
     );
 

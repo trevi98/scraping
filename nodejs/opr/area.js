@@ -20,6 +20,7 @@ function csv_handler(directory, batch) {
       { id: "about", title: "about" },
       { id: "nearby_place", title: "nearby_place" },
       { id: "all_images", title: "all_images" },
+      { id: "images_sup", title: "images_sup" },
       { id: "signaturea", title: "signaturea" },
       { id: "all_content", title: "all_content" },
     ],
@@ -174,7 +175,16 @@ async function visit_each(link, page) {
       images.forEach((e) => {
         all_images.push(e.href);
       });
+      let images_sup = [];
+      let temp_img = document.querySelector(".bgnormal a img");
+      try {
+        images_sup.push(temp_img.src);
+      } catch (error) {}
       all_images = [...new Set(all_images)];
+      let cover_img = "";
+      try {
+        cover_img = document.querySelector(".node.layer.layer-image a img").src;
+      } catch (error) {}
       temp = Array.from(
         document.querySelectorAll(
           ".node.section-clear.section.font-text-opensanslight.font-header-opensanslight"
@@ -199,8 +209,6 @@ async function visit_each(link, page) {
           ".node.widget-text.cr-text.widget:not(.lg-hidden)"
         )
       );
-      // let al = [];
-      // temp.forEach((e) => al.push(e.innerHTML));
       let tit2 = "";
       let tit3 = "";
       for (let i = 0; i < temp.length; i++) {
@@ -376,6 +384,7 @@ async function visit_each(link, page) {
         about: about,
         nearby_place: nearby_place,
         all_images: all_images,
+        images_sup: images_sup,
         signaturea: Date.now(),
         all_content: all,
       };

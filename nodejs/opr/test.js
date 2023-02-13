@@ -198,6 +198,19 @@ async function run() {
         }
       }
     }
+    let images_sup = [];
+    let temp_img = document.querySelector(
+      ".node.widget-image.widget .bgimage.bg-cover"
+    );
+    try {
+      let bgImage = temp_img.style.backgroundImage;
+      console.log(bgImage);
+      images_sup.push(bgImage.slice(4, -1).replace(/"/g, ""));
+    } catch (error) {}
+    temp_img = document.querySelector(".bgnormal a img");
+    try {
+      images_sup.push(temp_img.src);
+    } catch (error) {}
 
     // .node.section-clear.section.font-text-opensanslight.font-header-opensanslight .node.widget-text.cr-text.widget h2
     // let title = document.querySelector("title").textContent;
@@ -288,6 +301,7 @@ async function run() {
 
     return {
       all: all,
+      images_sup: images_sup,
       // al: al,
       // le: al.length,
       // title: title,

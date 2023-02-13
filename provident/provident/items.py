@@ -51,5 +51,33 @@ class ProvRenItem(scrapy.Item):
 class provCoomItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
-    description = scrapy.Field()
+    all_content = scrapy.Field()
+
+
+class Premier_Finance_spiderItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    descriptionHome = scrapy.Field()
+    services = scrapy.Field()
+class Primestay_Holiday_spiderItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    descriptionHome = scrapy.Field()
+    in_holiday = scrapy.Field()
+    In_just_5_steps_you_can_start_earning_great_returns_with_short_term_rentals_of_your_property_investment = scrapy.Field()
+
+
+class Prism_Conveyance_spiderItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    descriptionHome = scrapy.Field()
+    services = scrapy.Field()
+    brochure = scrapy.Field()
+
+    
+class Second_Citizenship_spiderItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    descriptionHome = scrapy.Field()
+    Why_Plan_B_Advisory_Services = scrapy.Field()
     
