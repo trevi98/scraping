@@ -8,7 +8,7 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/projects_Waterfront${batch}.csv`,
+    path: `${directory}/Buy_Near_Golf_Course${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "price", title: "price" },
@@ -42,15 +42,15 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("opr_projects_Waterfrontprojects");
-let csvWriter = csv_handler("projects_Waterfront", 1);
+let csvErrr = csv_error_handler("Buy_Near_Golf_Course");
+let csvWriter = csv_handler("Buy_Near_Golf_Course", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
 async function visit_each(link, page) {
-  // console.log(link.types);
+  console.log(link.types);
   // await page.setCacheEnabled(false)
   await page.goto(link.link);
   // await page.waitForNavigation();
@@ -133,7 +133,6 @@ async function visit_each(link, page) {
       }
 
       // function get_text_from_section_if
-
       let title = "";
       try {
         title = clean(document.querySelector("title").textContent);
@@ -262,7 +261,7 @@ async function visit_each(link, page) {
       } catch (error) {}
 
       let images = Array.from(
-        document.querySelectorAll(".gallery1-image.fancybox ")
+        document.querySelectorAll(".gallery1-image.fancybox")
       );
       let all_images = [];
       images.forEach((e) => {
@@ -303,39 +302,37 @@ async function visit_each(link, page) {
     for (let f of floor) {
       await page.click(`#${f}`);
       floor_plans.push(
-        JSON.stringify(
-          await page.evaluate(() => {
-            let size = [];
-            let img = "";
-            let title = "";
-            try {
-              let size_all = Array.from(
-                document.querySelectorAll(
-                  "#fp .swiper-slide.swiper-slide-active .node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
-                )
-              );
-              size_all.forEach((e) => {
-                size.push(e.textContent);
-              });
-            } catch (error) {}
+        await page.evaluate(() => {
+          let size = [];
+          let img = "";
+          let title = "";
+          try {
+            let size_all = Array.from(
+              document.querySelectorAll(
+                "#fp .swiper-slide.swiper-slide-active .node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
+              )
+            );
+            size_all.forEach((e) => {
+              size.push(e.textContent);
+            });
+          } catch (error) {}
 
-            try {
-              img = document.querySelector(
-                "#fp .swiper-slide.swiper-slide-active a .fr-dib.fr-draggable"
-              ).src;
-            } catch (error) {}
-            try {
-              title = document.querySelector(
-                "#fp .swiper-slide.swiper-slide-active h3"
-              ).textContent;
-            } catch (error) {}
-            return {
-              title: title,
-              size: size,
-              img: img,
-            };
-          })
-        )
+          try {
+            img = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active a .fr-dib.fr-draggable"
+            ).src;
+          } catch (error) {}
+          try {
+            title = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active h3"
+            ).textContent;
+          } catch (error) {}
+          return {
+            title: title,
+            size: size,
+            img: img,
+          };
+        })
       );
     }
   }
@@ -438,7 +435,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("projects_Waterfront", batch);
+    csvWriter = csv_handler("Buy_Near_Golf_Course", batch);
   }
 
   csvWriter
@@ -448,7 +445,7 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = "https://opr.ae/projects/waterfront-properties-in-dubai";
+  let target = "https://opr.ae/projects/properties-near-golf-course-in-dubai";
   await page.goto(target);
   //   await page.waitForNavigation()
 
@@ -508,10 +505,10 @@ async function main() {
   const page = await browser.newPage();
   // let plans_data = {};
   try {
-    await main_loop(page, 4);
+    await main_loop(page, 2);
   } catch (error) {
     try {
-      await main_loop(page, 4);
+      await main_loop(page, 2);
     } catch (error) {
       console.error(error);
       // csvErrr.writeRecords({link:i,error:error})
