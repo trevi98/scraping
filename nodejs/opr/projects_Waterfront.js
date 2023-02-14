@@ -152,7 +152,7 @@ async function visit_each(link, page) {
       price_payment.forEach((e) => {
         if (/price/i.test(e)) {
           let p = e;
-          info = a.filter((e) => {
+          info = price_payment.filter((e) => {
             return e !== p;
           });
         }
@@ -327,7 +327,8 @@ async function visit_each(link, page) {
     console.log("yes");
     // data.push({brochure:url})
 
-    await page.goto(link);
+    // await page.waitForNavigation();
+    page.goBack();
     data[0].brochure = brochure;
   } else {
     console.log("yyyy");
@@ -335,6 +336,7 @@ async function visit_each(link, page) {
 
   // ----------- floor plan pdf  --------------
 
+  await page.waitForNavigation()
   const exists_plan_btn = await page.evaluate(() => {
     return (
       document.querySelector(
