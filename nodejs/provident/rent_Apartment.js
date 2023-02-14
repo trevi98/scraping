@@ -67,19 +67,28 @@ async function visit_each(link, page) {
       }
 
       let title = clean(document.querySelector(".page-title h1").textContent);
-      let price = clean(
-        document.querySelector("div.property-price  div").textContent
-      );
-      let location = clean(
-        document
-          .querySelector("div.page-title div.iw-heading-title h2 span")
-          .textContent.split("in")[1]
-      );
-      let developer = clean(
-        document.querySelector(
-          "aside#iwp-property-author-infomation-2 div.agent-info .agent-name"
-        ).textContent
-      );
+      let price = "";
+      try {
+        price = clean(
+          document.querySelector("div.property-price  div").textContent
+        );
+      } catch (error) {}
+      let location = "";
+      try {
+        location = clean(
+          document
+            .querySelector("div.page-title div.iw-heading-title h2 span")
+            .textContent.split("in")[1]
+        );
+      } catch (error) {}
+      let developer = "";
+      try {
+        developer = clean(
+          document.querySelector(
+            "aside#iwp-property-author-infomation-2 div.agent-info .agent-name"
+          ).textContent
+        );
+      } catch (error) {}
       let Property_Type = "";
       let Purpose = "";
       let Bedrooms = "";
@@ -92,29 +101,32 @@ async function visit_each(link, page) {
         )
       );
       for (let i = 0; i < temp.length; i++) {
-        if (temp[i].textContent.includes("Type")) {
+        if (/Type/i.test(temp[i].textContent)) {
           Property_Type = clean(temp[i].textContent.split(":")[1]);
         }
-        if (temp[i].textContent.includes("Purpose")) {
+        if (/Purpose/i.test(temp[i].textContent)) {
           Purpose = clean(temp[i].textContent.split(":")[1]);
         }
-        if (temp[i].textContent.includes("Bedroom")) {
+        if (/Bedroom/i.test(temp[i].textContent)) {
           Bedrooms = clean(temp[i].textContent.split(":")[1]);
         }
-        if (temp[i].textContent.includes("Bath")) {
+        if (/Bath/i.test(temp[i].textContent)) {
           Baths = clean(temp[i].textContent.split(":")[1]);
         }
-        if (temp[i].textContent.includes("ID")) {
+        if (/id/i.test(temp[i].textContent)) {
           Property_ID = clean(temp[i].textContent.split(":")[1]);
         }
-        if (temp[i].textContent.includes("Size")) {
+        if (/Size/i.test(temp[i].textContent)) {
           Area_Size = clean(temp[i].textContent.split(":")[1]);
         }
       }
-      let description = clean(
-        document.querySelector("div.iwp-single-property-description")
-          .textContent
-      );
+      let description = "";
+      try {
+        description = clean(
+          document.querySelector("div.iwp-single-property-description")
+            .textContent
+        );
+      } catch (error) {}
       let features = [];
       temp = Array.from(
         document.querySelectorAll(
@@ -122,7 +134,7 @@ async function visit_each(link, page) {
         )
       );
       temp.forEach((e) => {
-        features.push(e.textContent);
+        features.push(clean(e.textContent));
       });
       all = [];
       temp = Array.from(document.querySelectorAll("div.iwp-flexslider img"));

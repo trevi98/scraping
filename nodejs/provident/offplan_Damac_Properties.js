@@ -91,28 +91,28 @@ async function visit_each(link, page) {
       let Starting_Price = "";
       let Community = "";
       for (let i = 0; i < temp.length; i++) {
-        if (temp[i].textContent.includes("Down Payment")) {
+        if (/Down Payment/i.test(temp[i].textContent)) {
           Down_Payment = temp[i + 1].textContent;
         }
-        if (temp[i].textContent.includes("Location")) {
+        if (/Location/i.test(temp[i].textContent)) {
           Location = temp[i + 1].textContent;
         }
-        if (temp[i].textContent.includes("Bedrooms")) {
+        if (/Bedrooms/i.test(temp[i].textContent)) {
           Bedrooms = temp[i + 1].textContent;
         }
-        if (temp[i].textContent.includes("Area")) {
+        if (/Area/i.test(temp[i].textContent)) {
           Area = temp[i + 1].textContent;
         }
-        if (temp[i].textContent.includes("Type")) {
+        if (/Type/i.test(temp[i].textContent)) {
           Type = temp[i + 1].textContent;
         }
-        if (temp[i].textContent.includes("Completion")) {
+        if (/Completion/i.test(temp[i].textContent)) {
           Completion = temp[i + 1].textContent;
         }
-        if (temp[i].textContent.includes("Price")) {
+        if (/price/i.test(temp[i].textContent)) {
           Starting_Price = temp[i + 1].textContent;
         }
-        if (temp[i].textContent.includes("Community")) {
+        if (/Community/i.test(temp[i].textContent)) {
           Community = temp[i + 1].textContent;
         }
       }
@@ -134,37 +134,50 @@ async function visit_each(link, page) {
       temp = Array.from(document.querySelectorAll("div.wpb_wrapper"));
       temp.forEach((e) => {
         if (e.querySelector("h3") !== null) {
-          if (e.querySelector("h3").textContent.includes("Investment")) {
-            temp1 = e.querySelector(
-              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
-            );
-            temp2 = Array.from(temp1.querySelectorAll("li"));
-            temp2.forEach((e) => Investment.push(e.textContent));
-          }
           if (
-            e.querySelector("h3").textContent.includes("Exclusive Features")
+            /Investment/i.test(e.querySelector("h3").textContent) ||
+            /Investment/i.test(e.querySelector("h2").textContent)
           ) {
             temp1 = e.querySelector(
               "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
-            temp2.forEach((e) => Exclusive_Features.push(e.textContent));
+            temp2.forEach((e) => Investment.push(clean(e.textContent)));
           }
-          if (e.querySelector("h3").textContent.includes("Unit Sizes")) {
+          if (
+            /Exclusive Features/i.test(e.querySelector("h3").textContent) ||
+            /Exclusive Features/i.test(e.querySelector("h2").textContent)
+          ) {
+            temp1 = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+            );
+            temp2 = Array.from(temp1.querySelectorAll("li"));
+            temp2.forEach((e) => Exclusive_Features.push(clean(e.textContent)));
+          }
+          if (
+            /Unit Sizes/i.test(e.querySelector("h3").textContent) ||
+            /Unit Sizes/i.test(e.querySelector("h3").textContent)
+          ) {
             temp1 = e.querySelector(
               "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
             );
             temp2 = Array.from(temp1.querySelectorAll("p"));
-            temp2.forEach((e) => Unit_Sizes.push(e.textContent));
+            temp2.forEach((e) => Unit_Sizes.push(clean(e.textContent)));
           }
-          if (e.querySelector("h3").textContent.includes("Overview")) {
+          if (
+            /Overview/i.test(e.querySelector("h3").textContent) ||
+            /Overview/i.test(e.querySelector("h3").textContent)
+          ) {
             Overview = clean(
               e.querySelector(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
               ).textContent
             );
           }
-          if (e.querySelector("h3").textContent.includes("Gallery")) {
+          if (
+            /Gallery/i.test(e.querySelector("h3").textContent) ||
+            /Gallery/i.test(e.querySelector("h3").textContent)
+          ) {
             temp1 = Array.from(
               e.querySelectorAll(
                 "div.vc_grid-container-wrapper.vc_clearfix img"
@@ -172,16 +185,20 @@ async function visit_each(link, page) {
             );
             temp1.forEach((e) => images.push(e.src));
           }
-          if (e.querySelector("h3").textContent.includes("Video")) {
+          if (
+            /video/i.test(e.querySelector("h3").textContent) ||
+            /video/i.test(e.querySelector("h3").textContent)
+          ) {
             try {
               video = e.querySelector(
                 "div.fluid-width-video-wrapper iframe"
               ).src;
-            } catch (error) {
-              video = "";
-            }
+            } catch (error) {}
           }
-          if (e.querySelector("h3").textContent.includes("Payment Plan")) {
+          if (
+            /Payment Plan/i.test(e.querySelector("h3").textContent) ||
+            /Payment Plan/i.test(e.querySelector("h3").textContent)
+          ) {
             if (
               e.querySelector(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
@@ -191,41 +208,46 @@ async function visit_each(link, page) {
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
               );
               temp2 = Array.from(temp1.querySelectorAll("li"));
-              temp2.forEach((e) => Payment_Plan.push(e.textContent));
-              let temp = Array.from(
+              temp2.forEach((e) => Payment_Plan.push(clean(e.textContent)));
+              temp = Array.from(
                 e.querySelectorAll(
                   "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
                 )
               );
               temp.forEach((e) => {
-                if (e.textContent.includes("Handover")) {
+                if (/Handover/i.test(e.textContent)) {
                   handover = e.textContent.replaceAll("Handover:", "").trim();
                 }
               });
             } else {
               temp = Array.from(document.querySelectorAll("div.payment-plan"));
-              temp.forEach((e) => Payment_Plan.push(e.textContent));
+              temp.forEach((e) => Payment_Plan.push(clean(e.textContent)));
             }
           }
-          if (e.querySelector("h3").textContent.includes("Interiors")) {
+          if (
+            /Interiors/i.test(e.querySelector("h3").textContent) ||
+            /Interiors/i.test(e.querySelector("h3").textContent)
+          ) {
             Interiors = clean(
               e.querySelector(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
               ).textContent
             );
           }
-          if (e.querySelector("h3").textContent.includes("Amenities")) {
-            try {
-              Amenities_description = clean(
-                e.querySelector(
-                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-                ).textContent
-              );
-            } catch (error) {
-              Amenities_description = "";
-            }
+          if (
+            /Amenities/i.test(e.querySelector("h3").textContent) ||
+            /Amenities/i.test(e.querySelector("h3").textContent)
+          ) {
+            Amenities_description = clean(
+              e.querySelector(
+                "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+              ).textContent
+            );
           }
-          if (e.querySelector("h3").textContent.includes("Floor")) {
+          if (
+            /Floor/i.test(e.querySelector("h3").textContent) ||
+            /Floor/i.test(e.querySelector("h3").textContent)
+          ) {
             let images = Array.from(e.querySelectorAll("img"));
             images.forEach((e) => {
               floor_plan_images.push(e.src);
@@ -241,13 +263,8 @@ async function visit_each(link, page) {
         )
       );
       temp.forEach((e) => {
-        try {
-          Location_Map += e.textContent;
-        } catch (error) {
-          Location_Map = "";
-        }
+        Location_Map += clean(e.textContent);
       });
-      Location_Map = clean(Location_Map);
       try {
         Image_location_map = document.querySelector(
           "div#locationmap div.wpb_column.vc_column_container img"
@@ -262,13 +279,13 @@ async function visit_each(link, page) {
       for (let i = 0; i < temp.length; i++) {
         if (
           temp[i].querySelector("h3") !== null &&
-          temp[i].querySelector("h3").textContent.includes("Amenities")
+          /Amenities/i.test(temp[i].querySelector("h3").textContent)
         ) {
           all = Array.from(temp[i + 1].querySelectorAll("li"));
           break;
         }
       }
-      all.forEach((e) => Amenities_List.push(e.textContent));
+      all.forEach((e) => Amenities_List.push(clean(e.textContent)));
 
       return {
         title: title,

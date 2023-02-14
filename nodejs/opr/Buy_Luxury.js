@@ -8,7 +8,7 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/projects_Waterfront${batch}.csv`,
+    path: `${directory}/Buy_Luxury${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "price", title: "price" },
@@ -42,15 +42,15 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("opr_projects_Waterfrontprojects");
-let csvWriter = csv_handler("projects_Waterfront", 1);
+let csvErrr = csv_error_handler("Buy_Luxury");
+let csvWriter = csv_handler("Buy_Luxury", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
 async function visit_each(link, page) {
-  // console.log(link.types);
+  console.log(link.types);
   // await page.setCacheEnabled(false)
   await page.goto(link.link);
   // await page.waitForNavigation();
@@ -303,39 +303,37 @@ async function visit_each(link, page) {
     for (let f of floor) {
       await page.click(`#${f}`);
       floor_plans.push(
-        JSON.stringify(
-          await page.evaluate(() => {
-            let size = [];
-            let img = "";
-            let title = "";
-            try {
-              let size_all = Array.from(
-                document.querySelectorAll(
-                  "#fp .swiper-slide.swiper-slide-active .node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
-                )
-              );
-              size_all.forEach((e) => {
-                size.push(e.textContent);
-              });
-            } catch (error) {}
+        await page.evaluate(() => {
+          let size = [];
+          let img = "";
+          let title = "";
+          try {
+            let size_all = Array.from(
+              document.querySelectorAll(
+                "#fp .swiper-slide.swiper-slide-active .node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
+              )
+            );
+            size_all.forEach((e) => {
+              size.push(e.textContent);
+            });
+          } catch (error) {}
 
-            try {
-              img = document.querySelector(
-                "#fp .swiper-slide.swiper-slide-active a .fr-dib.fr-draggable"
-              ).src;
-            } catch (error) {}
-            try {
-              title = document.querySelector(
-                "#fp .swiper-slide.swiper-slide-active h3"
-              ).textContent;
-            } catch (error) {}
-            return {
-              title: title,
-              size: size,
-              img: img,
-            };
-          })
-        )
+          try {
+            img = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active a .fr-dib.fr-draggable"
+            ).src;
+          } catch (error) {}
+          try {
+            title = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active h3"
+            ).textContent;
+          } catch (error) {}
+          return {
+            title: title,
+            size: size,
+            img: img,
+          };
+        })
       );
     }
   }
@@ -383,11 +381,6 @@ async function visit_each(link, page) {
     console.log("yes");
     // data.push({brochure:url})
 
-<<<<<<< HEAD
-    // await page.waitForNavigation();
-    page.goBack();
-=======
->>>>>>> 74d7e7d4c3ded30ef80e08e3a7c730624931d883
     data[0].brochure = brochure;
   } else {
     console.log("yyyy");
@@ -395,49 +388,6 @@ async function visit_each(link, page) {
 
   // ----------- floor plan pdf  --------------
 
-<<<<<<< HEAD
-  await page.waitForNavigation()
-  const exists_plan_btn = await page.evaluate(() => {
-    return (
-      document.querySelector(
-        "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-      ) &&
-      /floor/i.test(
-        document.querySelector(
-          "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a span"
-        ).textContent
-      ) !== null
-    );
-  });
-  if (exists_plan_btn) {
-    await page.click(
-      "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-    );
-    await page.waitForSelector(".modal6-root.is-active");
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="name"]',
-      "John"
-    );
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="tel"]',
-      "+968509465823"
-    );
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="email"]',
-      "jhon@jmail.com"
-    );
-    await page.evaluate(() => {
-      document
-        .querySelector(".modal6-root.is-active button:not(.modal6-close)")
-        .click();
-    });
-    await page.waitForNavigation();
-    let floor_plans_pdf = await page.evaluate(() => document.location.href);
-    // data[0].floor_plans_pdf = floor_plans_pdf;
-    // console.log("f  ", floor_plans_pdf);
-    console.log("yes");
-    data[0].floor_plans_pdf = floor_plans_pdf;
-=======
   // const exists_plan_btn = await page.evaluate(() => {
   //   return (
   //     document.querySelector(
@@ -478,7 +428,6 @@ async function visit_each(link, page) {
   //   // console.log("f  ", floor_plans_pdf);
   //   console.log("yes");
   //   data[0].floor_plans_pdf = floor_plans_pdf;
->>>>>>> 74d7e7d4c3ded30ef80e08e3a7c730624931d883
 
   //   // data.push({ brochure: url });
   // } else {
@@ -487,7 +436,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("projects_Waterfront", batch);
+    csvWriter = csv_handler("Buy_Luxury", batch);
   }
 
   csvWriter
@@ -497,7 +446,7 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = "https://opr.ae/projects/waterfront-properties-in-dubai";
+  let target = "https://opr.ae/projects/luxury-properties-in-dubai";
   await page.goto(target);
   //   await page.waitForNavigation()
 
@@ -557,10 +506,10 @@ async function main() {
   const page = await browser.newPage();
   // let plans_data = {};
   try {
-    await main_loop(page, 4);
+    await main_loop(page, 5);
   } catch (error) {
     try {
-      await main_loop(page, 4);
+      await main_loop(page, 5);
     } catch (error) {
       console.error(error);
       // csvErrr.writeRecords({link:i,error:error})
