@@ -259,7 +259,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 1; i++) {
+  for (let i = 1; i <= 54; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {
@@ -268,7 +268,7 @@ async function main() {
       } catch (error) {
         csvErrr
           .writeRecords({ link: i, error: error })
-          .then(() => console.log("error logged"));
+          .then(() => console.log("error logged main"));
         continue;
       }
     }
