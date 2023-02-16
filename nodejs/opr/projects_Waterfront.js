@@ -12,6 +12,7 @@ function csv_handler(directory, batch) {
     header: [
       { id: "title", title: "title" },
       { id: "price", title: "price" },
+      { id: "type", title: "type" },
       { id: "info", title: "info" },
       { id: "handover", title: "handover" },
       { id: "overview_title", title: "overview_title" },
@@ -200,7 +201,7 @@ async function visit_each(link, page) {
       try {
         overview = clean(
           document.querySelector(
-            "#header-menu-desktop ~ div.node.section-zero.section div.zero-layer-axis.lg-left.lg-middle p"
+            "#header-menu-desktop ~ div.node.section-zero.section div.zero-layer-axis.lg-left.lg-middle"
           ).textContent
         );
       } catch (error) {}
@@ -302,16 +303,21 @@ async function visit_each(link, page) {
   if (floor.length > 0) {
     for (let f of floor) {
       await page.click(`#${f}`);
+      await page.waitForTimeout("700");
+      await page.waitForSelector("#fp .swiper-slide.swiper-slide-active");
       floor_plans.push(
         JSON.stringify(
           await page.evaluate(() => {
             let size = [];
             let img = "";
             let title = "";
+            let temp = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active"
+            );
             try {
               let size_all = Array.from(
-                document.querySelectorAll(
-                  "#fp .swiper-slide.swiper-slide-active .node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
+                temp.querySelectorAll(
+                  ".node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
                 )
               );
               size_all.forEach((e) => {
@@ -320,14 +326,10 @@ async function visit_each(link, page) {
             } catch (error) {}
 
             try {
-              img = document.querySelector(
-                "#fp .swiper-slide.swiper-slide-active a .fr-dib.fr-draggable"
-              ).src;
+              img = temp.querySelector(" a .fr-dib.fr-draggable").src;
             } catch (error) {}
             try {
-              title = document.querySelector(
-                "#fp .swiper-slide.swiper-slide-active h3"
-              ).textContent;
+              title = temp.querySelector("h3").textContent;
             } catch (error) {}
             return {
               title: title,
@@ -510,7 +512,7 @@ async function main_loop(page, i) {
   const links = await page.evaluate(() => {
     const items = Array.from(
       document.querySelectorAll(
-        ".node.section-clear.section.css88 .code #OffPlanListing #addListing .offPlanListing  .offPlanListing__item"
+        ".node.section-clear.section .code #OffPlanListing #addListing .offPlanListing  .offPlanListing__item"
       )
     );
     let anchors = [];

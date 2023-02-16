@@ -383,6 +383,7 @@ async function visit_each(link, page) {
         overview: overview,
         about: about,
         nearby_place: nearby_place,
+        cover_img: cover_img,
         all_images: all_images,
         images_sup: images_sup,
         signaturea: Date.now(),

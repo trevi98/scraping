@@ -2,12 +2,14 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
+const { on } = require("events");
+
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/offplan_Apartment${batch}.csv`,
+    path: `${directory}/offplan_apartment${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "images", title: "images" },
@@ -22,6 +24,7 @@ function csv_handler(directory, batch) {
       { id: "location", title: "location" },
       { id: "description", title: "description" },
       { id: "amenities", title: "amenities" },
+      { id: "payment_plan", title: "payment_plan" },
       { id: "floor_plan", title: "floor_plan" },
       { id: "signaturea", title: "signaturea" },
     ],
@@ -41,34 +44,38 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("offplan_Apartment");
-let csvWriter = csv_handler("offplan_Apartment", 1);
+let csvErrr = csv_error_handler("offplan_apartment");
+let csvWriter = csv_handler("offplan_apartment", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
-async function clean(text) {
-  try {
-    return text
-      .replace("\n", "")
-      .replace("\r", "")
-      .replace("\t", "")
-      .replace("  ", "");
-  } catch (error) {
-    return text;
-  }
-}
-
 async function visit_each(link, page) {
+  // await page.setCacheEnabled(false);
   await page.goto(link);
   let data = [];
   data.push(
     await page.evaluate(async () => {
+      function clean(text) {
+        try {
+          return text
+            .replaceAll("\n", "")
+            .replaceAll("\r", "")
+            .replaceAll("\t", "")
+            .replaceAll("  ", "")
+            .trim();
+        } catch (error) {
+          return text;
+        }
+      }
+
       let title = "";
       try {
-        title = document.title.split("|")[0];
-      } catch (error) {}
+        title = clean(document.title.split("|")[0]);
+      } catch (error) {
+        title = clean(document.title);
+      }
       let images = [];
       let temp = Array.from(document.querySelectorAll("._1rJE5wS3 img"));
       temp.forEach((e) => {
@@ -78,15 +85,17 @@ async function visit_each(link, page) {
       });
       let development = "";
       try {
-        development = document.querySelector("._1KmX3mFx").textContent;
+        development = clean(document.querySelector("._1KmX3mFx").textContent);
       } catch (error) {}
       let Completion = "";
       try {
-        Completion = document.querySelectorAll("._2n1p1Fk3 li")[1].textContent;
+        Completion = clean(
+          document.querySelectorAll("._2n1p1Fk3 li")[1].textContent
+        );
       } catch (error) {}
       let price = "";
       try {
-        price = document.querySelector("._2zZtS67d").textContent;
+        price = clean(document.querySelector("._2zZtS67d").textContent);
       } catch (error) {}
       temp = Array.from(document.querySelectorAll("._1-jqWgJk"));
       let per_Price = "";
@@ -101,7 +110,7 @@ async function visit_each(link, page) {
           key = e.querySelector("._1EKHXI5l").textContent;
         } catch (error) {}
         try {
-          valeu = e.querySelector("._1-htALWL").textContent;
+          valeu = clean(e.querySelector("._1-htALWL").textContent);
         } catch (error) {}
         if (!price && /price from/i.test(key)) {
           price = valeu;
@@ -124,17 +133,24 @@ async function visit_each(link, page) {
       });
       let location = "";
       try {
-        location = document.querySelector("._3XeJbDEl").textContent;
+        location = clean(document.querySelector("._3XeJbDEl").textContent);
       } catch (error) {}
       let description = "";
       try {
-        description = document.querySelector("._3RInl69y").textContent;
+        description = clean(document.querySelector("._3RInl69y").textContent);
       } catch (error) {}
       let amenities = [];
       temp = Array.from(document.querySelectorAll(".tFA-5K61"));
       temp.forEach((e) => {
         try {
-          amenities.push(e.textContent);
+          amenities.push(clean(e.textContent));
+        } catch (error) {}
+      });
+      let payment_plan = [];
+      temp = Array.from(document.querySelectorAll("._1Eg1bPle"));
+      temp.forEach((e) => {
+        try {
+          payment_plan.push(clean(e.textContent));
         } catch (error) {}
       });
       return {
@@ -151,11 +167,11 @@ async function visit_each(link, page) {
         location: location,
         description: description,
         amenities: amenities,
-        signaturea: new Date(),
+        payment_plan: payment_plan,
+        signaturea: Date.now(),
       };
     })
   );
-
   const exists = await page.evaluate(() => {
     return document.querySelector(".hKLeOaZw") !== null;
   });
@@ -164,44 +180,44 @@ async function visit_each(link, page) {
     await page.click(".hKLeOaZw");
     let number = await page.evaluate(() => {
       let number = document.querySelector("._1NQKGfgH").textContent;
-      return number.match(/(\d)/)[0];
+      return number.match(/(\d+)/)[0];
     });
-    console.log(number);
     let one = "";
     for (let i = 0; i < number - 1; i++) {
       await page.click("._2QSr25U5._3FXKQtgy .Gyj5GDoE._1aq7zO-I");
-      await page.waitForTimeout(700);
+      await page.waitForTimeout(600);
 
       one = await page.evaluate(() => {
-        if (document.querySelector("._1Hu9Ll0m") !== null) {
-          if (/floorplan/i.test(document.querySelector("._1Hu9Ll0m").src)) {
-            let title = "";
+        if (
+          document.querySelector("._1Hu9Ll0m") !== null &&
+          /floorplan/i.test(document.querySelector("._1Hu9Ll0m").src)
+        ) {
+          let title = "";
+          try {
+            title = document.querySelector("._1F-XLCtc").textContent;
+          } catch (error) {}
+          let temp = Array.from(
+            document.querySelectorAll(
+              "._3lqkaot7.SuVNGgcu._1KmjrEtq p:not(._1F-XLCtc)"
+            )
+          );
+          let all_content = {};
+          let i = 0;
+          for (; i < temp.length; ) {
             try {
-              title = document.querySelector("._1F-XLCtc").textContent;
+              all_content[temp[i].textContent] = temp[i + 1].textContent;
             } catch (error) {}
-            let temp = Array.from(
-              document.querySelectorAll(
-                "._3lqkaot7.SuVNGgcu._1KmjrEtq p:not(._1F-XLCtc)"
-              )
-            );
-            let all_content = {};
-            let i = 0;
-            for (; i < temp.length; ) {
-              try {
-                all_content[temp[i].textContent] = temp[i + 1].textContent;
-              } catch (error) {}
-              i += 2;
-            }
-            let img = "";
-            try {
-              img = document.querySelector("._1Hu9Ll0m").src;
-            } catch (error) {}
-            return {
-              title: title,
-              all_content: all_content,
-              img: img,
-            };
+            i += 2;
           }
+          let img = "";
+          try {
+            img = document.querySelector("._1Hu9Ll0m").src;
+          } catch (error) {}
+          return {
+            title: title,
+            all_content: all_content,
+            img: img,
+          };
         }
       });
       if (one) floor_plan.push(JSON.stringify(one));
@@ -209,10 +225,11 @@ async function visit_each(link, page) {
   } else {
     console.log("no");
   }
-  data[0].floor_plan.push(floor_plan);
+  data[0].floor_plan = floor_plan;
+
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("offplan_Apartment", batch);
+    csvWriter = csv_handler("offplan_apartment", batch);
   }
 
   csvWriter
@@ -222,15 +239,18 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.propertyfinder.ae/en/new-projects?location_id=1&page=${i}&property_type[]=1&q=Dubai&sort=-featured`;
+  let target = `https://www.propertyfinder.ae/en/new-projects?page=${i}&property_type[]=1&sort=-featured`;
+
   console.log(target);
   await page.goto(target);
   const links = await page.evaluate(() => {
-    const anchors = Array.from(
-      document.querySelectorAll("a._3CeWVKEE"),
-      (a) => a.href
-    );
-    let uniqe_links = [...new Set(anchors)];
+    let all = [];
+    let link = Array.from(document.querySelectorAll("a._3CeWVKEE"));
+    link.forEach((e) => {
+      let a = e.href;
+      all.push(a);
+    });
+    let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
 
@@ -241,10 +261,15 @@ async function main_loop(page, i) {
       try {
         await visit_each(link, page);
       } catch (err) {
-        csvErrr
-          .writeRecords({ link: link, error: err })
-          .then(() => console.log("error logged"));
-        continue;
+        try {
+          await visit_each(link, page);
+        } catch (error) {
+          console.error(error);
+          csvErrr
+            .writeRecords({ link: link, error: err })
+            .then(() => console.log("error logged main loop"));
+          continue;
+        }
       }
     }
   }
@@ -266,6 +291,7 @@ async function main() {
       try {
         await main_loop(page, i);
       } catch (error) {
+        console.error(error);
         csvErrr
           .writeRecords({ link: i, error: error })
           .then(() => console.log("error logged main"));

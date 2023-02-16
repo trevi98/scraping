@@ -459,7 +459,7 @@ async function main_loop(page, i) {
   const links = await page.evaluate(() => {
     const items = Array.from(
       document.querySelectorAll(
-        ".node.section-clear.section.css88 .code #OffPlanListing #addListing .offPlanListing  .offPlanListing__item"
+        ".node.section-clear.section .code #OffPlanListing #addListing .offPlanListing  .offPlanListing__item"
       )
     );
     let anchors = [];

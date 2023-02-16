@@ -80,4 +80,9 @@ class Second_Citizenship_spiderItem(scrapy.Item):
     title = scrapy.Field()
     descriptionHome = scrapy.Field()
     Why_Plan_B_Advisory_Services = scrapy.Field()
+
+class Real_Estate_spiderItem(scrapy.Item):
+    # define the fields for your item here like:
+    title = scrapy.Field()
+    all_content = scrapy.Field()
     
