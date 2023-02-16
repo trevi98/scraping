@@ -76,7 +76,7 @@ async function visit_each(link, page) {
         }
       }
 
-      let title = document.title;
+      let title = clean(document.title);
       let temp = Array.from(
         document.querySelectorAll(
           "div.wpb_column.vc_column_container.vc_col-sm-6 div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element div.wpb_wrapper div.table-responsive table#datatable1 tbody td "
@@ -92,28 +92,28 @@ async function visit_each(link, page) {
       let Community = "";
       for (let i = 0; i < temp.length; i++) {
         if (/Down Payment/i.test(temp[i].textContent)) {
-          Down_Payment = temp[i + 1].textContent;
+          Down_Payment = clean(temp[i + 1].textContent);
         }
         if (/Location/i.test(temp[i].textContent)) {
-          Location = temp[i + 1].textContent;
+          Location = clean(temp[i + 1].textContent);
         }
         if (/Bedrooms/i.test(temp[i].textContent)) {
-          Bedrooms = temp[i + 1].textContent;
+          Bedrooms = clean(temp[i + 1].textContent);
         }
         if (/Area/i.test(temp[i].textContent)) {
-          Area = temp[i + 1].textContent;
+          Area = clean(temp[i + 1].textContent);
         }
         if (/Type/i.test(temp[i].textContent)) {
-          Type = temp[i + 1].textContent;
+          Type = clean(temp[i + 1].textContent);
         }
         if (/Completion/i.test(temp[i].textContent)) {
-          Completion = temp[i + 1].textContent;
+          Completion = clean(temp[i + 1].textContent);
         }
         if (/price/i.test(temp[i].textContent)) {
-          Starting_Price = temp[i + 1].textContent;
+          Starting_Price = clean(temp[i + 1].textContent);
         }
         if (/Community/i.test(temp[i].textContent)) {
-          Community = temp[i + 1].textContent;
+          Community = clean(temp[i + 1].textContent);
         }
       }
       let Investment = [];
@@ -134,71 +134,78 @@ async function visit_each(link, page) {
       temp = Array.from(document.querySelectorAll("div.wpb_wrapper"));
       temp.forEach((e) => {
         if (e.querySelector("h3") !== null) {
-          if (
-            /Investment/i.test(e.querySelector("h3").textContent) ||
-            /Investment/i.test(e.querySelector("h2").textContent)
-          ) {
+          if (/Investment/i.test(e.querySelector("h3").textContent)) {
             temp1 = e.querySelector(
               "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
-            temp2.forEach((e) => Investment.push(clean(e.textContent)));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Investment.push(clean(temp));
+              }
+            });
           }
-          if (
-            /Exclusive Features/i.test(e.querySelector("h3").textContent) ||
-            /Exclusive Features/i.test(e.querySelector("h2").textContent)
-          ) {
+          if (/Exclusive Features/i.test(e.querySelector("h3").textContent)) {
             temp1 = e.querySelector(
               "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
-            temp2.forEach((e) => Exclusive_Features.push(clean(e.textContent)));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Exclusive_Features.push(clean(temp));
+              }
+            });
           }
-          if (
-            /Unit Sizes/i.test(e.querySelector("h3").textContent) ||
-            /Unit Sizes/i.test(e.querySelector("h3").textContent)
-          ) {
+          if (/Unit Sizes/i.test(e.querySelector("h3").textContent)) {
             temp1 = e.querySelector(
               "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
             );
             temp2 = Array.from(temp1.querySelectorAll("p"));
-            temp2.forEach((e) => Unit_Sizes.push(clean(e.textContent)));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Unit_Sizes.push(clean(temp));
+              }
+            });
           }
-          if (
-            /Overview/i.test(e.querySelector("h3").textContent) ||
-            /Overview/i.test(e.querySelector("h3").textContent)
-          ) {
+          if (/Overview/i.test(e.querySelector("h3").textContent)) {
             Overview = clean(
               e.querySelector(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
               ).textContent
             );
           }
-          if (
-            /Gallery/i.test(e.querySelector("h3").textContent) ||
-            /Gallery/i.test(e.querySelector("h3").textContent)
-          ) {
+          if (/Gallery/i.test(e.querySelector("h3").textContent)) {
             temp1 = Array.from(
               e.querySelectorAll(
                 "div.vc_grid-container-wrapper.vc_clearfix img"
               )
             );
-            temp1.forEach((e) => images.push(e.src));
+            temp1.forEach((e) => {
+              try {
+                temp = e.src;
+              } catch (error) {}
+              if (temp) {
+                images.push(temp);
+              }
+            });
           }
-          if (
-            /video/i.test(e.querySelector("h3").textContent) ||
-            /video/i.test(e.querySelector("h3").textContent)
-          ) {
+          if (/video/i.test(e.querySelector("h3").textContent)) {
             try {
               video = e.querySelector(
                 "div.fluid-width-video-wrapper iframe"
               ).src;
             } catch (error) {}
           }
-          if (
-            /Payment Plan/i.test(e.querySelector("h3").textContent) ||
-            /Payment Plan/i.test(e.querySelector("h3").textContent)
-          ) {
+          if (/Payment Plan/i.test(e.querySelector("h3").textContent)) {
             if (
               e.querySelector(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
@@ -208,7 +215,14 @@ async function visit_each(link, page) {
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
               );
               temp2 = Array.from(temp1.querySelectorAll("li"));
-              temp2.forEach((e) => Payment_Plan.push(clean(e.textContent)));
+              temp2.forEach((e) => {
+                try {
+                  temp = e.textContent;
+                } catch (error) {}
+                if (temp) {
+                  Payment_Plan.push(clean(temp));
+                }
+              });
               temp = Array.from(
                 e.querySelectorAll(
                   "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
@@ -221,33 +235,166 @@ async function visit_each(link, page) {
               });
             } else {
               temp = Array.from(document.querySelectorAll("div.payment-plan"));
-              temp.forEach((e) => Payment_Plan.push(clean(e.textContent)));
+              temp.forEach((e) => {
+                try {
+                  temp1 = e.textContent;
+                } catch (error) {}
+                if (temp1) {
+                  Payment_Plan.push(clean(temp1));
+                }
+              });
             }
           }
-          if (
-            /Interiors/i.test(e.querySelector("h3").textContent) ||
-            /Interiors/i.test(e.querySelector("h3").textContent)
-          ) {
-            Interiors = clean(
+          if (/Interiors/i.test(e.querySelector("h3").textContent)) {
+            try {
+              Interiors = clean(
+                e.querySelector(
+                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+                ).textContent
+              );
+            } catch (error) {}
+          }
+          if (/Amenities/i.test(e.querySelector("h3").textContent)) {
+            try {
+              Amenities_description = clean(
+                e.querySelector(
+                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+                ).textContent
+              );
+            } catch (error) {}
+          }
+          if (/Floor/i.test(e.querySelector("h3").textContent)) {
+            let images = Array.from(e.querySelectorAll("img"));
+            images.forEach((e) => {
+              floor_plan_images.push(e.src);
+            });
+            floor_plan_images = [...new Set(floor_plan_images)];
+          }
+        }
+        if (e.querySelector("h2") !== null) {
+          if (/Investment/i.test(e.querySelector("h2").textContent)) {
+            temp1 = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+            );
+            temp2 = Array.from(temp1.querySelectorAll("li"));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Investment.push(clean(temp));
+              }
+            });
+          }
+          if (/Exclusive Features/i.test(e.querySelector("h2").textContent)) {
+            temp1 = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+            );
+            temp2 = Array.from(temp1.querySelectorAll("li"));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Exclusive_Features.push(clean(temp));
+              }
+            });
+          }
+          if (/Unit Sizes/i.test(e.querySelector("h2").textContent)) {
+            temp1 = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+            );
+            temp2 = Array.from(temp1.querySelectorAll("p"));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Unit_Sizes.push(clean(temp));
+              }
+            });
+          }
+          if (/Overview/i.test(e.querySelector("h2").textContent)) {
+            Overview = clean(
               e.querySelector(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
               ).textContent
             );
           }
-          if (
-            /Amenities/i.test(e.querySelector("h3").textContent) ||
-            /Amenities/i.test(e.querySelector("h3").textContent)
-          ) {
-            Amenities_description = clean(
-              e.querySelector(
-                "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-              ).textContent
+          if (/Gallery/i.test(e.querySelector("h2").textContent)) {
+            temp1 = Array.from(
+              e.querySelectorAll(
+                "div.vc_grid-container-wrapper.vc_clearfix img"
+              )
             );
+            temp1.forEach((e) => images.push(e.src));
           }
-          if (
-            /Floor/i.test(e.querySelector("h3").textContent) ||
-            /Floor/i.test(e.querySelector("h3").textContent)
-          ) {
+          if (/video/i.test(e.querySelector("h2").textContent)) {
+            try {
+              video = e.querySelector(
+                "div.fluid-width-video-wrapper iframe"
+              ).src;
+            } catch (error) {}
+          }
+          if (/Payment Plan/i.test(e.querySelector("h2").textContent)) {
+            if (
+              e.querySelector(
+                "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+              ) !== null
+            ) {
+              temp1 = e.querySelector(
+                "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+              );
+              temp2 = Array.from(temp1.querySelectorAll("li"));
+              temp2.forEach((e) => {
+                try {
+                  temp = e.textContent;
+                } catch (error) {}
+                if (temp) {
+                  Payment_Plan.push(clean(temp));
+                }
+              });
+              temp = Array.from(
+                e.querySelectorAll(
+                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
+                )
+              );
+              temp.forEach((e) => {
+                if (/Handover/i.test(e.textContent)) {
+                  handover = e.textContent.replaceAll("Handover:", "").trim();
+                }
+              });
+            } else {
+              temp = Array.from(document.querySelectorAll("div.payment-plan"));
+              temp.forEach((e) => {
+                try {
+                  temp1 = e.textContent;
+                } catch (error) {}
+                if (temp1) {
+                  Payment_Plan.push(clean(temp1));
+                }
+              });
+            }
+          }
+          if (/Interiors/i.test(e.querySelector("h2").textContent)) {
+            try {
+              Interiors = clean(
+                e.querySelector(
+                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+                ).textContent
+              );
+            } catch (error) {}
+          }
+          if (/Amenities/i.test(e.querySelector("h2").textContent)) {
+            try {
+              Amenities_description = clean(
+                e.querySelector(
+                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+                ).textContent
+              );
+            } catch (error) {}
+          }
+          if (/Floor/i.test(e.querySelector("h2").textContent)) {
             let images = Array.from(e.querySelectorAll("img"));
             images.forEach((e) => {
               floor_plan_images.push(e.src);
@@ -263,7 +410,9 @@ async function visit_each(link, page) {
         )
       );
       temp.forEach((e) => {
-        Location_Map += clean(e.textContent);
+        try {
+          Location_Map += clean(e.textContent);
+        } catch (error) {}
       });
       try {
         Image_location_map = document.querySelector(
@@ -280,6 +429,13 @@ async function visit_each(link, page) {
         if (
           temp[i].querySelector("h3") !== null &&
           /Amenities/i.test(temp[i].querySelector("h3").textContent)
+        ) {
+          all = Array.from(temp[i + 1].querySelectorAll("li"));
+          break;
+        }
+        if (
+          temp[i].querySelector("h2") !== null &&
+          /Amenities/i.test(temp[i].querySelector("h2").textContent)
         ) {
           all = Array.from(temp[i + 1].querySelectorAll("li"));
           break;

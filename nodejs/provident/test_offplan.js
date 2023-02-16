@@ -9,10 +9,10 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.providentestate.com/dubai-offplan/all-seasons-damac-hills.html"
+    "https://www.providentestate.com/dubai-offplan/viewz-by-danube.html"
   );
   const links = await page.evaluate(() => {
-    let title = document.querySelector("vc_custom_heading");
+    let title = document.title;
     let temp = Array.from(
       document.querySelectorAll(
         "div.wpb_column.vc_column_container.vc_col-sm-6 div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element div.wpb_wrapper div.table-responsive table#datatable1 tbody td "
@@ -70,67 +70,72 @@ async function run() {
     temp = Array.from(document.querySelectorAll("div.wpb_wrapper"));
     temp.forEach((e) => {
       if (e.querySelector("h3") !== null) {
-        if (
-          /Investment/i.test(e.querySelector("h3").textContent) ||
-          /Investment/i.test(e.querySelector("h2").textContent)
-        ) {
+        if (/Investment/i.test(e.querySelector("h3").textContent)) {
           temp1 = e.querySelector(
             "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
           );
           temp2 = Array.from(temp1.querySelectorAll("li"));
-          temp2.forEach((e) => Investment.push(clean(e.textContent)));
+          temp2.forEach((e) => {
+            try {
+              temp = e.textContent;
+            } catch (error) {}
+            if (temp) {
+              Investment.push(temp);
+            }
+          });
         }
-        if (
-          /Exclusive Features/i.test(e.querySelector("h3").textContent) ||
-          /Exclusive Features/i.test(e.querySelector("h2").textContent)
-        ) {
+        if (/Exclusive Features/i.test(e.querySelector("h3").textContent)) {
           temp1 = e.querySelector(
             "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
           );
           temp2 = Array.from(temp1.querySelectorAll("li"));
-          temp2.forEach((e) => Exclusive_Features.push(clean(e.textContent)));
+          temp2.forEach((e) => {
+            try {
+              temp = e.textContent;
+            } catch (error) {}
+            if (temp) {
+              Exclusive_Features.push(temp);
+            }
+          });
         }
-        if (
-          /Unit Sizes/i.test(e.querySelector("h3").textContent) ||
-          /Unit Sizes/i.test(e.querySelector("h3").textContent)
-        ) {
+        if (/Unit Sizes/i.test(e.querySelector("h3").textContent)) {
           temp1 = e.querySelector(
             "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
           );
           temp2 = Array.from(temp1.querySelectorAll("p"));
-          temp2.forEach((e) => Unit_Sizes.push(clean(e.textContent)));
+          temp2.forEach((e) => {
+            try {
+              temp = e.textContent;
+            } catch (error) {}
+            if (temp) {
+              Unit_Sizes.push(temp);
+            }
+          });
         }
-        if (
-          /Overview/i.test(e.querySelector("h3").textContent) ||
-          /Overview/i.test(e.querySelector("h3").textContent)
-        ) {
-          Overview = clean(
-            e.querySelector(
-              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-            ).textContent
-          );
+        if (/Overview/i.test(e.querySelector("h3").textContent)) {
+          Overview = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+          ).textContent;
         }
-        if (
-          /Gallery/i.test(e.querySelector("h3").textContent) ||
-          /Gallery/i.test(e.querySelector("h3").textContent)
-        ) {
+        if (/Gallery/i.test(e.querySelector("h3").textContent)) {
           temp1 = Array.from(
             e.querySelectorAll("div.vc_grid-container-wrapper.vc_clearfix img")
           );
-          temp1.forEach((e) => images.push(e.src));
+          temp1.forEach((e) => {
+            try {
+              temp = e.src;
+            } catch (error) {}
+            if (temp) {
+              images.push(temp);
+            }
+          });
         }
-        if (
-          /video/i.test(e.querySelector("h3").textContent) ||
-          /video/i.test(e.querySelector("h3").textContent)
-        ) {
+        if (/video/i.test(e.querySelector("h3").textContent)) {
           try {
             video = e.querySelector("div.fluid-width-video-wrapper iframe").src;
           } catch (error) {}
         }
-        if (
-          /Payment Plan/i.test(e.querySelector("h3").textContent) ||
-          /Payment Plan/i.test(e.querySelector("h3").textContent)
-        ) {
+        if (/Payment Plan/i.test(e.querySelector("h3").textContent)) {
           if (
             e.querySelector(
               "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
@@ -140,7 +145,14 @@ async function run() {
               "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
-            temp2.forEach((e) => Payment_Plan.push(clean(e.textContent)));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Payment_Plan.push(temp);
+              }
+            });
             temp = Array.from(
               e.querySelectorAll(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
@@ -153,33 +165,146 @@ async function run() {
             });
           } else {
             temp = Array.from(document.querySelectorAll("div.payment-plan"));
-            temp.forEach((e) => Payment_Plan.push(clean(e.textContent)));
+            temp.forEach((e) => {
+              try {
+                temp1 = e.textContent;
+              } catch (error) {}
+              if (temp1) {
+                Payment_Plan.push(temp1);
+              }
+            });
           }
         }
-        if (
-          /Interiors/i.test(e.querySelector("h3").textContent) ||
-          /Interiors/i.test(e.querySelector("h3").textContent)
-        ) {
-          Interiors = clean(
-            e.querySelector(
-              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-            ).textContent
-          );
+        if (/Interiors/i.test(e.querySelector("h3").textContent)) {
+          Interiors = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+          ).textContent;
         }
-        if (
-          /Amenities/i.test(e.querySelector("h3").textContent) ||
-          /Amenities/i.test(e.querySelector("h3").textContent)
-        ) {
-          Amenities_description = clean(
-            e.querySelector(
-              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-            ).textContent
-          );
+        if (/Amenities/i.test(e.querySelector("h3").textContent)) {
+          Amenities_description = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+          ).textContent;
         }
-        if (
-          /Floor/i.test(e.querySelector("h3").textContent) ||
-          /Floor/i.test(e.querySelector("h3").textContent)
-        ) {
+        if (/Floor/i.test(e.querySelector("h3").textContent)) {
+          let images = Array.from(e.querySelectorAll("img"));
+          images.forEach((e) => {
+            floor_plan_images.push(e.src);
+          });
+          floor_plan_images = [...new Set(floor_plan_images)];
+        }
+      }
+      if (e.querySelector("h2") !== null) {
+        if (/Investment/i.test(e.querySelector("h2").textContent)) {
+          temp1 = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+          );
+          temp2 = Array.from(temp1.querySelectorAll("li"));
+          temp2.forEach((e) => {
+            try {
+              temp = e.textContent;
+            } catch (error) {}
+            if (temp) {
+              Investment.push(temp);
+            }
+          });
+        }
+        if (/Exclusive Features/i.test(e.querySelector("h2").textContent)) {
+          temp1 = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+          );
+          temp2 = Array.from(temp1.querySelectorAll("li"));
+          temp2.forEach((e) => {
+            try {
+              temp = e.textContent;
+            } catch (error) {}
+            if (temp) {
+              Exclusive_Features.push(temp);
+            }
+          });
+        }
+        if (/Unit Sizes/i.test(e.querySelector("h2").textContent)) {
+          temp1 = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+          );
+          temp2 = Array.from(temp1.querySelectorAll("p"));
+          temp2.forEach((e) => {
+            try {
+              temp = e.textContent;
+            } catch (error) {}
+            if (temp) {
+              Unit_Sizes.push(temp);
+            }
+          });
+        }
+        if (/Overview/i.test(e.querySelector("h2").textContent)) {
+          Overview = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+          ).textContent;
+        }
+        if (/Gallery/i.test(e.querySelector("h2").textContent)) {
+          temp1 = Array.from(
+            e.querySelectorAll("div.vc_grid-container-wrapper.vc_clearfix img")
+          );
+          temp1.forEach((e) => images.push(e.src));
+        }
+        if (/video/i.test(e.querySelector("h2").textContent)) {
+          try {
+            video = e.querySelector("div.fluid-width-video-wrapper iframe").src;
+          } catch (error) {}
+        }
+        if (/Payment Plan/i.test(e.querySelector("h2").textContent)) {
+          if (
+            e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+            ) !== null
+          ) {
+            temp1 = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+            );
+            temp2 = Array.from(temp1.querySelectorAll("li"));
+            temp2.forEach((e) => {
+              try {
+                temp = e.textContent;
+              } catch (error) {}
+              if (temp) {
+                Payment_Plan.push(temp);
+              }
+            });
+            temp = Array.from(
+              e.querySelectorAll(
+                "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
+              )
+            );
+            temp.forEach((e) => {
+              if (/Handover/i.test(e.textContent)) {
+                handover = e.textContent.replaceAll("Handover:", "").trim();
+              }
+            });
+          } else {
+            temp = Array.from(document.querySelectorAll("div.payment-plan"));
+            temp.forEach((e) => {
+              try {
+                temp1 = e.textContent;
+              } catch (error) {}
+              if (temp1) {
+                Payment_Plan.push(temp1);
+              }
+            });
+          }
+        }
+        if (/Interiors/i.test(e.querySelector("h2").textContent)) {
+          Interiors = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+          ).textContent;
+        }
+        if (/Amenities/i.test(e.querySelector("h2").textContent)) {
+          try {
+            Amenities_description = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+            ).textContent;
+          } catch (error) {}
+        }
+        if (/Floor/i.test(e.querySelector("h2").textContent)) {
           let images = Array.from(e.querySelectorAll("img"));
           images.forEach((e) => {
             floor_plan_images.push(e.src);
@@ -195,7 +320,9 @@ async function run() {
       )
     );
     temp.forEach((e) => {
-      Location_Map += clean(e.textContent);
+      try {
+        Location_Map += e.textContent;
+      } catch (error) {}
     });
     try {
       Image_location_map = document.querySelector(
@@ -216,8 +343,15 @@ async function run() {
         all = Array.from(temp[i + 1].querySelectorAll("li"));
         break;
       }
+      if (
+        temp[i].querySelector("h2") !== null &&
+        /Amenities/i.test(temp[i].querySelector("h2").textContent)
+      ) {
+        all = Array.from(temp[i + 1].querySelectorAll("li"));
+        break;
+      }
     }
-    all.forEach((e) => Amenities_List.push(clean(e.textContent)));
+    all.forEach((e) => Amenities_List.push(e.textContent));
 
     return {
       title: title,
@@ -261,20 +395,42 @@ async function run() {
   if (exists) {
     await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
     await page.waitForSelector(
-      'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]'
+      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
     );
-    await page.type(
-      'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]',
-      "John"
-    );
-    await page.type(
-      'div.modal-content div.modal-body.listing-form-7 form input[name="your-email"]',
-      "jhon@jmail.com"
-    );
-    await page.type(
-      'div.modal-content div.modal-body.listing-form-7 form textarea[name="your-message"]',
-      "Hello"
-    );
+    // await page.type(
+    //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]',
+    //   "John"
+    // );
+    // await page.type(
+    //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-email"]',
+    //   "jhon@jmail.com"
+    // );
+    // await page.type(
+    //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-phone"]',
+    //   "944331234"
+    // );
+    // await page.type(
+    //   'div.modal-content div.modal-body.listing-form-7 form textarea[name="your-message"]',
+    //   "Hello"
+    // );
+    await page.evaluate(() => {
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+      ).value = "John";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
+      ).value = "jhon@jmail.com";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
+      ).value = "944331234";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
+      ).value = "Hello";
+      // document.querySelector("div.modal-content div.modal-body.listing-form-7 div form input[type=submit]").click()
+    });
+    // await page.click(
+    //   "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    // );
     await page.evaluate(() => {
       document
         .querySelector(
@@ -283,13 +439,22 @@ async function run() {
         .click();
     });
     await page.waitForNavigation();
-    let brochure = await page.evaluate(() => document.location.href);
-    data[0].brochure = brochure;
+    // let brochure = await page.evaluate(() => document.location.href);
+    // const pages = await browser.pages();
+    // await page.waitForTarget((target) => target.url() !== page.url());
+    // const newPage = pages[pages.length - 1];
+    // console.log(await newPage.url());
+    if ((await browser.pages()).length !== 2) {
+      throw "unexpected number of tabs";
+    }
+    const otherPage = (await browser.pages())[1];
+    // data[0].brochure = brochure;
     // data.push({brochure:url})
-    console.log(brochure);
+    console.log(otherPage);
   } else {
     console.log("yyyy");
   }
   await browser.close();
+  await otherPage.close();
 }
 run();

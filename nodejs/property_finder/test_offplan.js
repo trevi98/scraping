@@ -9,7 +9,7 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.propertyfinder.ae/en/new-projects/damac-properties/a-luxury-hotel-and-residential-tower-next-to-sheikh-zayed-road-floors-15-to-25-host-a-selection-of-high-end-hotel-rooms-inspired-by-the-hollywood-studio"
+    "https://www.propertyfinder.ae/en/new-projects/emaar-properties/collective-2"
   );
   const links = await page.evaluate(() => {
     let title = "";
@@ -110,8 +110,9 @@ async function run() {
     await page.click(".hKLeOaZw");
     let number = await page.evaluate(() => {
       let number = document.querySelector("._1NQKGfgH").textContent;
-      return number.match(/(\d)/)[0];
+      return number.match(/(\d+)/)[0];
     });
+    console.log(number);
     let one = "";
     for (let i = 0; i < number - 1; i++) {
       await page.click("._2QSr25U5._3FXKQtgy .Gyj5GDoE._1aq7zO-I");
@@ -159,3 +160,5 @@ async function run() {
   await browser.close();
 }
 run();
+
+// a._3CeWVKEE

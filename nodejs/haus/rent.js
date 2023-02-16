@@ -62,9 +62,11 @@ async function visit_each(link, page) {
         }
       }
 
-      let title = document.querySelector(
-        "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading"
-      ).textContent;
+      let title = clean(
+        document.querySelector(
+          "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading"
+        ).textContent
+      );
       let images = [];
       let temp = Array.from(
         document.querySelectorAll("div.section-gallery.js-animate-top img")
@@ -77,13 +79,13 @@ async function visit_each(link, page) {
       temp = Array.from(document.querySelectorAll("ul.list-icons li"));
       temp.forEach((e) => {
         if (/Bedrooms/i.test(e.textContent)) {
-          bedrooms = e.querySelector("span").textContent;
+          bedrooms = clean(e.querySelector("span").textContent);
         }
         if (/Bathrooms/i.test(e.textContent)) {
-          bathrooms = e.querySelector("span").textContent;
+          bathrooms = clean(e.querySelector("span").textContent);
         }
         if (/Square/i.test(e.textContent)) {
-          area = e.querySelector("span").textContent;
+          area = clean(e.querySelector("span").textContent);
         }
       });
       let features = [];
@@ -92,16 +94,22 @@ async function visit_each(link, page) {
           "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-features ul li"
         )
       );
-      try {
-        temp.forEach((e) => features.push(e.textContent));
-      } catch (error) {
-        features = [];
-      }
+
+      let one = "";
+      temp.forEach((e) => {
+        try {
+          one = e.textContent;
+        } catch (error) {}
+        if (one) features.push(clean(one));
+      });
+
+      features = [];
+
       let price = document.querySelector(
         "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price"
       );
       try {
-        price = price.textContent;
+        price = clean(price.textContent);
       } catch (error) {
         price = "";
       }
@@ -119,9 +127,7 @@ async function visit_each(link, page) {
         if (/brochure/i.test(e.textContent)) {
           try {
             brochure = e.href;
-          } catch (error) {
-            brochure = "";
-          }
+          } catch (error) {}
         }
       });
       return {

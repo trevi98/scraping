@@ -11,10 +11,14 @@ async function run() {
   await page.goto(
     "https://www.binayah.com/dubai-projects/emaar-beachfront-apartments-sale-rent/"
   );
+  await page.waitForSelector(
+    ".vc_gitem-link.prettyphoto.vc-zone-link.vc-prettyphoto-link"
+  );
   const links = await page.evaluate(() => {
-    let title = document.querySelector(
-      ".wpb_column.vc_column_container.vc_col-sm-6 .wpb_wrapper h2.vc_custom_heading"
-    ).textContent;
+    let title = "";
+    try {
+      title = document.title;
+    } catch (error) {}
     let temp = Array.from(
       document.querySelectorAll("div#property-address-wrap ul li")
     );
@@ -61,6 +65,17 @@ async function run() {
         Completion_date = temp[i].querySelector("span").textContent;
       }
     }
+    let images = [];
+    temp = Array.from(
+      document.querySelectorAll(
+        ".vc_gitem-link.prettyphoto.vc-zone-link.vc-prettyphoto-link"
+      )
+    );
+    temp.forEach((e) => {
+      try {
+        images.push(e.href);
+      } catch (error) {}
+    });
     let about = "";
     let Amenities_description = "";
     let Amenities_list = [];
@@ -69,26 +84,35 @@ async function run() {
         ".wpb_text_column.wpb_content_element .wpb_wrapper"
       )[2].textContent;
     } catch (error) {}
-    temp = document.querySelectorAll(
-      "#property-description-wrap div.block-content-wrap div.vc_row.wpb_row.vc_row-fluid"
-    )[1];
     temp = Array.from(
       document.querySelectorAll(
-        "div.wpb_column.vc_column_container.vc_col-sm-12 div.vc_column-inner div.wpb_wrapper > *"
+        ".vc_row.wpb_row.vc_inner.vc_row-fluid.lists li"
       )
     );
-    let all = [];
-    temp.forEach((e) => all.push(e.innerHTML));
-    let req = /(Amenities|Nearby Attractions|Payment Plan|Size)/i;
-    for (let i = 0; i < all.length; i++) {
-      if (req.test(all[i])) {
-        if (/\bAmenities\b/i.test(all[i])) {
-            let s=i+1
-            if(req.test(all[s]))break
-            else{}
-        }
-      }
-    }
+    temp.forEach((e) => {
+      try {
+        Amenities_list.push(e.textContent);
+      } catch (error) {}
+    });
+    temp = document.querySelectorAll(
+      "#property-description-wrap div.block-content-wrap div.vc_row.wpb_row.vc_row-fluid"
+    )[4];
+    // for (let i = 0; i < array.length; i++) {
+    //   const element = array[i];
+    // }
+    // let all = [];
+    // temp.forEach((e) => all.push(e.innerHTML));
+    // let req = /(Amenities|Nearby Attractions|Payment Plan|Size)/i;
+    // for (let i = 0; i < all.length; i++) {
+    //   if (req.test(all[i])) {
+    //     if (/\bAmenities\b/i.test(all[i])) {
+    //       let s = i + 1;
+    //       if (req.test(all[s])) break;
+    //       else {
+    //       }
+    //     }
+    //   }
+    // }
 
     return {
       title: title,
@@ -103,8 +127,9 @@ async function run() {
       Downpayment: Downpayment,
       Completion_date: Completion_date,
       about: about,
-      all: all,
-      a: all.length,
+      images: images,
+      le: images.length,
+      Amenities_list: Amenities_list,
     };
   });
   console.log(links);

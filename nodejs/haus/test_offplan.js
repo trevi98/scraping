@@ -9,7 +9,7 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.hausandhaus.com/new-developments-details/studios-and-1-2-bedroom-apartments-for-sale-in-belmont-residences-by-ellington-properties/54687"
+    "https://www.hausandhaus.com/new-developments-details/1-2-3-bedroom-apartments-for-sale-in-district-one-residences-mbr-city-dubai/7654"
   );
   const links = await page.evaluate(() => {
     let title = document.querySelector(
@@ -87,20 +87,54 @@ async function run() {
     temp.forEach((e) => {
       Payment_Plan.push(e.textContent);
     });
+    temp = Array.from(
+      document.querySelectorAll(
+        ".section-description .description.col-md-12 .col-md-6"
+      )
+    );
+    let tr = "";
+    let Community = "";
+    let i = 0;
+    for (; i < temp.length; i++) {
+      if (
+        temp[i].querySelector("p") !== null ||
+        temp[i].querySelector("ul") !== null
+      ) {
+        try {
+          tr = temp[i].querySelector("strong").textContent;
+        } catch (error) {}
+        if (/Community/i.test(tr)) {
+          let s = i + 1;
+          let results = "";
+          while (s < temp.length) {
+            console.log(temp[s].querySelector("p").textContent.length);
+            if (temp[s].querySelector("p").textContent.length < 40) {
+              break;
+            }
+            results += temp[s].querySelector("p").textContent;
+          }
+          i = s - 1;
+          try {
+            Community = results;
+          } catch (error) {}
+        }
+      }
+    }
 
     return {
-      title: title,
-      project_title: project_title,
-      overview: overview,
-      brochure: brochure,
-      floor_plan_link: floor_plan_link,
-      price: price,
-      Location: Location,
-      completion_date: completion_date,
-      developer: developer,
-      develpment_type: develpment_type,
-      images: images,
-      Payment_Plan: Payment_Plan,
+      // title: title,
+      // project_title: project_title,
+      // overview: overview,
+      // brochure: brochure,
+      // floor_plan_link: floor_plan_link,
+      // price: price,
+      // Location: Location,
+      // completion_date: completion_date,
+      // developer: developer,
+      // develpment_type: develpment_type,
+      // images: images,
+      // Payment_Plan: Payment_Plan,
+      Community: Community,
     };
   });
   console.log(links);
