@@ -9,9 +9,10 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-al-barsha-al-barsha-south-maisan-residence-towers-9401742.html"
+    "https://www.propertyfinder.ae/en/plp/buy/villa-for-sale-dubai-arabian-ranches-alma-alma-1-9418024.html"
   );
   let images = [];
+  await page.waitForSelector;
   const exist = await page.evaluate(() => {
     return (
       document.querySelector(
@@ -29,30 +30,26 @@ async function run() {
     await page.click(
       ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
     );
-    images.push(
-      await page.evaluate(
-        () =>
-          document.querySelector(".gallery__img.progressive-image--loaded").src
-      )
-    );
-    // let temp=Array.from(document.querySelectorAll(""))
-    for (let i = 1; i < number + 1; i++) {
-      await page.waitForTimeout(10000);
+
+    for (let i = 0; i < number + 1; i++) {
       await page.evaluate(() =>
-        document.querySelectorAll(".modal-gallery__thumbnail-item")[i].click()
-      );
-      images.push(
-        await page.evaluate(
-          () =>
-            document.querySelectorAll(
-              ".gallery__img.progressive-image--loaded"
-            )[i].src
-        )
+        document.querySelector(".gallery__item").click()
       );
     }
+    images = await page.evaluate(() => {
+      let temp = Array.from(document.querySelectorAll(".gallery__item img "));
+      let imgs = [];
+      temp.forEach((e) => {
+        imgs.push(e.src);
+      });
+      return imgs;
+    });
   }
 
   console.log(images);
+  console.log(images.length);
+  console.log([...new Set(images)]);
+  console.log([...new Set(images)].length);
 
   await browser.close();
 }

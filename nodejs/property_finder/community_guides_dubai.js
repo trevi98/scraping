@@ -40,7 +40,7 @@ let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
-async function visit_each(link, page) {
+async function visit_each(link, page, cover) {
   // await page.setCacheEnabled(false);
   await page.goto(link);
   let data = [];
@@ -98,7 +98,7 @@ async function visit_each(link, page) {
       };
     })
   );
-  data[0].cover_image = link.cover_image;
+  data[0].cover_image = cover;
 
   if (j % 500 == 0) {
     batch++;
@@ -115,6 +115,9 @@ async function main_loop(page, i) {
   let target = `https://www.propertyfinder.ae/en/community-guides/dubai`;
   console.log(target);
   await page.goto(target);
+  await page.waitForSelector(
+    ".card-community__image.progressive-image--loaded"
+  );
   const links = await page.evaluate(() => {
     const items = Array.from(document.querySelectorAll(".card-community"));
     let anchors = [];
@@ -129,20 +132,24 @@ async function main_loop(page, i) {
     let uniqe_links = [...new Set(anchors)];
     return uniqe_links;
   });
+  // console.log(links.link);
+  for (const link of links) {
+    console.log(link.link);
+  }
 
   for (const link of links) {
     try {
       await visit_each(link, page);
     } catch (error) {
       try {
-        await visit_each(link, page);
+        await visit_each(link.link, page, link.cover_image);
       } catch (err) {
         try {
-          await visit_each(link, page);
+          await visit_each(link.link, page, link.cover_image);
         } catch (error) {
           console.error(error);
           csvErrr
-            .writeRecords({ link: link, error: err })
+            .writeRecords({ link: link.link, error: err })
             .then(() => console.log("error logged main loop"));
           continue;
         }
@@ -160,7 +167,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 4000; i++) {
+  for (let i = 1; i <= 1; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

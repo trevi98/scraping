@@ -34,6 +34,7 @@ function csv_handler(directory, batch) {
       { id: "Broker_ORN", title: "Broker_ORN" },
       { id: "Ownership", title: "Ownership" },
       { id: "Property_age", title: "Property_age" },
+      { id: "images", title: "images" },
     ],
   });
 }
@@ -261,7 +262,40 @@ async function visit_each(link, page) {
       };
     })
   );
+  let images = [];
+  const exist = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
+      ) !== null
+    );
+  });
+  if (exist) {
+    let number = await page.evaluate(() => {
+      let number = document.querySelector(
+        ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
+      ).textContent;
+      return number.match(/(\d+)/)[0];
+    });
+    await page.click(
+      ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
+    );
 
+    for (let i = 0; i < number + 1; i++) {
+      await page.evaluate(() =>
+        document.querySelector(".gallery__item").click()
+      );
+    }
+    images = await page.evaluate(() => {
+      let temp = Array.from(document.querySelectorAll(".gallery__item img "));
+      let imgs = [];
+      temp.forEach((e) => {
+        imgs.push(e.src);
+      });
+      return imgs;
+    });
+  }
+  data[0].images = images;
   if (j % 500 == 0) {
     batch++;
     csvWriter = csv_handler("buy", batch);
