@@ -25,6 +25,7 @@ function csv_handler(directory, batch) {
       { id: "images", title: "images" },
       { id: "floor_plans", title: "floor_plans" },
       { id: "brochure", title: "brochure" },
+      { id: "floor_plans_pdf", title: "floor_plans_pdf" },
       { id: "signaturea", title: "signaturea" },
     ],
   });
@@ -54,6 +55,19 @@ async function visit_each(link, page) {
   // console.log(link.types);
   // await page.setCacheEnabled(false)
   await page.goto(link.link);
+
+  function clean(text) {
+    try {
+      return text
+        .replaceAll("\n", "")
+        .replaceAll("\r", "")
+        .replaceAll("\t", "")
+        .replaceAll("  ", "")
+        .trim();
+    } catch (error) {
+      return text;
+    }
+  }
   // await page.waitForNavigation();
   //   await page.deleteCookie({name:'hkd'})
 
@@ -78,19 +92,6 @@ async function visit_each(link, page) {
           console.error(error);
         }
         return result;
-      }
-
-      function clean(text) {
-        try {
-          return text
-            .replaceAll("\n", "")
-            .replaceAll("\r", "")
-            .replaceAll("\t", "")
-            .replaceAll("  ", "")
-            .trim();
-        } catch (error) {
-          return text;
-        }
       }
 
       function create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(
@@ -336,7 +337,7 @@ async function visit_each(link, page) {
                 )
               );
               size_all.forEach((e) => {
-                size.push(e.textContent);
+                size.push(clean(e.textContent));
               });
             } catch (error) {}
 
@@ -344,7 +345,7 @@ async function visit_each(link, page) {
               img = temp.querySelector(" a .fr-dib.fr-draggable").src;
             } catch (error) {}
             try {
-              title = temp.querySelector("h3").textContent;
+              title = clean(temp.querySelector("h3").textContent);
             } catch (error) {}
             return {
               title: title,
@@ -401,57 +402,53 @@ async function visit_each(link, page) {
     // data.push({brochure:url})
 
     data[0].brochure = brochure;
+    await page.goto(link.link);
   } else {
     console.log("yyyy");
   }
 
   // ----------- floor plan pdf  --------------
 
-  // const exists_plan_btn = await page.evaluate(() => {
-  //   return (
-  //     document.querySelector(
-  //       "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-  //     ) &&
-  //     /floor/i.test(
-  //       document.querySelector(
-  //         "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a span"
-  //       ).textContent
-  //     ) !== null
-  //   );
-  // });
-  // if (exists_plan_btn) {
-  //   await page.click(
-  //     "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-  //   );
-  //   await page.waitForSelector(".modal6-root.is-active");
-  //   await page.type(
-  //     '.modal6-root.is-active div.input input[autocomplete="name"]',
-  //     "John"
-  //   );
-  //   await page.type(
-  //     '.modal6-root.is-active div.input input[autocomplete="tel"]',
-  //     "+968509465823"
-  //   );
-  //   await page.type(
-  //     '.modal6-root.is-active div.input input[autocomplete="email"]',
-  //     "jhon@jmail.com"
-  //   );
-  //   await page.evaluate(() => {
-  //     document
-  //       .querySelector(".modal6-root.is-active button:not(.modal6-close)")
-  //       .click();
-  //   });
-  //   await page.waitForNavigation();
-  //   let floor_plans_pdf = await page.evaluate(() => document.location.href);
-  //   // data[0].floor_plans_pdf = floor_plans_pdf;
-  //   // console.log("f  ", floor_plans_pdf);
-  //   console.log("yes");
-  //   data[0].floor_plans_pdf = floor_plans_pdf;
+  const exists_plan_btn = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
+      ) !== null
+    );
+  });
+  if (exists_plan_btn) {
+    await page.click(
+      "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
+    );
+    await page.waitForSelector(".modal6-root.is-active");
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="name"]',
+      "John"
+    );
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="tel"]',
+      "+968509465823"
+    );
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="email"]',
+      "jhon@jmail.com"
+    );
+    await page.evaluate(() => {
+      document
+        .querySelector(".modal6-root.is-active button:not(.modal6-close)")
+        .click();
+    });
+    await page.waitForNavigation();
+    let floor_plans_pdf = await page.evaluate(() => document.location.href);
+    // data[0].floor_plans_pdf = floor_plans_pdf;
+    // console.log("f  ", floor_plans_pdf);
+    console.log("yes");
+    data[0].floor_plans_pdf = floor_plans_pdf;
 
-  //   // data.push({ brochure: url });
-  // } else {
-  //   console.log("yyyy");
-  // }
+    // data.push({ brochure: url });
+  } else {
+    console.log("yyyy");
+  }
 
   if (j % 500 == 0) {
     batch++;

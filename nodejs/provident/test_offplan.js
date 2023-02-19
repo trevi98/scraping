@@ -9,7 +9,7 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.providentestate.com/dubai-offplan/nad-al-sheba.html"
+    "https://www.providentestate.com/dubai-offplan/belair-the-trump-estate.html"
   );
   const links = await page.evaluate(() => {
     let title = document.title;
@@ -144,57 +144,59 @@ async function run() {
             video = e.querySelector("div.fluid-width-video-wrapper iframe").src;
           } catch (error) {}
         }
-        // if (/Payment Plan/i.test(e.querySelector("h3").textContent)) {
-        //   if (
-        //     e.querySelector(
-        //       "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
-        //     ) !== null
-        //   ) {
-        //     temp1 = e.querySelector(
-        //       "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
-        //     );
-        //     temp2 = Array.from(temp1.querySelectorAll("li"));
-        //     temp2.forEach((e) => {
-        //       let one = "";
-        //       try {
-        //         one = e.textContent;
-        //       } catch (error) {}
-        //       if (one) {
-        //         Payment_Plan.push(one);
-        //       }
-        //     });
-        //     let s = Array.from(
-        //       e.querySelectorAll(
-        //         "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
-        //       )
-        //     );
-        //     s.forEach((e) => {
-        //       if (/Handover/i.test(e.textContent)) {
-        //         handover = e.textContent.replaceAll("Handover:", "").trim();
-        //       }
-        //     });
-        //   } else {
-        //     temp1 = Array.from(document.querySelectorAll("div.payment-plan"));
-        //     temp1.forEach((e) => {
-        //       let one = "";
-        //       try {
-        //         one = e.textContent;
-        //       } catch (error) {}
-        //       if (one) {
-        //         Payment_Plan.push(one);
-        //       }
-        //     });
-        //   }
-        // }
+        if (/Payment Plan/i.test(e.querySelector("h3").textContent)) {
+          if (
+            e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+            ) !== null
+          ) {
+            temp1 = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+            );
+            temp2 = Array.from(temp1.querySelectorAll("li"));
+            temp2.forEach((e) => {
+              let one = "";
+              try {
+                one = e.textContent;
+              } catch (error) {}
+              if (one) {
+                Payment_Plan.push(one);
+              }
+            });
+            let s = Array.from(
+              e.querySelectorAll(
+                "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
+              )
+            );
+            s.forEach((e) => {
+              if (/Handover/i.test(e.textContent)) {
+                handover = e.textContent.replaceAll("Handover:", "").trim();
+              }
+            });
+          } else {
+            temp1 = Array.from(document.querySelectorAll("div.payment-plan"));
+            temp1.forEach((e) => {
+              let one = "";
+              try {
+                one = e.textContent;
+              } catch (error) {}
+              if (one) {
+                Payment_Plan.push(one);
+              }
+            });
+          }
+        }
         if (/Interiors/i.test(e.querySelector("h3").textContent)) {
           Interiors = e.querySelector(
             "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
           ).textContent;
         }
         if (/Amenities/i.test(e.querySelector("h3").textContent)) {
-          Amenities_description = e.querySelector(
-            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-          ).textContent;
+          try {
+            Amenities_description = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+            ).textContent;
+          } catch (error) {}
         }
         if (/Floor/i.test(e.querySelector("h3").textContent)) {
           let images = Array.from(e.querySelectorAll("img"));
@@ -485,3 +487,8 @@ async function run() {
   // await otherPage.close();
 }
 run();
+// https://www.providentestate.com/dubai-offplan/damac-lagoons.html
+
+// https://www.providentestate.com/dubai-offplan/nad-al-sheba.html
+
+// https://www.providentestate.com/dubai-offplan/belair-the-trump-estate.html

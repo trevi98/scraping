@@ -39,11 +39,27 @@ let visit_err_record = 0;
 async function visit_each(link, page) {
   await page.goto(link);
   let data = [];
+  function clean(text) {
+    try {
+      return text
+        .replaceAll("\n", "")
+        .replaceAll("\r", "")
+        .replaceAll("\t", "")
+        .replaceAll("  ", "")
+        .trim();
+    } catch (error) {
+      return text;
+    }
+  }
   data.push(
     await page.evaluate(async () => {
       let titles = [];
       let temp = Array.from(document.querySelectorAll("h2"));
-      temp.forEach((e) => titles.push(e.textContent));
+      temp.forEach((e) => {
+        try {
+          titles.push(clean(e.textContent));
+        } catch (error) {}
+      });
       let description = [];
       temp = Array.from(
         document.querySelectorAll(
@@ -51,14 +67,18 @@ async function visit_each(link, page) {
         )
       );
       temp.forEach((e) => {
-        description.push(e.textContent);
+        try {
+          description.push(clean(e.textContent));
+        } catch (error) {}
       });
       let list = [];
       temp = Array.from(
         document.querySelectorAll("div.node.widget-list.widget ul li")
       );
       temp.forEach((e) => {
-        list.push(e.textContent);
+        try {
+          list.push(clean(e.textContent));
+        } catch (error) {}
       });
       return {
         titles: titles,

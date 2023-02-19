@@ -48,16 +48,37 @@ let visit_err_record = 0;
 async function visit_each(link, page) {
   // await page.setCacheEnabled(false);
   await page.goto(link);
+  function clean(text) {
+    try {
+      return text
+        .replaceAll("\n", "")
+        .replaceAll("\r", "")
+        .replaceAll("\t", "")
+        .replaceAll("  ", "")
+        .trim();
+    } catch (error) {
+      return text;
+    }
+  }
   let data = [];
   data.push(
     await page.evaluate(async () => {
-      let qeustion = document.querySelector(
-        "div#header-menu-mobile ~ div.node.section-clear.section.menu2 div.node.widget-text.cr-text.widget.lg-hidden p.textable"
-      ).textContent;
-
-      let answer = document.querySelector(
-        "div.node.widget-text.cr-text.widget.links-on-black-text p"
-      ).textContent;
+      let qeustion = "";
+      try {
+        qeustion = clean(
+          document.querySelector(
+            "div#header-menu-mobile ~ div.node.section-clear.section.menu2 div.node.widget-text.cr-text.widget.lg-hidden p.textable"
+          ).textContent
+        );
+      } catch (error) {}
+      let answer = "";
+      try {
+        answer = clean(
+          document.querySelector(
+            "div.node.widget-text.cr-text.widget.links-on-black-text p"
+          ).textContent
+        );
+      } catch (error) {}
       return {
         qeustion: qeustion,
         answer: answer,

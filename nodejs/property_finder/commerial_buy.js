@@ -9,7 +9,7 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/buy${batch}.csv`,
+    path: `${directory}/commerial_buy${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "Property_type", title: "Property_type" },
@@ -53,8 +53,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("buy");
-let csvWriter = csv_handler("buy", 1);
+let csvErrr = csv_error_handler("commerial_buy");
+let csvWriter = csv_handler("commerial_buy", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -301,7 +301,7 @@ async function visit_each(link, page) {
   data[0].images = images;
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("buy", batch);
+    csvWriter = csv_handler("commerial_buy", batch);
   }
 
   csvWriter
@@ -311,9 +311,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.propertyfinder.ae/en/buy/properties-for-sale.html?page=${i}`;
+  let target = `https://www.propertyfinder.ae/en/search?c=3&ob=mr&page=${i}`;
   if (i == 1) {
-    target = "https://www.propertyfinder.ae/en/buy/properties-for-sale.html";
+    target = "https://www.propertyfinder.ae/en/search?c=3&ob=mr&page=1";
   }
   console.log(target);
   await page.goto(target);
@@ -358,7 +358,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 4000; i++) {
+  for (let i = 1; i <= 170; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {
