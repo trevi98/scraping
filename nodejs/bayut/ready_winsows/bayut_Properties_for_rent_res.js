@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
+const http = require('http');
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
@@ -320,6 +321,29 @@ async function main_loop(page, i) {
         continue;
       }
     }
+  }
+  if (i==1 || i%20 == 0){
+
+    const message = `bayut rent residential ${i}`
+    const options = {
+      hostname: 'https://profoundproject.com',
+      path: `/tele?message=${message}`,
+      method: 'GET'
+    };
+    
+    const req = http.request(options, res => {
+      console.log(`statusCode: ${res.statusCode}`);
+      
+      res.on('data', data => {
+        console.log(data.toString());
+      });
+    });
+    
+    req.on('error', error => {
+      console.error(error);
+    });
+    
+    req.end();
   }
 }
 

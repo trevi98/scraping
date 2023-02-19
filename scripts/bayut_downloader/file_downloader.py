@@ -1,8 +1,11 @@
 import urllib.request
 import os
+import requests
+
 class img_downloader():
 
     def download(url, signature, idd):
+        url = str(url)
         try:
         # User-Agent string
             user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
@@ -30,6 +33,8 @@ class img_downloader():
                 with open(f'./files/{new_name}', 'wb') as f:
                     f.write(s)
                     return new_name
-        except:
-            pass
+        except Exception as error:
+            print('error inside download function '+ url+' error: '+str(error))
+            requests.get('https://profoundproject.com/tele', {'message':'Error occured => error inside the download function '+ url+' Error: '+error})
+
 

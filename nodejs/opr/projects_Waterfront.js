@@ -385,11 +385,6 @@ async function visit_each(link, page) {
     console.log("yes");
     // data.push({brochure:url})
 
-<<<<<<< HEAD
-    // await page.waitForNavigation();
-    page.goBack();
-=======
->>>>>>> 74d7e7d4c3ded30ef80e08e3a7c730624931d883
     data[0].brochure = brochure;
   } else {
     console.log("yyyy");
@@ -397,49 +392,6 @@ async function visit_each(link, page) {
 
   // ----------- floor plan pdf  --------------
 
-<<<<<<< HEAD
-  await page.waitForNavigation()
-  const exists_plan_btn = await page.evaluate(() => {
-    return (
-      document.querySelector(
-        "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-      ) &&
-      /floor/i.test(
-        document.querySelector(
-          "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a span"
-        ).textContent
-      ) !== null
-    );
-  });
-  if (exists_plan_btn) {
-    await page.click(
-      "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-    );
-    await page.waitForSelector(".modal6-root.is-active");
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="name"]',
-      "John"
-    );
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="tel"]',
-      "+968509465823"
-    );
-    await page.type(
-      '.modal6-root.is-active div.input input[autocomplete="email"]',
-      "jhon@jmail.com"
-    );
-    await page.evaluate(() => {
-      document
-        .querySelector(".modal6-root.is-active button:not(.modal6-close)")
-        .click();
-    });
-    await page.waitForNavigation();
-    let floor_plans_pdf = await page.evaluate(() => document.location.href);
-    // data[0].floor_plans_pdf = floor_plans_pdf;
-    // console.log("f  ", floor_plans_pdf);
-    console.log("yes");
-    data[0].floor_plans_pdf = floor_plans_pdf;
-=======
   // const exists_plan_btn = await page.evaluate(() => {
   //   return (
   //     document.querySelector(
@@ -480,7 +432,6 @@ async function visit_each(link, page) {
   //   // console.log("f  ", floor_plans_pdf);
   //   console.log("yes");
   //   data[0].floor_plans_pdf = floor_plans_pdf;
->>>>>>> 74d7e7d4c3ded30ef80e08e3a7c730624931d883
 
   //   // data.push({ brochure: url });
   // } else {
