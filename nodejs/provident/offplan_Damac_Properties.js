@@ -426,20 +426,20 @@ async function visit_each(link, page) {
       );
       let all = [];
       for (let i = 0; i < temp.length; i++) {
-        if (
-          temp[i].querySelector("h3") !== null &&
-          /Amenities/i.test(temp[i].querySelector("h3").textContent)
-        ) {
-          all = Array.from(temp[i + 1].querySelectorAll("li"));
-          break;
-        }
-        if (
-          temp[i].querySelector("h2") !== null &&
-          /Amenities/i.test(temp[i].querySelector("h2").textContent)
-        ) {
-          all = Array.from(temp[i + 1].querySelectorAll("li"));
-          break;
-        }
+        if (temp[i].querySelector("h3") !== null)
+          if (/Amenities/i.test(temp[i].querySelector("h3").textContent)) {
+            {
+              all = Array.from(temp[i + 1].querySelectorAll("li"));
+              break;
+            }
+          }
+        if (temp[i].querySelector("h2") !== null)
+          if (/Amenities/i.test(temp[i].querySelector("h2").textContent)) {
+            {
+              all = Array.from(temp[i + 1].querySelectorAll("li"));
+              break;
+            }
+          }
       }
       all.forEach((e) => Amenities_List.push(clean(e.textContent)));
 

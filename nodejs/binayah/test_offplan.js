@@ -8,12 +8,8 @@ async function run() {
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
-  await page.goto(
-    "https://www.binayah.com/dubai-projects/emaar-beachfront-apartments-sale-rent/"
-  );
-  await page.waitForSelector(
-    ".vc_gitem-link.prettyphoto.vc-zone-link.vc-prettyphoto-link"
-  );
+  await page.goto("https://www.binayah.com/dubai-projects/jomana-mjl/");
+  // .vc_row.wpb_row.vc_inner.vc_row-fluid:not(.payment) .wpb_single_image.wpb_content_element.vc_align_center +.wpb_text_column.wpb_content_element;
   const links = await page.evaluate(() => {
     let title = "";
     try {
@@ -65,17 +61,6 @@ async function run() {
         Completion_date = temp[i].querySelector("span").textContent;
       }
     }
-    let images = [];
-    temp = Array.from(
-      document.querySelectorAll(
-        ".vc_gitem-link.prettyphoto.vc-zone-link.vc-prettyphoto-link"
-      )
-    );
-    temp.forEach((e) => {
-      try {
-        images.push(e.href);
-      } catch (error) {}
-    });
     let about = "";
     let Amenities_description = "";
     let Amenities_list = [];
@@ -95,25 +80,51 @@ async function run() {
       } catch (error) {}
     });
     temp = document.querySelectorAll(
-      "#property-description-wrap div.block-content-wrap div.vc_row.wpb_row.vc_row-fluid"
-    )[4];
+      "div.wpb_column.vc_column_container.vc_col-sm-3 div.wpb_single_image.wpb_content_element.vc_align_center + div.wpb_text_column.wpb_content_element strong"
+    );
+    let attractions = [];
+    temp.forEach((e) => {
+      try {
+        attractions.push(e.textContent);
+      } catch (error) {}
+    });
+    if (
+      document.querySelector(
+        ".wpb_text_column.wpb_content_element + .wpb_row.vc_inner.vc_row-fluid.lists"
+      ) !== null
+    ) {
+      try {
+        Amenities_description = document.querySelectorAll(
+          ".wpb_text_column.wpb_content_element .wpb_wrapper"
+        )[3].textContent;
+      } catch (error) {}
+    }
+    let video = "";
+    try {
+      video = document
+        .querySelector("div.rll-youtube-player")
+        .getAttribute("data-src");
+    } catch (error) {}
+    // temp = document.querySelectorAll(".vc_row.wpb_row.vc_row-fluid")[4];
+    // let all = Array.from(temp.querySelectorAll(">*"));
+    // let s = [];
+    // all.forEach((e) => s.push());
+    temp = Array.from(document.querySelectorAll(".wpb_wrapper"));
+    let floor_plans = {};
+    for (let i = 0; i < temp.length; i++) {
+      if (
+        temp[i].querySelector(".wpb_heading.wpb_singleimage_heading") !== null
+      ) {
+        try {
+          floor_plans[temp[i].textContent] =
+            temp[i].querySelector("figure img").src;
+        } catch (error) {}
+      }
+    }
+    all = [];
     // for (let i = 0; i < array.length; i++) {
     //   const element = array[i];
     // }
-    // let all = [];
-    // temp.forEach((e) => all.push(e.innerHTML));
-    // let req = /(Amenities|Nearby Attractions|Payment Plan|Size)/i;
-    // for (let i = 0; i < all.length; i++) {
-    //   if (req.test(all[i])) {
-    //     if (/\bAmenities\b/i.test(all[i])) {
-    //       let s = i + 1;
-    //       if (req.test(all[s])) break;
-    //       else {
-    //       }
-    //     }
-    //   }
-    // }
-
     return {
       title: title,
       Property_Type: Property_Type,
@@ -127,43 +138,53 @@ async function run() {
       Downpayment: Downpayment,
       Completion_date: Completion_date,
       about: about,
-      images: images,
-      le: images.length,
+      Amenities_description: Amenities_description,
       Amenities_list: Amenities_list,
+      attractions: attractions,
+      video: video,
+      floor_plans: floor_plans,
     };
   });
   console.log(links);
+  // .wpb_text_column.wpb_content_element.paymentplan
+
+  const exist = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn"
+      ) !== null
+    );
+  });
+  let images;
+  if (exist) {
+    await page.waitForSelector(
+      ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn .vc_grid-item.vc_clearfix.vc_visible-item.fadeIn.animated"
+    );
+    // await page.waitForTimeout(10000);
+    await page.click(
+      ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn .vc_grid-item.vc_clearfix.vc_visible-item.fadeIn.animated"
+    );
+    images = await page.evaluate(() => {
+      let imgs = [];
+      temp = Array.from(
+        document.querySelectorAll(
+          ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn a"
+        )
+      );
+      temp.forEach((e) => {
+        try {
+          imgs.push(e.href);
+        } catch (error) {}
+      });
+      return imgs;
+    });
+    console.log(images);
+    console.log(images.length);
+    console.log([...new Set(images)].length);
+  } else {
+    console.log("w");
+  }
 
   await browser.close();
 }
 run();
-// for (let i = 0; i < temp.length; i++) {
-//   if (
-//     temp[i].innerHTML.startsWith("<strong") ||
-//     temp[i].innerHTML.startsWith("<b>")
-//   ) {
-//     all_title.push(temp[i].textContent);
-//     let results = "";
-//     let s = i + 1;
-//     while (s < temp.length) {
-//       if (
-//         temp[s].innerHTML.startsWith("<strong") ||
-//         temp[s].innerHTML.startsWith("<b>")
-//       )
-//         break;
-//       else {
-//         results += temp[s].textContent;
-//         s += 1;
-//         continue;
-//       }
-//     }
-//     i = s - 1;
-//     all_description.push(results);
-//   } else {
-//     continue;
-//   }
-// }
-// all = {};
-// for (let i = 0; i < all_description.length; i++) {
-//   all[all_title[i]] = all_description[i];
-// }

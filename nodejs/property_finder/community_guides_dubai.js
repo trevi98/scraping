@@ -16,6 +16,7 @@ function csv_handler(directory, batch) {
       { id: "cover_image", title: "cover_image" },
       { id: "qeustions", title: "qeustions" },
       { id: "answers", title: "answers" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -95,6 +96,7 @@ async function visit_each(link, page, cover) {
         description: description,
         qeustions: qeustions,
         answers: answers,
+        signaturea: Date.now(),
       };
     })
   );
@@ -139,7 +141,7 @@ async function main_loop(page, i) {
 
   for (const link of links) {
     try {
-      await visit_each(link, page);
+      await visit_each(link.link, page, link.cover_image);
     } catch (error) {
       try {
         await visit_each(link.link, page, link.cover_image);

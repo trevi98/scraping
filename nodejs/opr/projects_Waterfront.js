@@ -22,7 +22,7 @@ function csv_handler(directory, batch) {
       { id: "location", title: "location" },
       { id: "nearby_place", title: "nearby_place" },
       { id: "payment_plan", title: "payment_plan" },
-      { id: "all_images", title: "all_images" },
+      { id: "images", title: "images" },
       { id: "floor_plans", title: "floor_plans" },
       { id: "brochure", title: "brochure" },
       { id: "signaturea", title: "signaturea" },
@@ -262,15 +262,6 @@ async function visit_each(link, page) {
         });
       } catch (error) {}
 
-      let images = Array.from(
-        document.querySelectorAll(".gallery1-image.fancybox ")
-      );
-      let all_images = [];
-      images.forEach((e) => {
-        all_images.push(e.href);
-      });
-      all_images = [...new Set(all_images)];
-
       return {
         title: title,
         price: price,
@@ -283,11 +274,35 @@ async function visit_each(link, page) {
         location: location,
         nearby_place: nearby_place,
         payment_plan: payment_plan,
-        all_images: all_images,
         signaturea: Date.now(),
       };
     })
   );
+
+  const exist_images = await page.evaluate(() => {
+    return (
+      document.querySelectorAll(".tabs1-pagination .tabs1-page ")[1] !== null
+    );
+  });
+  let images;
+  if (exist_images) {
+    await page.click(".tabs1-pagination> div:not(.is-active)");
+    images = await page.evaluate(() => {
+      let temp = Array.from(
+        document.querySelectorAll(".gallery1-image.fancybox")
+      );
+      let imgs = [];
+      temp.forEach((e) => {
+        try {
+          imgs.push(e.href.split(",")[0]);
+        } catch (error) {}
+      });
+      return imgs;
+    });
+  } else {
+    console.log("no images");
+  }
+  data[0].images = images;
 
   //------------- floor plan------
   const floor = await page.evaluate(() => {

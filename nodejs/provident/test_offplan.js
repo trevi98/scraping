@@ -9,7 +9,7 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.providentestate.com/dubai-offplan/viewz-by-danube.html"
+    "https://www.providentestate.com/dubai-offplan/nad-al-sheba.html"
   );
   const links = await page.evaluate(() => {
     let title = document.title;
@@ -69,6 +69,7 @@ async function run() {
     let temp1, temp2;
     temp = Array.from(document.querySelectorAll("div.wpb_wrapper"));
     temp.forEach((e) => {
+      //-------------h3-------------
       if (e.querySelector("h3") !== null) {
         if (/Investment/i.test(e.querySelector("h3").textContent)) {
           temp1 = e.querySelector(
@@ -76,11 +77,12 @@ async function run() {
           );
           temp2 = Array.from(temp1.querySelectorAll("li"));
           temp2.forEach((e) => {
+            let one = "";
             try {
-              temp = e.textContent;
+              one = e.textContent;
             } catch (error) {}
-            if (temp) {
-              Investment.push(temp);
+            if (one) {
+              Investment.push(one);
             }
           });
         }
@@ -90,11 +92,13 @@ async function run() {
           );
           temp2 = Array.from(temp1.querySelectorAll("li"));
           temp2.forEach((e) => {
+            let one = "";
+
             try {
-              temp = e.textContent;
+              one = e.textContent;
             } catch (error) {}
-            if (temp) {
-              Exclusive_Features.push(temp);
+            if (one) {
+              Exclusive_Features.push(one);
             }
           });
         }
@@ -104,29 +108,34 @@ async function run() {
           );
           temp2 = Array.from(temp1.querySelectorAll("p"));
           temp2.forEach((e) => {
+            let one = "";
             try {
-              temp = e.textContent;
+              one = e.textContent;
             } catch (error) {}
-            if (temp) {
-              Unit_Sizes.push(temp);
+            if (one) {
+              Unit_Sizes.push(one);
             }
           });
         }
         if (/Overview/i.test(e.querySelector("h3").textContent)) {
-          Overview = e.querySelector(
-            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-          ).textContent;
+          try {
+            Overview = e.querySelector(
+              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+            ).textContent;
+          } catch (error) {}
         }
         if (/Gallery/i.test(e.querySelector("h3").textContent)) {
           temp1 = Array.from(
             e.querySelectorAll("div.vc_grid-container-wrapper.vc_clearfix img")
           );
+
           temp1.forEach((e) => {
+            let one = "";
             try {
-              temp = e.src;
+              one = e.src;
             } catch (error) {}
-            if (temp) {
-              images.push(temp);
+            if (one) {
+              images.push(one);
             }
           });
         }
@@ -135,46 +144,48 @@ async function run() {
             video = e.querySelector("div.fluid-width-video-wrapper iframe").src;
           } catch (error) {}
         }
-        if (/Payment Plan/i.test(e.querySelector("h3").textContent)) {
-          if (
-            e.querySelector(
-              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
-            ) !== null
-          ) {
-            temp1 = e.querySelector(
-              "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
-            );
-            temp2 = Array.from(temp1.querySelectorAll("li"));
-            temp2.forEach((e) => {
-              try {
-                temp = e.textContent;
-              } catch (error) {}
-              if (temp) {
-                Payment_Plan.push(temp);
-              }
-            });
-            temp = Array.from(
-              e.querySelectorAll(
-                "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
-              )
-            );
-            temp.forEach((e) => {
-              if (/Handover/i.test(e.textContent)) {
-                handover = e.textContent.replaceAll("Handover:", "").trim();
-              }
-            });
-          } else {
-            temp = Array.from(document.querySelectorAll("div.payment-plan"));
-            temp.forEach((e) => {
-              try {
-                temp1 = e.textContent;
-              } catch (error) {}
-              if (temp1) {
-                Payment_Plan.push(temp1);
-              }
-            });
-          }
-        }
+        // if (/Payment Plan/i.test(e.querySelector("h3").textContent)) {
+        //   if (
+        //     e.querySelector(
+        //       "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+        //     ) !== null
+        //   ) {
+        //     temp1 = e.querySelector(
+        //       "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul"
+        //     );
+        //     temp2 = Array.from(temp1.querySelectorAll("li"));
+        //     temp2.forEach((e) => {
+        //       let one = "";
+        //       try {
+        //         one = e.textContent;
+        //       } catch (error) {}
+        //       if (one) {
+        //         Payment_Plan.push(one);
+        //       }
+        //     });
+        //     let s = Array.from(
+        //       e.querySelectorAll(
+        //         "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
+        //       )
+        //     );
+        //     s.forEach((e) => {
+        //       if (/Handover/i.test(e.textContent)) {
+        //         handover = e.textContent.replaceAll("Handover:", "").trim();
+        //       }
+        //     });
+        //   } else {
+        //     temp1 = Array.from(document.querySelectorAll("div.payment-plan"));
+        //     temp1.forEach((e) => {
+        //       let one = "";
+        //       try {
+        //         one = e.textContent;
+        //       } catch (error) {}
+        //       if (one) {
+        //         Payment_Plan.push(one);
+        //       }
+        //     });
+        //   }
+        // }
         if (/Interiors/i.test(e.querySelector("h3").textContent)) {
           Interiors = e.querySelector(
             "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
@@ -188,11 +199,14 @@ async function run() {
         if (/Floor/i.test(e.querySelector("h3").textContent)) {
           let images = Array.from(e.querySelectorAll("img"));
           images.forEach((e) => {
-            floor_plan_images.push(e.src);
+            try {
+              floor_plan_images.push(e.src);
+            } catch (error) {}
           });
           floor_plan_images = [...new Set(floor_plan_images)];
         }
       }
+      // ------------h2-------------
       if (e.querySelector("h2") !== null) {
         if (/Investment/i.test(e.querySelector("h2").textContent)) {
           temp1 = e.querySelector(
@@ -200,11 +214,12 @@ async function run() {
           );
           temp2 = Array.from(temp1.querySelectorAll("li"));
           temp2.forEach((e) => {
+            let one = "";
             try {
-              temp = e.textContent;
+              one = e.textContent;
             } catch (error) {}
-            if (temp) {
-              Investment.push(temp);
+            if (one) {
+              Investment.push(one);
             }
           });
         }
@@ -214,11 +229,13 @@ async function run() {
           );
           temp2 = Array.from(temp1.querySelectorAll("li"));
           temp2.forEach((e) => {
+            let one = "";
+
             try {
-              temp = e.textContent;
+              one = e.textContent;
             } catch (error) {}
-            if (temp) {
-              Exclusive_Features.push(temp);
+            if (one) {
+              Exclusive_Features.push(one);
             }
           });
         }
@@ -228,11 +245,12 @@ async function run() {
           );
           temp2 = Array.from(temp1.querySelectorAll("p"));
           temp2.forEach((e) => {
+            let one = "";
             try {
-              temp = e.textContent;
+              one = e.textContent;
             } catch (error) {}
-            if (temp) {
-              Unit_Sizes.push(temp);
+            if (one) {
+              Unit_Sizes.push(one);
             }
           });
         }
@@ -245,7 +263,16 @@ async function run() {
           temp1 = Array.from(
             e.querySelectorAll("div.vc_grid-container-wrapper.vc_clearfix img")
           );
-          temp1.forEach((e) => images.push(e.src));
+
+          temp1.forEach((e) => {
+            let one = "";
+            try {
+              one = e.src;
+            } catch (error) {}
+            if (one) {
+              images.push(one);
+            }
+          });
         }
         if (/video/i.test(e.querySelector("h2").textContent)) {
           try {
@@ -263,31 +290,33 @@ async function run() {
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
             temp2.forEach((e) => {
+              let one = "";
               try {
-                temp = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp) {
-                Payment_Plan.push(temp);
+              if (one) {
+                Payment_Plan.push(one);
               }
             });
-            temp = Array.from(
+            let s = Array.from(
               e.querySelectorAll(
                 "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
               )
             );
-            temp.forEach((e) => {
+            s.forEach((e) => {
               if (/Handover/i.test(e.textContent)) {
                 handover = e.textContent.replaceAll("Handover:", "").trim();
               }
             });
           } else {
-            temp = Array.from(document.querySelectorAll("div.payment-plan"));
-            temp.forEach((e) => {
+            temp1 = Array.from(document.querySelectorAll("div.payment-plan"));
+            temp1.forEach((e) => {
+              let one = "";
               try {
-                temp1 = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp1) {
-                Payment_Plan.push(temp1);
+              if (one) {
+                Payment_Plan.push(one);
               }
             });
           }
@@ -298,16 +327,16 @@ async function run() {
           ).textContent;
         }
         if (/Amenities/i.test(e.querySelector("h2").textContent)) {
-          try {
-            Amenities_description = e.querySelector(
-              "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-            ).textContent;
-          } catch (error) {}
+          Amenities_description = e.querySelector(
+            "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+          ).textContent;
         }
         if (/Floor/i.test(e.querySelector("h2").textContent)) {
           let images = Array.from(e.querySelectorAll("img"));
           images.forEach((e) => {
-            floor_plan_images.push(e.src);
+            try {
+              floor_plan_images.push(e.src);
+            } catch (error) {}
           });
           floor_plan_images = [...new Set(floor_plan_images)];
         }
@@ -336,19 +365,17 @@ async function run() {
     );
     let all = [];
     for (let i = 0; i < temp.length; i++) {
-      if (
-        temp[i].querySelector("h3") !== null &&
-        /Amenities/i.test(temp[i].querySelector("h3").textContent)
-      ) {
-        all = Array.from(temp[i + 1].querySelectorAll("li"));
-        break;
+      if (temp[i].querySelector("h3") !== null) {
+        if (/Amenities/i.test(temp[i].querySelector("h3").textContent)) {
+          all = Array.from(temp[i + 1].querySelectorAll("li"));
+          break;
+        }
       }
-      if (
-        temp[i].querySelector("h2") !== null &&
-        /Amenities/i.test(temp[i].querySelector("h2").textContent)
-      ) {
-        all = Array.from(temp[i + 1].querySelectorAll("li"));
-        break;
+      if (temp[i].querySelector("h2") !== null) {
+        if (/Amenities/i.test(temp[i].querySelector("h2").textContent)) {
+          all = Array.from(temp[i + 1].querySelectorAll("li"));
+          break;
+        }
       }
     }
     all.forEach((e) => Amenities_List.push(e.textContent));
@@ -382,79 +409,79 @@ async function run() {
   console.log(links);
 
   //#################### brochure#####################################
-  const exists = await page.evaluate(() => {
-    return (
-      document.querySelector(
-        "div.vc_btn3-container.download_btn.vc_btn3-center a"
-      ) !== null &&
-      document
-        .querySelector("div.vc_btn3-container.download_btn.vc_btn3-center a")
-        .textContent.includes("Brochure")
-    );
-  });
-  if (exists) {
-    await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
-    await page.waitForSelector(
-      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-    );
-    // await page.type(
-    //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]',
-    //   "John"
-    // );
-    // await page.type(
-    //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-email"]',
-    //   "jhon@jmail.com"
-    // );
-    // await page.type(
-    //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-phone"]',
-    //   "944331234"
-    // );
-    // await page.type(
-    //   'div.modal-content div.modal-body.listing-form-7 form textarea[name="your-message"]',
-    //   "Hello"
-    // );
-    await page.evaluate(() => {
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-      ).value = "John";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
-      ).value = "jhon@jmail.com";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
-      ).value = "944331234";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
-      ).value = "Hello";
-      // document.querySelector("div.modal-content div.modal-body.listing-form-7 div form input[type=submit]").click()
-    });
-    // await page.click(
-    //   "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-    // );
-    await page.evaluate(() => {
-      document
-        .querySelector(
-          "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-        )
-        .click();
-    });
-    await page.waitForNavigation();
-    // let brochure = await page.evaluate(() => document.location.href);
-    // const pages = await browser.pages();
-    // await page.waitForTarget((target) => target.url() !== page.url());
-    // const newPage = pages[pages.length - 1];
-    // console.log(await newPage.url());
-    if ((await browser.pages()).length !== 2) {
-      throw "unexpected number of tabs";
-    }
-    const otherPage = (await browser.pages())[1];
-    // data[0].brochure = brochure;
-    // data.push({brochure:url})
-    console.log(otherPage);
-  } else {
-    console.log("yyyy");
-  }
+  // const exists = await page.evaluate(() => {
+  //   return (
+  //     document.querySelector(
+  //       "div.vc_btn3-container.download_btn.vc_btn3-center a"
+  //     ) !== null &&
+  //     document
+  //       .querySelector("div.vc_btn3-container.download_btn.vc_btn3-center a")
+  //       .textContent.includes("Brochure")
+  //   );
+  // });
+  // if (exists) {
+  //   await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
+  //   await page.waitForSelector(
+  //     "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+  //   );
+  //   // await page.type(
+  //   //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]',
+  //   //   "John"
+  //   // );
+  //   // await page.type(
+  //   //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-email"]',
+  //   //   "jhon@jmail.com"
+  //   // );
+  //   // await page.type(
+  //   //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-phone"]',
+  //   //   "944331234"
+  //   // );
+  //   // await page.type(
+  //   //   'div.modal-content div.modal-body.listing-form-7 form textarea[name="your-message"]',
+  //   //   "Hello"
+  //   // );
+  //   await page.evaluate(() => {
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+  //     ).value = "John";
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
+  //     ).value = "jhon@jmail.com";
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
+  //     ).value = "944331234";
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
+  //     ).value = "Hello";
+  //     // document.querySelector("div.modal-content div.modal-body.listing-form-7 div form input[type=submit]").click()
+  //   });
+  //   // await page.click(
+  //   //   "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+  //   // );
+  //   await page.evaluate(() => {
+  //     document
+  //       .querySelector(
+  //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+  //       )
+  //       .click();
+  //   });
+  //   await page.waitForNavigation();
+  //   // let brochure = await page.evaluate(() => document.location.href);
+  //   // const pages = await browser.pages();
+  //   // await page.waitForTarget((target) => target.url() !== page.url());
+  //   // const newPage = pages[pages.length - 1];
+  //   // console.log(await newPage.url());
+  //   if ((await browser.pages()).length !== 2) {
+  //     throw "unexpected number of tabs";
+  //   }
+  //   const otherPage = (await browser.pages())[1];
+  //   // data[0].brochure = brochure;
+  //   // data.push({brochure:url})
+  //   console.log(otherPage);
+  // } else {
+  //   console.log("yyyy");
+  // }
   await browser.close();
-  await otherPage.close();
+  // await otherPage.close();
 }
 run();

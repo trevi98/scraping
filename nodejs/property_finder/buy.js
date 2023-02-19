@@ -35,6 +35,7 @@ function csv_handler(directory, batch) {
       { id: "Ownership", title: "Ownership" },
       { id: "Property_age", title: "Property_age" },
       { id: "images", title: "images" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -259,6 +260,7 @@ async function visit_each(link, page) {
         Agent_BRN: Agent_BRN,
         Broker_ORN: Broker_ORN,
         Ownership: Ownership,
+        signaturea: Date.now(),
       };
     })
   );

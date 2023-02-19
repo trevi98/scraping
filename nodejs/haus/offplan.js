@@ -11,28 +11,20 @@ function csv_handler(directory, batch) {
     path: `${directory}/offplan_Dubai_Properties${batch}.csv`,
     header: [
       { id: "title", title: "title" },
-      { id: "Down_Payment", title: "Down_Payment" },
+      { id: "project_title", title: "project_title" },
+      { id: "overview", title: "overview" },
+      { id: "brochure", title: "brochure" },
+      { id: "floor_plan_link", title: "floor_plan_link" },
+      { id: "price", title: "price" },
       { id: "Location", title: "Location" },
-      { id: "Bedrooms", title: "Bedrooms" },
-      { id: "Type", title: "Type" },
-      { id: "Area", title: "Area" },
-      { id: "Completion", title: "Completion" },
-      { id: "Starting_Price", title: "Starting_Price" },
-      { id: "Community", title: "Community" },
-      { id: "Investment_Highlights", title: "Investment_Highlights" },
-      { id: "Exclusive_Features", title: "Exclusive_Features" },
-      { id: "Unit_Sizes", title: "Unit_Sizes" },
-      { id: "Overview", title: "Overview" },
-      { id: "Payment_Plan", title: "Payment_Plan" },
-      { id: "Interiors", title: "Interiors" },
-      { id: "Amenities_description", title: "Amenities_description" },
-      { id: "Amenities_List", title: "Amenities_List" },
-      { id: "handover", title: "handover" },
-      { id: "Location_Map", title: "Location_Map" },
-      { id: "Image_location_map", title: "Image_location_map" },
+      { id: "completion_date", title: "completion_date" },
+      { id: "developer", title: "developer" },
+      { id: "develpment_type", title: "develpment_type" },
       { id: "images", title: "images" },
-      { id: "video", title: "video" },
-      { id: "floor_plan_images", title: "floor_plan_images" },
+      { id: "Payment_Plan", title: "Payment_Plan" },
+      { id: "Amenities", title: "Amenities" },
+      { id: "description", title: "description" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -151,6 +143,28 @@ async function visit_each(link, page) {
       temp.forEach((e) => {
         Payment_Plan.push(e.textContent);
       });
+      temp = Array.from(
+        document.querySelectorAll(
+          ".section-description .description.col-md-12 .col-md-6 > *"
+        )
+      );
+      let Amenities = [];
+      for (let i = 0; i < temp.length; i++) {
+        if (/Amenities/i.test(temp[i].textContent)) {
+          let one = Array.from(temp[i + 1].querySelectorAll("li"));
+          one.forEach((e) => {
+            try {
+              Amenities.push(e.textContent);
+            } catch (error) {}
+          });
+        }
+      }
+      let description = "";
+      try {
+        description = document.querySelector(
+          ".section-description .description.col-md-12 "
+        ).textContent;
+      } catch (error) {}
 
       return {
         title: title,
@@ -165,6 +179,9 @@ async function visit_each(link, page) {
         develpment_type: develpment_type,
         images: images,
         Payment_Plan: Payment_Plan,
+        Amenities: Amenities,
+        description: description,
+        signaturea: Date.now(),
       };
     })
   );
@@ -181,10 +198,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.providentestate.com/dubai-offplan/dubai-developer/dubai-properties/page-${i}`;
+  let target = `https://www.hausandhaus.com/new-developments/developments-of-properties-in-dubai/page-${i}`;
   if (i == 1) {
-    target =
-      "https://www.providentestate.com/dubai-offplan/dubai-developer/dubai-properties";
+    target = "https://www.hausandhaus.com/new-developments/properties-in-dubai";
   }
   console.log(target);
   await page.goto(target);

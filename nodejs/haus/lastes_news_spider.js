@@ -55,22 +55,31 @@ async function visit_each(link, page) {
           return text;
         }
       }
-
-      let title = clean(
-        document.querySelector("div.article-head h1").textContent
-      );
-      let about = clean(
-        document.querySelector(
-          "div.article-head div.introtext.row.js-animate-right div.col-sm-12 p"
-        ).textContent
-      );
+      let title = "";
+      try {
+        title = clean(
+          document.querySelector("div.article-head h1").textContent
+        );
+      } catch (error) {}
+      let about = "";
+      try {
+        about = clean(
+          document.querySelector(
+            "div.article-head div.introtext.row.js-animate-right div.col-sm-12 p"
+          ).textContent
+        );
+      } catch (error) {}
       let temp = Array.from(
         document.querySelectorAll(
           "div.article-body.remove-border.js-animate-left div.article-entry div.row div.col-sm-6 p"
         )
       );
-      let all_description = "";
-      temp.forEach((e) => (all_description += clean(e.textContent)));
+      let all_description = [];
+      temp.forEach((e) => {
+        try {
+          all_description.push(clean(e.textContent));
+        } catch (error) {}
+      });
 
       return {
         title: title,

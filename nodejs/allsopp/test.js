@@ -8,18 +8,21 @@ async function run() {
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
-  await page.goto("https://opr.ae/video-overviews");
+  await page.goto(
+    "https://www.binayah.com/apartment/sale/downtown-dubai/dubai/boulevard-point-apartment-for-sale-in-downtown-dubai-1-bedroom/"
+  );
   const links = await page.evaluate(() => {
-    let video = Array.from(
-      document.querySelectorAll("div.s-elements-cell iframe")
-    );
-    let s = [];
-    video.forEach((e) => s.push(e.src));
+    let title = "";
+    try {
+      title = document.title;
+    } catch (error) {}
+
     return {
-      video: s,
+      title: title,
     };
   });
   console.log(links);
+
   await browser.close();
 }
 run();

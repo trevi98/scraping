@@ -12,7 +12,9 @@ function csv_handler(directory, batch) {
     header: [
       { id: "title", title: "title" },
       { id: "about", title: "about" },
-      { id: "all", title: "all" },
+      { id: "description", title: "description" },
+      { id: "images", title: "images" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -55,55 +57,44 @@ async function visit_each(link, page) {
           return text;
         }
       }
-
-      let title = clean(
-        document.querySelector("div.intro-content h1").textContent
-      );
-      let about = clean(
-        document.querySelector(
-          "div.article-head div.introtext.row.js-animate-right div.col-sm-12 p"
-        ).textContent
-      );
+      let title = "";
+      title = clean(document.querySelector("div.intro-content h1").textContent);
+      let about = "";
+      try {
+        about = clean(
+          document.querySelector(
+            "div.article-head div.introtext.row.js-animate-right div.col-sm-12 p"
+          ).textContent
+        );
+      } catch (error) {}
       let temp = Array.from(
-        document.querySelectorAll("div.article-entry div.row div.col-sm-6 > *")
+        document.querySelectorAll(".article-entry div.col-sm-6 p")
       );
-      let all_title = [];
-      let all_description = [];
-      for (let i = 0; i < temp.length; i++) {
-        if (
-          temp[i].innerHTML.startsWith("<strong") ||
-          temp[i].innerHTML.startsWith("<b>")
-        ) {
-          all_title.push(temp[i].textContent);
-          let results = "";
-          let s = i + 1;
-          while (s < temp.length) {
-            if (
-              temp[s].innerHTML.startsWith("<strong") ||
-              temp[s].innerHTML.startsWith("<b>")
-            )
-              break;
-            else {
-              results += temp[s].textContent;
-              s += 1;
-              continue;
-            }
-          }
-          i = s - 1;
-          all_description.push(clean(results));
-        } else {
-          continue;
-        }
-      }
-      all = {};
-      for (let i = 0; i < all_description.length; i++) {
-        all[all_title[i]] = all_description[i];
-      }
+      let description = [];
+      temp.forEach((e) => {
+        let one = "";
+        try {
+          one = clean(e.textContent);
+        } catch (error) {}
+        if (one) description.push(one);
+      });
+
+      let images = [];
+      temp = Array.from(
+        document.querySelectorAll(".article-entry div.col-sm-6 img")
+      );
+      temp.forEach((e) => {
+        try {
+          images.push(e.src);
+        } catch (error) {}
+      });
 
       return {
         title: title,
         about: about,
-        all: all,
+        description: description,
+        images: images,
+        signaturea: Date.now(),
       };
     })
   );
