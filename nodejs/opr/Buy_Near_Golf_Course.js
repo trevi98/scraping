@@ -56,18 +56,6 @@ async function visit_each(link, page) {
   // await page.setCacheEnabled(false)
   await page.goto(link.link);
 
-  function clean(text) {
-    try {
-      return text
-        .replaceAll("\n", "")
-        .replaceAll("\r", "")
-        .replaceAll("\t", "")
-        .replaceAll("  ", "")
-        .trim();
-    } catch (error) {
-      return text;
-    }
-  }
   // await page.waitForNavigation();
   //   await page.deleteCookie({name:'hkd'})
 
@@ -76,6 +64,18 @@ async function visit_each(link, page) {
   let data = [];
   data.push(
     await page.evaluate(async () => {
+      function clean(text) {
+        try {
+          return text
+            .replaceAll("\n", "")
+            .replaceAll("\r", "")
+            .replaceAll("\t", "")
+            .replaceAll("  ", "")
+            .trim();
+        } catch (error) {
+          return text;
+        }
+      }
       function extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(
         elmnts,
         key,
@@ -282,15 +282,34 @@ async function visit_each(link, page) {
 
   const exist_images = await page.evaluate(() => {
     return (
-      document.querySelectorAll(".tabs1-pagination .tabs1-page ")[1] !== null
+      document.querySelector(
+        "#gallery .tabs1-pagination> div:not(.is-active) "
+      ) !== null
     );
   });
   let images;
   if (exist_images) {
-    await page.click(".tabs1-pagination> div:not(.is-active)");
+    await page.click("#gallery .tabs1-pagination> div:not(.is-active)");
     images = await page.evaluate(() => {
       let temp = Array.from(
-        document.querySelectorAll(".gallery1-image.fancybox")
+        document.querySelectorAll("#gallery .gallery1-image.fancybox")
+      );
+      let imgs = [];
+      temp.forEach((e) => {
+        try {
+          imgs.push(e.href.split(",")[0]);
+        } catch (error) {}
+      });
+      return imgs;
+    });
+  } else if (
+    await page.evaluate(() => {
+      document.querySelector("#gallery .gallery1-image.fancybox") !== null;
+    })
+  ) {
+    images = await page.evaluate(() => {
+      let temp = Array.from(
+        document.querySelectorAll("#gallery .gallery1-image.fancybox")
       );
       let imgs = [];
       temp.forEach((e) => {
@@ -324,6 +343,18 @@ async function visit_each(link, page) {
       floor_plans.push(
         JSON.stringify(
           await page.evaluate(() => {
+            function clean(text) {
+              try {
+                return text
+                  .replaceAll("\n", "")
+                  .replaceAll("\r", "")
+                  .replaceAll("\t", "")
+                  .replaceAll("  ", "")
+                  .trim();
+              } catch (error) {
+                return text;
+              }
+            }
             let size = [];
             let img = "";
             let title = "";

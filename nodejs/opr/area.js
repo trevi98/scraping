@@ -377,6 +377,8 @@ async function visit_each(link, page) {
           }
         }
       }
+      let all_content = [];
+      all_content.push(JSON.stringify(all));
 
       return {
         title: title,
@@ -391,11 +393,10 @@ async function visit_each(link, page) {
         all_images: all_images,
         images_sup: images_sup,
         signaturea: Date.now(),
-        all_content: all,
+        all_content: all_content,
       };
     })
   );
-  console.log(backgroundImage);
 
   if (j % 500 == 0) {
     batch++;
