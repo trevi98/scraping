@@ -264,7 +264,7 @@ async function visit_each(link, page) {
       );
       let all_images = [];
       images.forEach((e) => {
-        all_images.push(e.href);
+        all_images.push(e.href.split(",")[0]);
       });
       all_images = [...new Set(all_images)];
 

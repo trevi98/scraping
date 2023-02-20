@@ -19,6 +19,7 @@ function csv_handler(directory, batch) {
       { id: "price", title: "price" },
       { id: "overview", title: "overview" },
       { id: "brochure", title: "brochure" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -140,6 +141,7 @@ async function visit_each(link, page) {
         price: price,
         overview: overview,
         brochure: brochure,
+        signaturea: Date.now(),
       };
     })
   );

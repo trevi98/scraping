@@ -175,12 +175,22 @@ async function visit_each(link, page) {
       images.forEach((e) => {
         all_images.push(e.href);
       });
+      all_images = [...new Set(all_images)];
       let images_sup = [];
-      let temp_img = document.querySelector(".bgnormal a img");
+      let temp_img = document.querySelector(
+        ".node.widget-image.widget.xs-hidden  .bgnormal img"
+      );
       try {
         images_sup.push(temp_img.src);
       } catch (error) {}
-      all_images = [...new Set(all_images)];
+      temp_img = Array.from(document.querySelectorAll(".bgimage.bg-cover"));
+      for (let i = 0; i < temp_img.length - 1; i++) {
+        try {
+          let one = temp_img[i].style.backgroundImage.slice(4, -1);
+          one = one.replaceAll(/"/g, "");
+          images_sup.push(one);
+        } catch (error) {}
+      }
       let cover_img = "";
       try {
         cover_img = document.querySelector(".node.layer.layer-image a img").src;
@@ -391,6 +401,11 @@ async function visit_each(link, page) {
       };
     })
   );
+  const backgroundImage = await page.evaluate(
+    (el) => window.getComputedStyle(el).backgroundImage,
+    await page.$(".bgimage.bg-cover")
+  );
+  console.log(backgroundImage);
 
   if (j % 500 == 0) {
     batch++;
