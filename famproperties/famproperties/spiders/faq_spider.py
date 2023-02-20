@@ -37,7 +37,7 @@ class testingSpider(scrapy.Spider):
         items = faqtItem()
         
         items['question'] = response.css("#R12520461108108937973 .t-Region-body h1::text").get().replace("\n","").replace("\t","").replace("  ","").replace("\r","")
-        items['answer'] = BeautifulSoup(response.css("#R12520461108108937973 .t-Region-body").get(),'lxml').text.replace("\n","").replace("\t","").replace("  ","").replace("\r","").replace(response.css("#R12520461108108937973 .t-Region-body h1::text").get(),"")
+        items['answer'] = BeautifulSoup(response.css("#R12520461108108937973 .t-Region-body p").get(),'lxml').text.replace("\n","").replace("\t","").replace("  ","").replace("\r","").replace(response.css("#R12520461108108937973 .t-Region-body h1::text").get(),"")
 
         yield items
 

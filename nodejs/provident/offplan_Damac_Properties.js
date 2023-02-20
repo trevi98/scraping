@@ -133,6 +133,7 @@ async function visit_each(link, page) {
       let temp1, temp2;
       temp = Array.from(document.querySelectorAll("div.wpb_wrapper"));
       temp.forEach((e) => {
+        // ---------------h3------------
         if (e.querySelector("h3") !== null) {
           if (/Investment/i.test(e.querySelector("h3").textContent)) {
             temp1 = e.querySelector(
@@ -140,11 +141,12 @@ async function visit_each(link, page) {
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
             temp2.forEach((e) => {
+              let one = "";
               try {
-                temp = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp) {
-                Investment.push(clean(temp));
+              if (one) {
+                Investment.push(clean(one));
               }
             });
           }
@@ -154,11 +156,12 @@ async function visit_each(link, page) {
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
             temp2.forEach((e) => {
+              let one = "";
               try {
-                temp = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp) {
-                Exclusive_Features.push(clean(temp));
+              if (one) {
+                Exclusive_Features.push(clean(one));
               }
             });
           }
@@ -168,20 +171,23 @@ async function visit_each(link, page) {
             );
             temp2 = Array.from(temp1.querySelectorAll("p"));
             temp2.forEach((e) => {
+              let one = "";
               try {
-                temp = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp) {
-                Unit_Sizes.push(clean(temp));
+              if (one) {
+                Unit_Sizes.push(clean(one));
               }
             });
           }
           if (/Overview/i.test(e.querySelector("h3").textContent)) {
-            Overview = clean(
-              e.querySelector(
-                "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-              ).textContent
-            );
+            try {
+              Overview = clean(
+                e.querySelector(
+                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+                ).textContent
+              );
+            } catch (error) {}
           }
           if (/Gallery/i.test(e.querySelector("h3").textContent)) {
             temp1 = Array.from(
@@ -190,11 +196,12 @@ async function visit_each(link, page) {
               )
             );
             temp1.forEach((e) => {
+              let one = "";
               try {
-                temp = e.src;
+                one = e.src;
               } catch (error) {}
-              if (temp) {
-                images.push(temp);
+              if (one) {
+                images.push(one);
               }
             });
           }
@@ -234,13 +241,14 @@ async function visit_each(link, page) {
                 }
               });
             } else {
-              temp = Array.from(document.querySelectorAll("div.payment-plan"));
-              temp.forEach((e) => {
+              temp1 = Array.from(document.querySelectorAll("div.payment-plan"));
+              temp1.forEach((e) => {
+                let one = "";
                 try {
-                  temp1 = e.textContent;
+                  one = e.textContent;
                 } catch (error) {}
-                if (temp1) {
-                  Payment_Plan.push(clean(temp1));
+                if (one) {
+                  Payment_Plan.push(clean(one));
                 }
               });
             }
@@ -271,6 +279,7 @@ async function visit_each(link, page) {
             floor_plan_images = [...new Set(floor_plan_images)];
           }
         }
+        // -----------h2--------------
         if (e.querySelector("h2") !== null) {
           if (/Investment/i.test(e.querySelector("h2").textContent)) {
             temp1 = e.querySelector(
@@ -278,11 +287,12 @@ async function visit_each(link, page) {
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
             temp2.forEach((e) => {
+              let one = "";
               try {
-                temp = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp) {
-                Investment.push(clean(temp));
+              if (one) {
+                Investment.push(clean(one));
               }
             });
           }
@@ -292,11 +302,12 @@ async function visit_each(link, page) {
             );
             temp2 = Array.from(temp1.querySelectorAll("li"));
             temp2.forEach((e) => {
+              let one = "";
               try {
-                temp = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp) {
-                Exclusive_Features.push(clean(temp));
+              if (one) {
+                Exclusive_Features.push(clean(one));
               }
             });
           }
@@ -306,20 +317,23 @@ async function visit_each(link, page) {
             );
             temp2 = Array.from(temp1.querySelectorAll("p"));
             temp2.forEach((e) => {
+              let one = "";
               try {
-                temp = e.textContent;
+                one = e.textContent;
               } catch (error) {}
-              if (temp) {
-                Unit_Sizes.push(clean(temp));
+              if (one) {
+                Unit_Sizes.push(clean(one));
               }
             });
           }
           if (/Overview/i.test(e.querySelector("h2").textContent)) {
-            Overview = clean(
-              e.querySelector(
-                "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
-              ).textContent
-            );
+            try {
+              Overview = clean(
+                e.querySelector(
+                  "div.wpb_text_column.wpb_content_element div.wpb_wrapper"
+                ).textContent
+              );
+            } catch (error) {}
           }
           if (/Gallery/i.test(e.querySelector("h2").textContent)) {
             temp1 = Array.from(
@@ -327,7 +341,15 @@ async function visit_each(link, page) {
                 "div.vc_grid-container-wrapper.vc_clearfix img"
               )
             );
-            temp1.forEach((e) => images.push(e.src));
+            temp1.forEach((e) => {
+              let one = "";
+              try {
+                one = e.src;
+              } catch (error) {}
+              if (one) {
+                images.push(one);
+              }
+            });
           }
           if (/video/i.test(e.querySelector("h2").textContent)) {
             try {
@@ -365,13 +387,14 @@ async function visit_each(link, page) {
                 }
               });
             } else {
-              temp = Array.from(document.querySelectorAll("div.payment-plan"));
-              temp.forEach((e) => {
+              temp1 = Array.from(document.querySelectorAll("div.payment-plan"));
+              temp1.forEach((e) => {
+                let one = "";
                 try {
-                  temp1 = e.textContent;
+                  one = e.textContent;
                 } catch (error) {}
-                if (temp1) {
-                  Payment_Plan.push(clean(temp1));
+                if (one) {
+                  Payment_Plan.push(clean(one));
                 }
               });
             }

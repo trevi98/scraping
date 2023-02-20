@@ -17,7 +17,7 @@ class testingSpider(scrapy.Spider):
 
     def parse(self,response):
         # items = TestscrapyItem()
-        all = response.css(".col-xl-5.col-lg-5.col-md-5.col-sm-5.col-12.dpx-property-status-tag a::attr(href)").extract()
+        all = response.css(".col-xl-7.col-lg-7.col-md-7.col-sm-7.col-12 h3 a::attr(href)").extract()
 
         for one in all:
             self.link = one

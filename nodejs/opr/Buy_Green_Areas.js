@@ -12,6 +12,7 @@ function csv_handler(directory, batch) {
     header: [
       { id: "title", title: "title" },
       { id: "price", title: "price" },
+      { id: "type", title: "type" },
       { id: "info", title: "info" },
       { id: "handover", title: "handover" },
       { id: "overview_title", title: "overview_title" },
@@ -21,9 +22,10 @@ function csv_handler(directory, batch) {
       { id: "location", title: "location" },
       { id: "nearby_place", title: "nearby_place" },
       { id: "payment_plan", title: "payment_plan" },
-      { id: "all_images", title: "all_images" },
+      { id: "images", title: "images" },
       { id: "floor_plans", title: "floor_plans" },
       { id: "brochure", title: "brochure" },
+      { id: "floor_plans_pdf", title: "floor_plans_pdf" },
       { id: "signaturea", title: "signaturea" },
     ],
   });
@@ -50,9 +52,10 @@ let main_err_record = 0;
 let visit_err_record = 0;
 
 async function visit_each(link, page) {
-  console.log(link.types);
+  // console.log(link.types);
   // await page.setCacheEnabled(false)
   await page.goto(link.link);
+
   // await page.waitForNavigation();
   //   await page.deleteCookie({name:'hkd'})
 
@@ -61,6 +64,18 @@ async function visit_each(link, page) {
   let data = [];
   data.push(
     await page.evaluate(async () => {
+      function clean(text) {
+        try {
+          return text
+            .replaceAll("\n", "")
+            .replaceAll("\r", "")
+            .replaceAll("\t", "")
+            .replaceAll("  ", "")
+            .trim();
+        } catch (error) {
+          return text;
+        }
+      }
       function extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(
         elmnts,
         key,
@@ -77,19 +92,6 @@ async function visit_each(link, page) {
           console.error(error);
         }
         return result;
-      }
-
-      function clean(text) {
-        try {
-          return text
-            .replaceAll("\n", "")
-            .replaceAll("\r", "")
-            .replaceAll("\t", "")
-            .replaceAll("  ", "")
-            .trim();
-        } catch (error) {
-          return text;
-        }
       }
 
       function create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(
@@ -200,7 +202,7 @@ async function visit_each(link, page) {
       try {
         overview = clean(
           document.querySelector(
-            "#header-menu-desktop ~ div.node.section-zero.section div.zero-layer-axis.lg-left.lg-middle p"
+            "#header-menu-desktop ~ div.node.section-zero.section div.zero-layer-axis.lg-left.lg-middle"
           ).textContent
         );
       } catch (error) {}
@@ -227,9 +229,11 @@ async function visit_each(link, page) {
       } catch (error) {}
       let location = "";
       try {
-        location = document.querySelector(
-          "div#location.node.section-clear.section div.container.fullwidth div.cont div.node.widget-grid.widget div.grid.valign-top.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-text.cr-text.widget.links-on-black-text p.textable"
-        ).textContent;
+        location = clean(
+          document.querySelector(
+            "div#location.node.section-clear.section div.container.fullwidth div.cont div.node.widget-grid.widget div.grid.valign-top.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-text.cr-text.widget.links-on-black-text p.textable"
+          ).textContent
+        );
       } catch (error) {}
       let nearby_place = [];
       temp = Array.from(
@@ -261,15 +265,6 @@ async function visit_each(link, page) {
         });
       } catch (error) {}
 
-      let images = Array.from(
-        document.querySelectorAll(".gallery1-image.fancybox")
-      );
-      let all_images = [];
-      images.forEach((e) => {
-        all_images.push(e.href);
-      });
-      all_images = [...new Set(all_images)];
-
       return {
         title: title,
         price: price,
@@ -282,11 +277,54 @@ async function visit_each(link, page) {
         location: location,
         nearby_place: nearby_place,
         payment_plan: payment_plan,
-        all_images: all_images,
         signaturea: Date.now(),
       };
     })
   );
+
+  const exist_images = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        "#gallery .tabs1-pagination> div:not(.is-active) "
+      ) !== null
+    );
+  });
+  let images;
+  if (exist_images) {
+    await page.click("#gallery .tabs1-pagination> div:not(.is-active)");
+    images = await page.evaluate(() => {
+      let temp = Array.from(
+        document.querySelectorAll("#gallery .gallery1-image.fancybox")
+      );
+      let imgs = [];
+      temp.forEach((e) => {
+        try {
+          imgs.push(e.href.split(",")[0]);
+        } catch (error) {}
+      });
+      return imgs;
+    });
+  } else if (
+    await page.evaluate(() => {
+      document.querySelector("#gallery .gallery1-image.fancybox") !== null;
+    })
+  ) {
+    images = await page.evaluate(() => {
+      let temp = Array.from(
+        document.querySelectorAll("#gallery .gallery1-image.fancybox")
+      );
+      let imgs = [];
+      temp.forEach((e) => {
+        try {
+          imgs.push(e.href.split(",")[0]);
+        } catch (error) {}
+      });
+      return imgs;
+    });
+  } else {
+    console.log("no images");
+  }
+  data[0].images = images;
 
   //------------- floor plan------
   const floor = await page.evaluate(() => {
@@ -302,38 +340,53 @@ async function visit_each(link, page) {
   if (floor.length > 0) {
     for (let f of floor) {
       await page.click(`#${f}`);
+      await page.waitForTimeout("700");
+      await page.waitForSelector("#fp .swiper-slide.swiper-slide-active");
       floor_plans.push(
-        await page.evaluate(() => {
-          let size = [];
-          let img = "";
-          let title = "";
-          try {
-            let size_all = Array.from(
-              document.querySelectorAll(
-                "#fp .swiper-slide.swiper-slide-active .node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
-              )
+        JSON.stringify(
+          await page.evaluate(() => {
+            function clean(text) {
+              try {
+                return text
+                  .replaceAll("\n", "")
+                  .replaceAll("\r", "")
+                  .replaceAll("\t", "")
+                  .replaceAll("  ", "")
+                  .trim();
+              } catch (error) {
+                return text;
+              }
+            }
+            let size = [];
+            let img = "";
+            let title = "";
+            let temp = document.querySelector(
+              "#fp .swiper-slide.swiper-slide-active"
             );
-            size_all.forEach((e) => {
-              size.push(e.textContent);
-            });
-          } catch (error) {}
+            try {
+              let size_all = Array.from(
+                temp.querySelectorAll(
+                  ".node.widget-text.cr-text.widget + .node.widget-text.cr-text.widget p"
+                )
+              );
+              size_all.forEach((e) => {
+                size.push(clean(e.textContent));
+              });
+            } catch (error) {}
 
-          try {
-            img = document.querySelector(
-              "#fp .swiper-slide.swiper-slide-active a .fr-dib.fr-draggable"
-            ).src;
-          } catch (error) {}
-          try {
-            title = document.querySelector(
-              "#fp .swiper-slide.swiper-slide-active h3"
-            ).textContent;
-          } catch (error) {}
-          return {
-            title: title,
-            size: size,
-            img: img,
-          };
-        })
+            try {
+              img = temp.querySelector(" a .fr-dib.fr-draggable").src;
+            } catch (error) {}
+            try {
+              title = clean(temp.querySelector("h3").textContent);
+            } catch (error) {}
+            return {
+              title: title,
+              size: size,
+              img: img,
+            };
+          })
+        )
       );
     }
   }
@@ -382,57 +435,53 @@ async function visit_each(link, page) {
     // data.push({brochure:url})
 
     data[0].brochure = brochure;
+    await page.goto(link.link);
   } else {
     console.log("yyyy");
   }
 
   // ----------- floor plan pdf  --------------
 
-  // const exists_plan_btn = await page.evaluate(() => {
-  //   return (
-  //     document.querySelector(
-  //       "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-  //     ) &&
-  //     /floor/i.test(
-  //       document.querySelector(
-  //         "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a span"
-  //       ).textContent
-  //     ) !== null
-  //   );
-  // });
-  // if (exists_plan_btn) {
-  //   await page.click(
-  //     "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-  //   );
-  //   await page.waitForSelector(".modal6-root.is-active");
-  //   await page.type(
-  //     '.modal6-root.is-active div.input input[autocomplete="name"]',
-  //     "John"
-  //   );
-  //   await page.type(
-  //     '.modal6-root.is-active div.input input[autocomplete="tel"]',
-  //     "+968509465823"
-  //   );
-  //   await page.type(
-  //     '.modal6-root.is-active div.input input[autocomplete="email"]',
-  //     "jhon@jmail.com"
-  //   );
-  //   await page.evaluate(() => {
-  //     document
-  //       .querySelector(".modal6-root.is-active button:not(.modal6-close)")
-  //       .click();
-  //   });
-  //   await page.waitForNavigation();
-  //   let floor_plans_pdf = await page.evaluate(() => document.location.href);
-  //   // data[0].floor_plans_pdf = floor_plans_pdf;
-  //   // console.log("f  ", floor_plans_pdf);
-  //   console.log("yes");
-  //   data[0].floor_plans_pdf = floor_plans_pdf;
+  const exists_plan_btn = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
+      ) !== null
+    );
+  });
+  if (exists_plan_btn) {
+    await page.click(
+      "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
+    );
+    await page.waitForSelector(".modal6-root.is-active");
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="name"]',
+      "John"
+    );
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="tel"]',
+      "+968509465823"
+    );
+    await page.type(
+      '.modal6-root.is-active div.input input[autocomplete="email"]',
+      "jhon@jmail.com"
+    );
+    await page.evaluate(() => {
+      document
+        .querySelector(".modal6-root.is-active button:not(.modal6-close)")
+        .click();
+    });
+    await page.waitForNavigation();
+    let floor_plans_pdf = await page.evaluate(() => document.location.href);
+    // data[0].floor_plans_pdf = floor_plans_pdf;
+    // console.log("f  ", floor_plans_pdf);
+    console.log("yes");
+    data[0].floor_plans_pdf = floor_plans_pdf;
 
-  //   // data.push({ brochure: url });
-  // } else {
-  //   console.log("yyyy");
-  // }
+    // data.push({ brochure: url });
+  } else {
+    console.log("yyyy");
+  }
 
   if (j % 500 == 0) {
     batch++;

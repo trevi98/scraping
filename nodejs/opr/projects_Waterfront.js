@@ -26,6 +26,7 @@ function csv_handler(directory, batch) {
       { id: "floor_plans", title: "floor_plans" },
       // { id: "floor_plans-o", title: "floor_plans-o" },
       { id: "brochure", title: "brochure" },
+      { id: "floor_plans_pdf", title: "floor_plans_pdf" },
       { id: "signaturea", title: "signaturea" },
       { id: "signaturea", title: "signaturea" },
     ],
@@ -56,6 +57,7 @@ async function visit_each(link, page) {
   // console.log(link.types);
   // await page.setCacheEnabled(false)
   await page.goto(link.link);
+
   // await page.waitForNavigation();
   //   await page.deleteCookie({name:'hkd'})
 
@@ -64,6 +66,18 @@ async function visit_each(link, page) {
   let data = [];
   data.push(
     await page.evaluate(async () => {
+      function clean(text) {
+        try {
+          return text
+            .replaceAll("\n", "")
+            .replaceAll("\r", "")
+            .replaceAll("\t", "")
+            .replaceAll("  ", "")
+            .trim();
+        } catch (error) {
+          return text;
+        }
+      }
       function extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(
         elmnts,
         key,
@@ -80,19 +94,6 @@ async function visit_each(link, page) {
           console.error(error);
         }
         return result;
-      }
-
-      function clean(text) {
-        try {
-          return text
-            .replaceAll("\n", "")
-            .replaceAll("\r", "")
-            .replaceAll("\t", "")
-            .replaceAll("  ", "")
-            .trim();
-        } catch (error) {
-          return text;
-        }
       }
 
       function create_pares_from_pare_elements_in_one_container_if_thing_exists__pass_array_of_pares_containers(
@@ -230,9 +231,11 @@ async function visit_each(link, page) {
       } catch (error) {}
       let location = "";
       try {
-        location = document.querySelector(
-          "div#location.node.section-clear.section div.container.fullwidth div.cont div.node.widget-grid.widget div.grid.valign-top.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-text.cr-text.widget.links-on-black-text p.textable"
-        ).textContent;
+        location = clean(
+          document.querySelector(
+            "div#location.node.section-clear.section div.container.fullwidth div.cont div.node.widget-grid.widget div.grid.valign-top.paddings-40px.xs-wrap div.gridwrap div.col div.cont div.node.widget-text.cr-text.widget.links-on-black-text p.textable"
+          ).textContent
+        );
       } catch (error) {}
       let nearby_place = [];
       temp = Array.from(
@@ -283,15 +286,34 @@ async function visit_each(link, page) {
 
   const exist_images = await page.evaluate(() => {
     return (
-      document.querySelectorAll(".tabs1-pagination .tabs1-page ")[1] !== null
+      document.querySelector(
+        "#gallery .tabs1-pagination> div:not(.is-active) "
+      ) !== null
     );
   });
   let images;
   if (exist_images) {
-    await page.click(".tabs1-pagination> div:not(.is-active)");
+    await page.click("#gallery .tabs1-pagination> div:not(.is-active)");
     images = await page.evaluate(() => {
       let temp = Array.from(
-        document.querySelectorAll(".gallery1-image.fancybox")
+        document.querySelectorAll("#gallery .gallery1-image.fancybox")
+      );
+      let imgs = [];
+      temp.forEach((e) => {
+        try {
+          imgs.push(e.href.split(",")[0]);
+        } catch (error) {}
+      });
+      return imgs;
+    });
+  } else if (
+    await page.evaluate(() => {
+      document.querySelector("#gallery .gallery1-image.fancybox") !== null;
+    })
+  ) {
+    images = await page.evaluate(() => {
+      let temp = Array.from(
+        document.querySelectorAll("#gallery .gallery1-image.fancybox")
       );
       let imgs = [];
       temp.forEach((e) => {
@@ -325,6 +347,18 @@ async function visit_each(link, page) {
       floor_plans.push(
         JSON.stringify(
           await page.evaluate(() => {
+            function clean(text) {
+              try {
+                return text
+                  .replaceAll("\n", "")
+                  .replaceAll("\r", "")
+                  .replaceAll("\t", "")
+                  .replaceAll("  ", "")
+                  .trim();
+              } catch (error) {
+                return text;
+              }
+            }
             let size = [];
             let img = "";
             let title = "";
@@ -338,7 +372,7 @@ async function visit_each(link, page) {
                 )
               );
               size_all.forEach((e) => {
-                size.push(e.textContent);
+                size.push(clean(e.textContent));
               });
             } catch (error) {}
 
@@ -346,7 +380,7 @@ async function visit_each(link, page) {
               img = temp.querySelector(" a .fr-dib.fr-draggable").src;
             } catch (error) {}
             try {
-              title = temp.querySelector("h3").textContent;
+              title = clean(temp.querySelector("h3").textContent);
             } catch (error) {}
             return {
               title: title,
@@ -405,7 +439,7 @@ async function visit_each(link, page) {
     
 
     data[0].brochure = brochure;
-    await page.goto(link.link)
+    await page.goto(link.link);
   } else {
     console.log("yyyy");
   }
@@ -416,7 +450,7 @@ async function visit_each(link, page) {
     return (
       document.querySelector(
         "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
-      ) 
+      ) !== null
     );
   });
   if (exists_plan_btn) {
@@ -443,7 +477,6 @@ async function visit_each(link, page) {
     });
     await page.waitForNavigation();
     let floor_plans_pdf = await page.evaluate(() => document.location.href);
-    console.log(floor_plans_pdf)
     // data[0].floor_plans_pdf = floor_plans_pdf;
     // console.log("f  ", floor_plans_pdf);
     console.log("yes");

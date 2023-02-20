@@ -18,6 +18,7 @@ function csv_handler(directory, batch) {
       { id: "overview_title", title: "overview_title" },
       { id: "overview", title: "overview" },
       { id: "about", title: "about" },
+      { id: "cover_img", title: "cover_img" },
       { id: "nearby_place", title: "nearby_place" },
       { id: "all_images", title: "all_images" },
       { id: "images_sup", title: "images_sup" },
@@ -183,14 +184,7 @@ async function visit_each(link, page) {
       try {
         images_sup.push(temp_img.src);
       } catch (error) {}
-      temp_img = Array.from(document.querySelectorAll(".bgimage.bg-cover"));
-      for (let i = 0; i < temp_img.length - 1; i++) {
-        try {
-          let one = temp_img[i].style.backgroundImage.slice(4, -1);
-          one = one.replaceAll(/"/g, "");
-          images_sup.push(one);
-        } catch (error) {}
-      }
+
       let cover_img = "";
       try {
         cover_img = document.querySelector(".node.layer.layer-image a img").src;
@@ -383,6 +377,8 @@ async function visit_each(link, page) {
           }
         }
       }
+      let all_content = [];
+      all_content.push(JSON.stringify(all));
 
       return {
         title: title,
@@ -397,15 +393,10 @@ async function visit_each(link, page) {
         all_images: all_images,
         images_sup: images_sup,
         signaturea: Date.now(),
-        all_content: all,
+        all_content: all_content,
       };
     })
   );
-  const backgroundImage = await page.evaluate(
-    (el) => window.getComputedStyle(el).backgroundImage,
-    await page.$(".bgimage.bg-cover")
-  );
-  console.log(backgroundImage);
 
   if (j % 500 == 0) {
     batch++;

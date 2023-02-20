@@ -8,10 +8,11 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/opr_faq${batch}.csv`,
+    path: `${directory}/developers${batch}.csv`,
     header: [
-      { id: "qeustion", title: "qeustion" },
-      { id: "answer", title: "answer" },
+      { id: "title", title: "title" },
+      { id: "about", title: "about" },
+      { id: "all_content", title: "all_content" },
     ],
   });
 }
@@ -29,66 +30,104 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("opr_faq");
-let csvWriter = csv_handler("opr_faq", 1);
+let csvErrr = csv_error_handler("developers");
+let csvWriter = csv_handler("developers", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
-// async function clean(text){
-//   try{
-
-//     return text.replace('\n','').replace('\r','').replace('\t','').replace('  ','');
-//   }catch(error){
-//     return text;
-//   }
-// }
-
 async function visit_each(link, page) {
   // await page.setCacheEnabled(false);
   await page.goto(link);
-  function clean(text) {
-    try {
-      return text
-        .replaceAll("\n", "")
-        .replaceAll("\r", "")
-        .replaceAll("\t", "")
-        .replaceAll("  ", "")
-        .trim();
-    } catch (error) {
-      return text;
-    }
-  }
   let data = [];
   data.push(
     await page.evaluate(async () => {
-      let qeustion = "";
+      function clean(text) {
+        try {
+          return text
+            .replaceAll("\n", "")
+            .replaceAll("\r", "")
+            .replaceAll("\t", "")
+            .replaceAll("  ", "")
+            .trim();
+        } catch (error) {
+          return text;
+        }
+      }
+
+      let title = "";
       try {
-        qeustion = clean(
-          document.querySelector(
-            "div#header-menu-mobile ~ div.node.section-clear.section.menu2 div.node.widget-text.cr-text.widget.lg-hidden p.textable"
-          ).textContent
-        );
+        title = clean(document.title);
       } catch (error) {}
-      let answer = "";
+      let about = "";
+      let temp = Array.from(
+        document.querySelectorAll(
+          "div.node.widget-text.cr-text.widget.xs-hidden.links-on-black-text p"
+        )
+      );
       try {
-        answer = clean(
-          document.querySelector(
-            "div.node.widget-text.cr-text.widget.links-on-black-text p"
-          ).textContent
-        );
+        for (let i = 0; i < temp.length; i++) {
+          if (temp[i].textContent) {
+            about = temp[i].textContent;
+            break;
+          }
+        }
       } catch (error) {}
+      temp = Array.from(
+        document.querySelectorAll(
+          ".node.widget-text.cr-text.widget:not(.lg-hidden)"
+        )
+      );
+      let all = {};
+      let tit2 = "";
+      let tit3 = "";
+      for (let i = 0; i < temp.length; i++) {
+        if (temp[i].querySelector("h2")) {
+          try {
+            tit2 = temp[i].querySelector("h2").textContent;
+          } catch (error) {}
+          if (/offplan project/i.test(tit2)) {
+            t = tit2;
+            d = temp[i + 1].textContent;
+            all[t] = d;
+          }
+          if (/best properties/i.test(tit2)) {
+            t = tit2;
+            d = temp[i + 1].textContent;
+            all[t] = d;
+          }
+        }
+        if (temp[i].querySelector("h3")) {
+          try {
+            tit3 = temp[i].querySelector("h3").textContent;
+          } catch (error) {}
+          if (/offplan project/i.test(tit3)) {
+            t = tit2;
+            d = temp[i + 1].textContent;
+            all[t] = d;
+          }
+          if (/best properties/i.test(tit3)) {
+            t = tit2;
+            d = temp[i + 1].textContent;
+            all[t] = d;
+          }
+        }
+      }
+      let all_content = [];
+      all_content.push(JSON.stringify(all));
+
       return {
-        qeustion: qeustion,
-        answer: answer,
+        title: title,
+        about: about,
+        all_content: all_content,
       };
     })
   );
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("opr_faq", batch);
+    csvWriter = csv_handler("developers", batch);
   }
 
   csvWriter
@@ -98,27 +137,25 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://opr.ae/faq/${i}`;
-  if (i == 1) {
-    target = "https://opr.ae/faq";
-  }
+  let target = `https://opr.ae/developers`;
+
   console.log(target);
   await page.goto(target);
   const links = await page.evaluate(() => {
     let all = [];
     let link = Array.from(
       document.querySelectorAll(
-        "div.spoiler0-container.is-collapsed div.cont div#faq-more-link.node.widget-text.cr-text.widget.faq-more-link p"
+        ".s-elements-grid.valign-top.halign-center.use-flex .node.widget-element.widget .btn.btn-legacy.hvr-fade"
       )
     );
     link.forEach((e) => {
-      let a = e.querySelector("a").href;
+      let a = e.href;
       all.push(a);
     });
     let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
-
+  console.log(links.length);
   for (const link of links) {
     try {
       await visit_each(link, page);
