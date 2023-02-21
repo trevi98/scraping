@@ -317,41 +317,104 @@ async function visit_each(link, page) {
   j++;
 }
 
-async function main_loop(page, i) {
-  let target = `https://famproperties.com/luxury-apartments-for-sale-dubai`;
+async function main_loop(page) {
+  let target = `https://famproperties.com/luxury-projects-dubai`;
 
   console.log(target);
   await page.goto(target);
-  const links = await page.evaluate(() => {
-    let all = [];
-    let link = Array.from(document.querySelectorAll(".card "));
-    link.forEach((e) => {
-      let a = e.querySelector("a").href;
-      all.push(a);
-    });
-    let uniqe_links = [...new Set(all)];
-    return uniqe_links;
-  });
+  let links = [];
+  await page.waitForSelector("#project_cards .t-Cards-item");
+  await page.waitForSelector("#marquizPopup");
 
-  for (const link of links) {
-    try {
-      await visit_each(link, page);
-    } catch (error) {
-      try {
-        await visit_each(link, page);
-      } catch (err) {
-        try {
-          await visit_each(link, page);
-        } catch (error) {
-          console.error(error);
-          csvErrr
-            .writeRecords({ link: link, error: err })
-            .then(() => console.log("error logged main loop"));
-          continue;
-        }
-      }
-    }
+  // Use page.evaluate to interact with the popup and close it
+  await page.evaluate(() => {
+    const popup = document.querySelector("#marquizPopup");
+    const closeButton = popup.querySelector(".fa.fa-times.fa-2x.closeMarquiz");
+    closeButton.click();
+  });
+  await page.evaluate(() => {
+    document.querySelectorAll("footer .row")[15].style.display = "none";
+  });
+  await page.waitForTimeout(9000);
+
+  links.push(
+    await page.evaluate(() => {
+      let all = [];
+      let link = Array.from(document.querySelectorAll("#project_cards"));
+      link.forEach((e) => {
+        let a = e.querySelector("a").href;
+        all.push(a);
+      });
+      let uniqe_links = [...new Set(all)];
+      return uniqe_links;
+    })
+  );
+
+  // for (const link of links) {
+  //   try {
+  //     await visit_each(link, page);
+  //   } catch (error) {
+  //     try {
+  //       await visit_each(link, page);
+  //     } catch (err) {
+  //       try {
+  //         await visit_each(link, page);
+  //       } catch (error) {
+  //         console.error(error);
+  //         csvErrr
+  //           .writeRecords({ link: link, error: err })
+  //           .then(() => console.log("error logged main loop"));
+  //         continue;
+  //       }
+  //     }
+  //   }
+  // }
+  while (
+    await page.evaluate(() => {
+      return (
+        document.querySelector(
+          ".pagination .t-Button.t-Button--small.t-Button--noUI.t-Report-paginationLink.t-Report-paginationLink--next"
+        ) !== null
+      );
+    })
+  ) {
+    await page.evaluate(() => {
+      document.querySelectorAll("footer .row")[15].style.display = "none";
+    });
+    await page.evaluate(() => {
+      document.querySelector("#marquizPopup").style.display = "none";
+    });
+    await page.setDefaultNavigationTimeout(80000);
+    await page.waitForSelector(
+      ".pagination .t-Button.t-Button--small.t-Button--noUI.t-Report-paginationLink.t-Report-paginationLink--next"
+    );
+    await page.click(
+      ".pagination .t-Button.t-Button--small.t-Button--noUI.t-Report-paginationLink.t-Report-paginationLink--next"
+    );
+    await page.waitForSelector("#project_cards");
+    await page.waitForTimeout(11000);
+    links.push(
+      await page.evaluate(() => {
+        let all = [];
+        let link = Array.from(
+          document.querySelectorAll("#project_cards .t-Cards-item")
+        );
+        link.forEach((e) => {
+          let a = e.querySelector("a").href;
+          all.push(a);
+        });
+        let uniqe_links = [...new Set(all)];
+        return uniqe_links;
+      })
+    );
   }
+  let all = [];
+  links.forEach((e) => {
+    e.forEach((s) => all.push(s));
+  });
+  console.log(all);
+  console.log(all.length);
+  console.log([...new Set(all)].length);
 }
 
 async function main() {
@@ -363,12 +426,12 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 4000; i++) {
+  for (let i = 1; i <= 1; i++) {
     try {
-      await main_loop(page, i);
+      await main_loop(page);
     } catch (error) {
       try {
-        await main_loop(page, i);
+        await main_loop(page);
       } catch (error) {
         console.error(error);
         csvErrr
