@@ -8,7 +8,7 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/luxury_villas_for_rent${batch}.csv`,
+    path: `${directory}/shops_for_sale${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "type", title: "type" },
@@ -40,8 +40,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("luxury_villas_for_rent");
-let csvWriter = csv_handler("luxury_villas_for_rent", 1);
+let csvErrr = csv_error_handler("shops_for_sale");
+let csvWriter = csv_handler("shops_for_sale", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -169,7 +169,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("luxury_villas_for_rent", batch);
+    csvWriter = csv_handler("shops_for_sale", batch);
   }
 
   csvWriter
@@ -179,9 +179,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.drivenproperties.com/dubai/luxury-villas-for-rent?page=${i}`;
+  let target = `https://www.drivenproperties.com/dubai/retail-shops-for-sale?page=${i}`;
   if (i == 1) {
-    target = "https://www.drivenproperties.com/dubai/luxury-villas-for-rent";
+    target = "https://www.drivenproperties.com/dubai/retail-shops-for-sale";
   }
   console.log(target);
   await page.goto(target);

@@ -22,6 +22,7 @@ function csv_handler(directory, batch) {
       { id: "reference", title: "reference" },
       { id: "property_overview", title: "property_overview" },
       { id: "description", title: "description" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -161,6 +162,7 @@ async function visit_each(link, page) {
         reference: reference,
         property_overview: property_overview,
         description: description,
+        signaturea: Date.now(),
       };
     })
   );

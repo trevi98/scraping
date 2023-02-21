@@ -218,22 +218,48 @@ async function run() {
     await page.click(".a-GV-pageButton.a-GV-pageButton--nav.js-pg-next");
     await page.waitForTimeout(500);
     s.push(
-      await page.evaluate(() => {
-        let temp = Array.from(
-          document.querySelectorAll(
-            "#R29114923532291890799_Cards .a-CardView-header"
-          )
-        );
-        let s = [];
-        temp.forEach((e) => {
-          try {
-            s.push(e.querySelector("h3").textContent);
-          } catch (error) {}
-        });
-        return s;
-      })
+      JSON.stringify(
+        await page.evaluate(() => {
+          let temp = Array.from(
+            document.querySelectorAll(
+              "#R29114923532291890799_Cards .a-CardView-header"
+            )
+          );
+          let ss = [];
+          let title = "";
+          let Curriculum = "";
+          let Rating = "";
+          temp.forEach((e) => {
+            try {
+              title = e.querySelector("h3").textContent;
+            } catch (error) {}
+            try {
+              Curriculum = e
+                .querySelector("h4")
+                .textContent.replace(
+                  e.querySelector(" h4 span.u-color-4-text.padding-right-sm")
+                    .textContent,
+                  ""
+                );
+            } catch (error) {}
+            try {
+              Rating = e
+                .querySelectorAll("h4")[1]
+                .textContent.replace(
+                  e.querySelectorAll(
+                    " h4 span.u-color-4-text.padding-right-sm"
+                  )[1].textContent,
+                  ""
+                );
+            } catch (error) {}
+            ss.push({ title, Curriculum, Rating });
+          });
+          return ss;
+        })
+      )
     );
     while (true) {
+      // await page.waitForSelector
       // await page.click("#marquizPopup .fa.fa-times.fa-2x.closeMarquiz");
       if (
         await page.evaluate(() => {
@@ -250,20 +276,45 @@ async function run() {
       await page.waitForTimeout(2000);
 
       s.push(
-        await page.evaluate(() => {
-          let temp = Array.from(
-            document.querySelectorAll(
-              "#R29114923532291890799_Cards .a-CardView-header"
-            )
-          );
-          let s = [];
-          temp.forEach((e) => {
-            try {
-              s.push(e.querySelector("h3").textContent);
-            } catch (error) {}
-          });
-          return s;
-        })
+        JSON.stringify(
+          await page.evaluate(() => {
+            let temp = Array.from(
+              document.querySelectorAll(
+                "#R29114923532291890799_Cards .a-CardView-header"
+              )
+            );
+            let ss = [];
+            let title = "";
+            let Curriculum = "";
+            let Rating = "";
+            temp.forEach((e) => {
+              try {
+                title = e.querySelector("h3").textContent;
+              } catch (error) {}
+              try {
+                Curriculum = e
+                  .querySelector("h4")
+                  .textContent.replace(
+                    e.querySelector(" h4 span.u-color-4-text.padding-right-sm")
+                      .textContent,
+                    ""
+                  );
+              } catch (error) {}
+              try {
+                Rating = e
+                  .querySelectorAll("h4")[1]
+                  .textContent.replace(
+                    e.querySelectorAll(
+                      " h4 span.u-color-4-text.padding-right-sm"
+                    )[1].textContent,
+                    ""
+                  );
+              } catch (error) {}
+              ss.push({ title, Curriculum, Rating });
+            });
+            return ss;
+          })
+        )
       );
     }
     console.log(s);
@@ -287,8 +338,8 @@ async function run() {
       await page.click(
         "#R23240284213309688160 .fa.fa-chevron-circle-right.fa-3x"
       );
+      await page.waitForTimeout(300);
     }
-    await page.waitForTimeout(4000);
     all = await page.evaluate(() => {
       let images = [];
       let temp = Array.from(
