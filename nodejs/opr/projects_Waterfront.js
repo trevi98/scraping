@@ -306,7 +306,9 @@ async function visit_each(link, page) {
     });
   } else if (
     await page.evaluate(() => {
-      document.querySelector("#gallery .gallery1-image.fancybox") !== null;
+      return (
+        document.querySelector("#gallery .gallery1-image.fancybox") !== null
+      );
     })
   ) {
     images = await page.evaluate(() => {
@@ -428,6 +430,13 @@ async function visit_each(link, page) {
       document
         .querySelector(".modal.nocolors.active button:not(.modal6-close)")
         .click();
+    });
+    page.on("response", (response) => {
+      const statusCode = response.status();
+      if (statusCode >= 300 && statusCode < 400) {
+        const redirectUrl = response.headers()["location"];
+        console.log(`Redirected to ${redirectUrl}`);
+      }
     });
     await page.waitForNavigation();
     let brochure = await page.evaluate(() => document.location.href);

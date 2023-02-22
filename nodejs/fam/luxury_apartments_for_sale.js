@@ -25,6 +25,7 @@ function csv_handler(directory, batch) {
       { id: "amenities", title: "amenities" },
       { id: "nearby_schools", title: "nearby_schools" },
       { id: "images", title: "images" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -51,7 +52,7 @@ let visit_err_record = 0;
 
 async function visit_each(link, page) {
   // await page.setCacheEnabled(false);
-  await page.goto(link);
+  await page.goto(link.link);
   let data = [];
   data.push(
     await page.evaluate(async () => {
@@ -176,9 +177,11 @@ async function visit_each(link, page) {
         amenities: amenities,
         nearby_schools: nearby_schools,
         images: images,
+        signaturea: Date.now(),
       };
     })
   );
+  data[0].area = link.area;
 
   const exist = await page.evaluate(() => {
     return (
@@ -234,23 +237,69 @@ async function visit_each(link, page) {
   j++;
 }
 
-async function main_loop(page, i) {
+async function main_loop(page) {
   let target = `https://famproperties.com/luxury-apartments-for-sale-dubai`;
 
   console.log(target);
   await page.goto(target);
-  const links = await page.evaluate(() => {
-    let all = [];
-    let link = Array.from(document.querySelectorAll(".card "));
-    link.forEach((e) => {
-      let a = e.querySelector("a").href;
-      all.push(a);
+  let links = [];
+  // Use page.evaluate to interact with the popup and close it
+  await page.evaluate(() => {
+    const popup = document.querySelector("#marquizPopup");
+    const closeButton = popup.querySelector(".fa.fa-times.fa-2x.closeMarquiz");
+    closeButton.click();
+  });
+  await page.evaluate(() => {
+    document.querySelectorAll("footer .row")[15].style.display = "none";
+    document.querySelector("#marquizPopup").style.display = "none";
+  });
+  while (true) {
+    await page.evaluate(() => {
+      document.querySelectorAll("footer .row")[15].style.display = "none";
+      document.querySelector("#marquizPopup").style.display = "none";
     });
-    let uniqe_links = [...new Set(all)];
-    return uniqe_links;
+    await page.waitForSelector(".a-CardView");
+    await page.waitForTimeout(3000);
+    links.push(
+      await page.evaluate(() => {
+        let all = [];
+        let link = Array.from(document.querySelectorAll(".a-CardView"));
+        link.forEach((e) => {
+          let a = e.querySelector("a.card-image").href;
+          let area = e.querySelector(" h5 .u-color-10-text").textContent;
+          all.push({ link: a, area: area });
+        });
+        let uniqe_links = [...new Set(all)];
+        return uniqe_links;
+      })
+    );
+    if (
+      await page.evaluate(() => {
+        return (
+          document
+            .querySelector(".a-GV-pageButton.a-GV-pageButton--nav.js-pg-next")
+            .getAttribute("disabled") === "disabled"
+        );
+      })
+    ) {
+      break;
+    }
+    await page.click(".a-GV-pageButton.a-GV-pageButton--nav.js-pg-next");
+  }
+  let all_links = [];
+  links.forEach((e) => {
+    e.forEach((s) => all_links.push(s.link));
+  });
+  let all_area = [];
+  links.forEach((e) => {
+    e.forEach((s) => all_area.push(s.area));
   });
 
-  for (const link of links) {
+  all_links = [...new Set(all_links)];
+  // all_area = [...new Set(all_area)];
+  console.log(all_links.length);
+  console.log(all_area.length);
+  for (const link of all_links) {
     try {
       await visit_each(link, page);
     } catch (error) {
@@ -280,18 +329,21 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 4000; i++) {
+  for (let i = 1; i <= 1; i++) {
     try {
-      await main_loop(page, i);
+      await main_loop(page);
     } catch (error) {
       try {
-        await main_loop(page, i);
+        await main_loop(page);
       } catch (error) {
-        console.error(error);
+        try {
+          await main_loop(page);
+        } catch (error) {}
         csvErrr
           .writeRecords({ link: i, error: error })
           .then(() => console.log("error logged main"));
         continue;
+        console.error(error);
       }
     }
   }
