@@ -16,6 +16,8 @@ return createCsvWriter({
     {id: 'founded_in', title: 'founded_in'},
     {id: 'content', title: 'content'},
     {id: 'images', title: 'images'},
+    {id: 'signaturea', title: 'signaturea'},
+
   ]
 });
 
@@ -137,6 +139,7 @@ async function visit_each(link,page){
       projects:projects,
       content:content,
       images:images,
+      signaturea : Date.now(),
 
     })
 

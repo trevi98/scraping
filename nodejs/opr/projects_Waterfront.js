@@ -423,7 +423,7 @@ async function visit_each(link, page) {
       for (let i = 0; i < 10; i++) {
         email += characters[Math.floor(Math.random() * characters.length)];
       }
-      email += "@example.com";
+      email += Math.floor(Math.random() * 100)  + "@example.com";
       return email;
     }
 
@@ -503,7 +503,7 @@ async function visit_each(link, page) {
       for (let i = 0; i < 10; i++) {
         email += characters[Math.floor(Math.random() * characters.length)];
       }
-      email += "@example.com";
+      email += Math.floor(Math.random() * 100)  + "@example.com";
       return email;
     }
 

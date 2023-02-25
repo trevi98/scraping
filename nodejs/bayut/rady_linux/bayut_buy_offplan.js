@@ -3,12 +3,13 @@ const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const axios = require('axios');
+const { exec } = require('child_process');
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/bayut_Properties_for_rent_res${batch}.csv`,
+    path: `${directory}/bayut_Showrooms_for_sale_comm${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "description", title: "description" },
@@ -17,7 +18,6 @@ function csv_handler(directory, batch) {
       { id: "size", title: "size" },
       { id: "area", title: "area" },
       { id: "type", title: "type" },
-      { id: "date", title: "date" },
       { id: "parking", title: "parking" },
       { id: "ownership", title: "ownership" },
       { id: "completion", title: "completion" },
@@ -54,8 +54,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("bayut_Properties_for_rent_res");
-let csvWriter = csv_handler("bayut_Properties_for_rent_res", 1);
+let csvErrr = csv_error_handler("bayut_Showrooms_for_sale_comm");
+let csvWriter = csv_handler("bayut_Showrooms_for_sale_comm", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -206,12 +206,6 @@ async function visit_each(link, page) {
         .replace("\r", "")
         .replace("\t", "")
         .replace("  ", "");
-      let date = document
-        .querySelector("span._56562304")
-        .textContent.replace("\n", "")
-        .replace("\r", "")
-        .replace("\t", "")
-        .replace("  ", "");
       info = Array.from(document.querySelectorAll("._033281ab li"), (elmnt) =>
         elmnt.textContent
           .replace("\n", "")
@@ -255,7 +249,6 @@ async function visit_each(link, page) {
         bathrooms: bathrooms,
         size: size,
         area: area,
-        date: date,
         type: type,
         parking: parking_availability,
         ownership: ownership,
@@ -281,7 +274,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("bayut_Properties_for_rent_res", batch);
+    csvWriter = csv_handler("bayut_Showrooms_for_sale_comm", batch);
   }
 
   data[0].plans_2d = plans.d2[0];
@@ -293,9 +286,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.bayut.com/to-rent/property/uae/page-${i}/?rent_frequency=any`;
+  let target = `https://www.bayut.com/for-sale/showrooms/uae/page-${i}/`;
   if (i == 1) {
-    target = "https://www.bayut.com/to-rent/property/uae/?rent_frequency=any";
+    target = "https://www.bayut.com/for-sale/showrooms/uae/";
   }
   console.log(target);
   await page.goto(target);
@@ -322,8 +315,8 @@ async function main_loop(page, i) {
       }
     }
   }
-  if (i==1 || i%20 == 0){
-    const message = `Bayut rent residential ${i} done`;
+  if (i==1 || i%1 == 0){
+    const message = `Data - Bayut showrooms sale ${i} done`;
 
     const url = 'https://profoundproject.com/tele/';
 
@@ -338,6 +331,18 @@ async function main_loop(page, i) {
       .catch(error => {
         console.error(error);
       });
+    if(i == 1){
+      exec('pm2 stop main', (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error executing command: ${error}`);
+          return;
+        }
+      
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
+    }
+
   }
 }
 
@@ -345,7 +350,7 @@ async function main() {
   const browser = await puppeteer.launch({headless: true,executablePath: '/usr/bin/google-chrome-stable',args: ['--no-sandbox']});
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 2084; i++) {
+  for (let i = 1; i <= 1; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {
@@ -354,7 +359,7 @@ async function main() {
       } catch (error) {
         csvErrr
           .writeRecords({ link: i, error: error })
-          .then(() => console.log("error logged",error));
+          .then(() => console.log("error logged"));
         continue;
       }
     }

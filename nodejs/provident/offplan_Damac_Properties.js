@@ -559,12 +559,8 @@ async function visit_each(link, page, browser) {
       };
     })
   );
-  await page.waitForSelector(
-    ".comagic-c-callback__panel.comagic-c-callback__panel__screen--callback"
-  );
-  await page.click(
-    ".comagic-c-callback__panel.comagic-c-callback__panel__screen--callback .comagic-o-button_close"
-  );
+
+  console.log(data[0])
   //#################### brochure #####################################
   const exists = await page.evaluate(() => {
     return (
@@ -585,42 +581,42 @@ async function visit_each(link, page, browser) {
     );
 
     await page.evaluate(() => {
-      let Numbers = document
-        .querySelector(
-          "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 span"
-        )
-        .textContent.match(/\w/g);
-      let operation = document
-        .querySelector(
-          "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 span"
-        )
-        .textContent.match(/\W/)[0];
-      let reselt;
-      switch (operation) {
-        case "+":
-          reselt = Number(Numbers[0]) + Number(Numbers[1]);
-          break;
-        case "-":
-          reselt = Number(Numbers[0]) - Number(Numbers[1]);
-          break;
-        case "*":
-          reselt = Number(Numbers[0]) * Number(Numbers[1]);
-          break;
-        case "/":
-          reselt =
-            Number(Numbers[1]) !== 0
-              ? Number(Numbers[0]) / Number(Numbers[1])
-              : 0;
-          break;
-        default:
-          break;
-      }
+      // let Numbers = document
+      //   .querySelector(
+      //     "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 span"
+      //   )
+      //   .textContent.match(/\w/g);
+      // let operation = document
+      //   .querySelector(
+      //     "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 span"
+      //   )
+      //   .textContent.match(/\W/)[0];
+      // let reselt;
+      // switch (operation) {
+      //   case "+":
+      //     reselt = Number(Numbers[0]) + Number(Numbers[1]);
+      //     break;
+      //   case "-":
+      //     reselt = Number(Numbers[0]) - Number(Numbers[1]);
+      //     break;
+      //   case "*":
+      //     reselt = Number(Numbers[0]) * Number(Numbers[1]);
+      //     break;
+      //   case "/":
+      //     reselt =
+      //       Number(Numbers[1]) !== 0
+      //         ? Number(Numbers[0]) / Number(Numbers[1])
+      //         : 0;
+      //     break;
+      //   default:
+      //     break;
+      // }
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
       ).value = "John";
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
-      ).value = "jhon@jmail.com";
+      ).value = "jhon@gmail.com";
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
       ).value = "944331234";
@@ -629,7 +625,7 @@ async function visit_each(link, page, browser) {
       ).value = "Hello";
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 input[name='quiz-221']"
-      ).value = reselt;
+      ).value = '4';
     });
 
     // await page.evaluate(() => {
@@ -646,20 +642,39 @@ async function visit_each(link, page, browser) {
     //     "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
     //   ),
     // ]);
-    const [newPage] = await Promise([
-      new Promise((resolve) =>
-        browser.once("targetcreated", (target) => resolve(target.page()))
-      ),
-      await page.click(
-        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-      ),
-    ]);
+    // const [newPage] = await Promise.all([
+    //   new Promise((resolve) =>
+    //     browser.once("targetcreated", (target) => resolve(target.page()))
+    //   ),
+    // ]);
+    
+    // await page.click(
+    //   "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    // )
+    await page.waitForNavigation()
 
+    await Promise.all([
+      page.click('div.modal-content div.modal-body.listing-form-7 div form input[type=submit]'), // click on a link that opens in a new tab
+      page.waitForTarget(target => target.url().includes('pdf'), { timeout: 5000 }) // wait for the new tab to finish loading
+    ]);
+  
+    // Get the URL of the newly opened tab
+    const pages = await browser.pages();
+    const newPage = pages[pages.length - 1];
+    const newPageUrl = await newPage.url();
+  
+    // Copy the URL to clipboard
+    await page.evaluate(url => navigator.clipboard.writeText(url), newPageUrl);
+
+
+
+
+    // await page.waitForTarget(target => target.url().includes('pdf'), { timeout: 5000 }) // wait for the new tab to finish loading
     // Get the URL of the new page
-    const url = await newPage.url();
-    console.log(url);
+    // const url = await newPage.url();
+    // console.log(url);
     // console.log(brochure);
-    await page.goBack();
+    // await page.goBack();
     // console.log(data[0]);
     // await newPage.goBack();
   } else {
@@ -667,68 +682,68 @@ async function visit_each(link, page, browser) {
   }
 
   //#################### floor_link #####################################
-  const exists_floor_btn = await page.evaluate(() => {
-    return (
-      document.querySelectorAll(
-        "div.vc_btn3-container.download_btn.vc_btn3-center a"
-      )[1] !== null &&
-      /floor/i.test(
-        document.querySelectorAll(
-          "div.vc_btn3-container.download_btn.vc_btn3-center a"
-        )[1].textContent
-      )
-    );
-  });
-  if (exists_floor_btn) {
-    await page.evaluate(() => {
-      document
-        .querySelectorAll(
-          "div.vc_btn3-container.download_btn.vc_btn3-center a"
-        )[1]
-        .click();
-    });
-    await page.waitForSelector(
-      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-    );
-    await page.evaluate(() => {
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-      ).value = "John";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
-      ).value = "jhon@jmail.com";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
-      ).value = "944331234";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
-      ).value = "Hello";
-    });
+  // const exists_floor_btn = await page.evaluate(() => {
+  //   return (
+  //     document.querySelectorAll(
+  //       "div.vc_btn3-container.download_btn.vc_btn3-center a"
+  //     )[1] !== null &&
+  //     /floor/i.test(
+  //       document.querySelectorAll(
+  //         "div.vc_btn3-container.download_btn.vc_btn3-center a"
+  //       )[1].textContent
+  //     )
+  //   );
+  // });
+  // if (exists_floor_btn) {
+  //   await page.evaluate(() => {
+  //     document
+  //       .querySelectorAll(
+  //         "div.vc_btn3-container.download_btn.vc_btn3-center a"
+  //       )[1]
+  //       .click();
+  //   });
+  //   await page.waitForSelector(
+  //     "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+  //   );
+  //   await page.evaluate(() => {
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+  //     ).value = "John";
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
+  //     ).value = "jhon@jmail.com";
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
+  //     ).value = "944331234";
+  //     document.querySelector(
+  //       "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
+  //     ).value = "Hello";
+  //   });
 
-    await page.evaluate(() => {
-      document
-        .querySelector(
-          "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-        )
-        .click();
-    });
+  //   await page.evaluate(() => {
+  //     document
+  //       .querySelector(
+  //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+  //       )
+  //       .click();
+  //   });
 
-    const [newPage] = await Promise([
-      new Promise((resolve) =>
-        browser.once("targetcreated", (target) => resolve(target.page()))
-      ),
-      await page.click(
-        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-      ),
-    ]);
-    // Get the URL of the new page
-    const url = await newPage.url();
-    let floor_plan_link = url;
-    data[0].floor_plan_link = floor_plan_link;
-    console.log(floor_plan_link);
-  } else {
-    console.log("no floor_plan_link");
-  }
+  //   const [newPage] = await Promise([
+  //     new Promise((resolve) =>
+  //       browser.once("targetcreated", (target) => resolve(target.page()))
+  //     ),
+  //     await page.click(
+  //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+  //     ),
+  //   ]);
+  //   // Get the URL of the new page
+  //   const url = await newPage.url();
+  //   let floor_plan_link = url;
+  //   data[0].floor_plan_link = floor_plan_link;
+  //   console.log(floor_plan_link);
+  // } else {
+  //   console.log("no floor_plan_link");
+  // }
 
   if (j % 500 == 0) {
     batch++;

@@ -13,6 +13,9 @@ return createCsvWriter({
     {id: 'title', title: 'title'},
     {id: 'content', title: 'content'},
     {id: 'images', title: 'images'},
+    {id: 'cover', title: 'cover'},
+    {id: 'signaturea', title: 'signaturea'},
+
   ]
 });
 
@@ -118,6 +121,7 @@ async function visit_each(link,page){
     let title = clean(document.querySelector(".area-header__title").textContent)
     let content = extract_text_from_section_key_value_auto_all__pass_elmnts_with_key_selector(Array.from(document.querySelectorAll('.contentSection.featureProjects')),'.projectHeading ')
     let images = Array.from(document.querySelectorAll('.gallerySlider-wrap .gallerySlider__item img'),img => img.getAttribute('data-src'))
+    let cover = document.querySelector('.area-header__col.area-header__col-img img').getAttribute('data-srcset')
 
 
 
@@ -127,6 +131,8 @@ async function visit_each(link,page){
       title: title,
       content:content,
       images:images,
+      cover:cover,
+      signaturea : Date.now(),
 
     })
 
@@ -199,7 +205,7 @@ async function main_loop(page,i){
 
 async function main(){
 
-  const browser = await puppeteer.launch({headless: false,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
+  const browser = await puppeteer.launch({headless: true,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
   const page = await browser.newPage();
   // let plans_data = {};
   for(let i=1 ; i<=1 ; i++){

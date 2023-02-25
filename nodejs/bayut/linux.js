@@ -2,14 +2,17 @@ const puppeteer = require('puppeteer');
 const csv = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
-const request = require('request');
+const axios = require('axios');
+const { exec } = require('child_process');
+
+
 
 function csv_handler (directory,batch){
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
 }
 return createCsvWriter({
-  path: `${directory}/bayut_buy_ready_${batch}.csv`,
+  path: `${directory}/bayut_buy_offplan_${batch}.csv`,
   header: [
     {id: 'title', title: 'title'},
     {id: 'description', title: 'description'},
@@ -56,8 +59,8 @@ return createCsvWriter({
 });
 }
 
-let csvErrr = csv_error_handler('bayut_buy_ready')
-let csvWriter = csv_handler('bayut_buy_ready',1)
+let csvErrr = csv_error_handler('offplan')
+let csvWriter = csv_handler('offplan',1)
 let batch = 0
 let j = 0
 let main_err_record = 0
@@ -213,7 +216,7 @@ if(btns.length>0){
 
   if((j%500) == 0){
     batch++
-    csvWriter = csv_handler('bayut_buy_ready',batch)
+    csvWriter = csv_handler('offplan',batch)
   }
   
   data[0].plans_2d = plans.d2[0]
@@ -230,9 +233,9 @@ if(btns.length>0){
 async function main_loop(page,i){
   
 
-  let target = `https://www.bayut.com/for-sale/property/dubai/page-${i}/?completion_status=ready`;
+  let target = `https://www.bayut.com/for-sale/property/dubai/page-${i}/?completion_status=off-plan`;
   if(i == 1){
-    target = 'https://www.bayut.com/for-sale/property/dubai/?completion_status=ready'
+    target = 'https://www.bayut.com/for-sale/property/dubai/?completion_status=off-plan'
   }
   console.log(target)
   await page.goto(target);
@@ -257,15 +260,34 @@ async function main_loop(page,i){
       }
     }
   }
-  if( i == 1 || i%10 == 0){
-    
-    let data = { message: `bayut ready buy page ${i}` };
-    request.post({ url: 'https://notifier.abdullatif-treifi.com/', form: data }, (err, res, body) => {
-      if (err) {
-        console.error(err);
-        return;
+  if (i==1 || i%54 == 0){
+    const message = `Data - Bayut Wearhous rent ${i} done`;
+
+    const url = 'https://profoundproject.com/tele/';
+
+    axios.get(url, {
+      params: {
+        message: message
       }
-    });
+    })
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    if(i == 54){
+      exec('pm2 stop main', (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error executing command: ${error}`);
+          return;
+        }
+      
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
+    }
+
   }
 
 }
@@ -277,7 +299,7 @@ async function main(){
   const browser = await puppeteer.launch({headless: true,executablePath: '/usr/bin/google-chrome-stable',args: ['--no-sandbox']});
   const page = await browser.newPage();
   // let plans_data = {};
-  for(let i=1 ; i<=2084 ; i++){
+  for(let i=1 ; i<=1493 ; i++){
     try{
       await main_loop(page,i)
     }catch(error){

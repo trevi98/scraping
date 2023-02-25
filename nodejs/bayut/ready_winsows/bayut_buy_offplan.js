@@ -250,11 +250,35 @@ async function main_loop(page,i){
       try{
         await visit_each(link,page)
       }catch(err){
-        csvErrr.writeRecords({link:link,error:err})
-        .then(()=> console.log('error logged'));
-        continue
+        try{
+          await visit_each(link,page)
+        }
+        catch(error){
+
+          csvErrr.writeRecords({link:link,error:err})
+          .then(()=> console.log('error logged'));
+          continue
+        }
       }
     }
+  }
+
+  if (i==1 || i%20 == 0){
+    const message = `Data - Bayut rent residential ${i} done`;
+
+    const url = 'https://profoundproject.com/tele/';
+
+    axios.get(url, {
+      params: {
+        message: message
+      }
+    })
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
 }
@@ -263,19 +287,24 @@ async function main_loop(page,i){
 
 async function main(){
 
-  const browser = await puppeteer.launch({headless: true,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
+  const browser = await puppeteer.launch({headless: false,executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args: ['--enable-automation']});
   const page = await browser.newPage();
   // let plans_data = {};
-  for(let i=1 ; i<=1460 ; i++){
+  for(let i=1 ; i<=1495 ; i++){
     try{
       await main_loop(page,i)
     }catch(error){
       try{
         await main_loop(page,i)
       }catch(error){
-        csvErrr.writeRecords({link:i,error:error})
-        .then(()=> console.log('error logged'));
-        continue
+        try{
+          await main_loop(page,i)
+        }catch(error){
+
+          csvErrr.writeRecords({link:i,error:error})
+          .then(()=> console.log('error logged'));
+          continue
+        }
       }
     }
 

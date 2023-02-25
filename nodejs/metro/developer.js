@@ -16,6 +16,9 @@ return createCsvWriter({
     {id: 'founded_in', title: 'founded_in'},
     {id: 'content', title: 'content'},
     {id: 'images', title: 'images'},
+    {id: 'cover', title: 'cover'},
+    {id: 'signaturea', title: 'signaturea'},
+
   ]
 });
 
@@ -125,6 +128,11 @@ async function visit_each(link,page){
     let projects = extract_one_text_from_pare_elements_in_one_container__pass_array_of_main_containers(temp,'Projects','.developer-header__details-item-value')
     let content = extract_text_from_section_key_value_auto_all__pass_elmnts_with_key_selector(Array.from(document.querySelectorAll('.contentSection.featureProjects')),'.projectHeading ')
     let images = Array.from(document.querySelectorAll('.gallerySlider__item img'),img => img.getAttribute('data-src'))
+    let cover = document.querySelector(".latest-projects__logo img")
+
+    if (cover != null && cover != undefined){
+      cover = cover .getAttribute('data-src')
+    }
 
 
 
@@ -137,6 +145,8 @@ async function visit_each(link,page){
       projects:projects,
       content:content,
       images:images,
+      cover:cover,
+      signaturea : Date.now()
 
     })
 

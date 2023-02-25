@@ -31,6 +31,8 @@ return createCsvWriter({
     {id: 'economic_apeal', title: 'economic_apeal'},
     {id: 'images', title: 'images'},
     {id: 'faq', title: 'faq'},
+    {id: 'signaturea', title: 'signaturea'},
+
   ]
 });
 
@@ -239,7 +241,8 @@ async function visit_each(link,page){
       location:x,
       economic_apeal:economic_apeal,
       property_price:property_price,
-      faq:JSON.stringify(faq)
+      faq:JSON.stringify(faq),
+      signaturea : Date.now(),
       // price: price,
     })
 
