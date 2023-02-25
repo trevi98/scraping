@@ -485,7 +485,7 @@ async function run() {
       ).value = "John";
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
-      ).value = "jhon@jmail.com";
+      ).value = "jh@gmail.com";
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
       ).value = "944331234";
@@ -494,15 +494,25 @@ async function run() {
       ).value = "Hello";
     });
 
-    await page.evaluate(() => {
-      document
-        .querySelector(
-          "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-        )
-        .click();
-    });
-    await page.waitForNavigation();
-    let brochure = await page.evaluate(() => document.location.href);
+    // await page.evaluate(() => {
+    //   document
+    //     .querySelector(
+    //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //     )
+    //     .click();
+    // });
+    // await page.waitForNavigation();
+    // let brochure = await page.evaluate(() => document.location.href);
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click(
+        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+      ),
+    ]);
+
+    // Get the URL of the new page
+    const newPageUrl = await page.url();
+    console.log(newPageUrl);
 
     // const [newPage] = await Promise.all([
     //   new Promise((resolve) =>
@@ -519,11 +529,9 @@ async function run() {
     // // Get the URL of the new page
     // const url = await newPage.url();
     // brochure = url;
-    console.log(brochure);
+    // console.log(brochure);
     console.log("yes");
-    await page.goto(
-      "https://www.providentestate.com/dubai-offplan/creek-beach-lotus.html"
-    );
+    await page.goBack();
   } else {
     console.log("no");
   }
@@ -567,28 +575,38 @@ async function run() {
       ).value = "Hello";
     });
 
-    await page.evaluate(() => {
-      document
-        .querySelector(
-          "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-        )
-        .click();
-    });
+    // await page.evaluate(() => {
+    //   document
+    //     .querySelector(
+    //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //     )
+    //     .click();
+    // });
 
-    const [newPage] = await Promise.all([
-      new Promise((resolve) =>
-        browser.once("targetcreated", (target) => resolve(target.page()))
+    // const [newPage] = await Promise.all([
+    //   new Promise((resolve) =>
+    //     browser.once("targetcreated", (target) => resolve(target.page()))
+    //   ),
+    //   await page.evaluate(() => {
+    //     document
+    //       .querySelector(
+    //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //       )
+    //       .click();
+    //   }),
+    // ]);
+    // // Get the URL of the new page
+    // const url = await newPage.url();
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click(
+        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
       ),
-      await page.evaluate(() => {
-        document
-          .querySelector(
-            "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-          )
-          .click();
-      }),
     ]);
+
     // Get the URL of the new page
-    const url = await newPage.url();
+    const newPageUrl = await page.url();
+    console.log(newPageUrl);
     let floor_plan_link = url;
     console.log(floor_plan_link);
   } else {

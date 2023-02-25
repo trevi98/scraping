@@ -133,30 +133,36 @@ async function main_loop(page) {
         return uniqe_links;
       })
     );
-    let all_links = await page.evaluate(() => {
-      let temp = Array.from(
-        document.querySelectorAll(".t-Report-paginationText a")
-      );
+    let temp = await page.evaluate(() => {
+      let temp = document.querySelectorAll(".t-Report-paginationText a");
+      let text = [];
+      temp.forEach((e) => text.push(e.textContent));
+      return text;
+    });
+
+    console.log(temp);
+    let all_links = await page.evaluate(async (mytemp) => {
       let s = [];
-      temp.forEach((e) => {
-        e.click();
+      for (let i = 0; i < mytemp.length; i++) {
+        await mytemp[i].click();
         setTimeout(() => {}, 4000);
-        let all = [];
         let link = Array.from(
           document.querySelectorAll(
             ".col.col-12.padding-top-sm.blog-info .t-Button.t-Button--icon.t-Button--primary.t-Button--simple.t-Button--iconRight "
           )
         );
+        let all = [];
         link.forEach((e) => {
           let a = e.href;
           all.push(a);
         });
         let uniqe_links = [...new Set(all)];
         s.push(uniqe_links);
-      });
+      }
       return s;
-    });
+    }, temp);
     links.push(all_links);
+    // console.log(all_links.l);
     if (
       await page.evaluate(() => {
         return (

@@ -9,7 +9,7 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/luxury_apartments_for_sale${batch}.csv`,
+    path: `${directory}/luxury_project${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "price", title: "price" },
@@ -25,6 +25,7 @@ function csv_handler(directory, batch) {
       { id: "amenities", title: "amenities" },
       { id: "buildings", title: "buildings" },
       { id: "properties", title: "properties" },
+      { id: "Nearby_places", title: "Nearby_places" },
       { id: "Nearby_schools", title: "Nearby_schools" },
       { id: "cover_img", title: "cover_img" },
       { id: "images", title: "images" },
@@ -46,8 +47,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("luxury_apartments_for_sale");
-let csvWriter = csv_handler("luxury_apartments_for_sale", 1);
+let csvErrr = csv_error_handler("luxury_project");
+let csvWriter = csv_handler("luxury_project", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -197,6 +198,15 @@ async function visit_each(link, page) {
           });
         } catch (error) {}
       });
+      let Nearby_places = [];
+      temp = Array.from(
+        document.querySelectorAll("#R28303583548336170062_Cards li")
+      );
+      temp.forEach((e) => {
+        try {
+          Nearby_places.push(clean(e, textContent));
+        } catch (error) {}
+      });
       return {
         title: title,
         price: price,
@@ -211,6 +221,7 @@ async function visit_each(link, page) {
         amenities: amenities,
         buildings: buildings,
         properties: properties,
+        Nearby_places: Nearby_places,
         signaturea: Date.now(),
       };
     })
@@ -233,6 +244,9 @@ async function visit_each(link, page) {
 
   let s = [];
   if (exist) {
+    await page.addStyleTag({
+      content: "#marquizPopup { display: none !important; }",
+    });
     await page.click(".a-GV-pageButton.a-GV-pageButton--nav.js-pg-next");
     await page.waitForTimeout(500);
     s.push(
@@ -387,6 +401,7 @@ async function visit_each(link, page) {
       );
       await page.waitForTimeout(500);
     }
+    await page.waitForTimeout(1000);
     all = await page.evaluate(() => {
       let images = [];
       let temp = Array.from(
@@ -408,7 +423,7 @@ async function visit_each(link, page) {
   //   data[0]
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("luxury_apartments_for_sale", batch);
+    csvWriter = csv_handler("luxury_project", batch);
   }
 
   csvWriter
@@ -433,6 +448,9 @@ async function main_loop(page) {
     await page.evaluate(() => {
       document.querySelectorAll("footer .row")[15].style.display = "none";
       document.querySelector("#marquizPopup").style.display = "none";
+    });
+    await page.addStyleTag({
+      content: "#marquizPopup { display: none !important; }",
     });
     await page.waitForSelector("#project_cards");
     await page.waitForTimeout(8000);

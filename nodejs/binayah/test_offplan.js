@@ -8,7 +8,9 @@ async function run() {
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
-  await page.goto("https://www.binayah.com/dubai-projects/jomana-mjl/");
+  await page.goto(
+    "https://www.binayah.com/dubai-projects/raffles-residences-palm-jumeirah/"
+  );
   // .vc_row.wpb_row.vc_inner.vc_row-fluid:not(.payment) .wpb_single_image.wpb_content_element.vc_align_center +.wpb_text_column.wpb_content_element;
   const links = await page.evaluate(() => {
     let title = "";
@@ -105,26 +107,63 @@ async function run() {
         .querySelector("div.rll-youtube-player")
         .getAttribute("data-src");
     } catch (error) {}
+    temp = Array.from(
+      document.querySelectorAll(
+        "div.wpb_text_column.wpb_content_element.bedroom div.wpb_wrapper"
+      )
+    );
+    let type_size = [];
+    temp.forEach((e) => {
+      try {
+        type_size.push(e.textContent);
+      } catch (error) {}
+    });
+    let Payment_Plan_list = [];
+    temp = Array.from(document.querySelectorAll(".paymentplan"));
+    temp.forEach((e) => {
+      try {
+        Payment_Plan_list.push(e.textContent);
+      } catch (error) {}
+    });
     // temp = document.querySelectorAll(".vc_row.wpb_row.vc_row-fluid")[4];
     // let all = Array.from(temp.querySelectorAll(">*"));
     // let s = [];
     // all.forEach((e) => s.push());
     temp = Array.from(document.querySelectorAll(".wpb_wrapper"));
     let floor_plans = {};
+    let s = 0;
     for (let i = 0; i < temp.length; i++) {
       if (
         temp[i].querySelector(".wpb_heading.wpb_singleimage_heading") !== null
       ) {
-        try {
-          floor_plans[temp[i].textContent] =
-            temp[i].querySelector("figure img").src;
-        } catch (error) {}
+        s++;
+        if (s > 1) {
+          try {
+            floor_plans[temp[i].textContent] =
+              temp[i].querySelector("figure a").href;
+          } catch (error) {}
+        }
       }
     }
-    all = [];
-    // for (let i = 0; i < array.length; i++) {
-    //   const element = array[i];
-    // }
+    let location_map = "";
+    temp = Array.from(
+      document.querySelectorAll(
+        ".wpb_single_image.wpb_content_element.vc_align_center a"
+      )
+    );
+    temp.forEach((e) => {
+      if (/locationmap/i.test(e.href)) {
+        location_map = e.href;
+      }
+    });
+    if (!location_map) {
+      temp = document.querySelectorAll(".mega_wrap img");
+      temp.forEach((e) => {
+        try {
+          location_map = e.getAttribute("data-src");
+        } catch (error) {}
+      });
+    }
     return {
       title: title,
       Property_Type: Property_Type,
@@ -141,34 +180,37 @@ async function run() {
       Amenities_description: Amenities_description,
       Amenities_list: Amenities_list,
       attractions: attractions,
+      type_size: type_size,
+      Payment_Plan_list: Payment_Plan_list,
       video: video,
       floor_plans: floor_plans,
+      location_map: location_map,
     };
   });
   console.log(links);
   // .wpb_text_column.wpb_content_element.paymentplan
-
+  // await page.waitForSelector(".vc_clearfix.vc_col-sm-3.vc_visible-item");
+  // await page.waitForNavigation();
+  // await page.waitForTimeout(10000);
   const exist = await page.evaluate(() => {
     return (
-      document.querySelector(
-        ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn"
-      ) !== null
+      document.querySelector(".vc_grid-container-wrapper.vc_clearfix") !== null
     );
   });
   let images;
   if (exist) {
-    await page.waitForSelector(
-      ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn .vc_grid-item.vc_clearfix.vc_visible-item.fadeIn.animated"
-    );
-    // await page.waitForTimeout(10000);
-    await page.click(
-      ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn .vc_grid-item.vc_clearfix.vc_visible-item.fadeIn.animated"
-    );
+    await page.waitForSelector(".vc_clearfix.vc_col-sm-3.vc_visible-item");
+    // try {
+    //   await page.waitForSelector(
+    //     ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn .vc_grid-item.vc_clearfix.vc_visible-item"
+    //   );
+    // } catch (error) {}
+    await page.click(".vc_grid-item.vc_clearfix.vc_col-sm-3.vc_visible-item a");
     images = await page.evaluate(() => {
       let imgs = [];
       temp = Array.from(
         document.querySelectorAll(
-          ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn a"
+          ".vc_grid-item.vc_clearfix.vc_col-sm-3.vc_visible-item a"
         )
       );
       temp.forEach((e) => {
@@ -180,9 +222,8 @@ async function run() {
     });
     console.log(images);
     console.log(images.length);
-    console.log([...new Set(images)].length);
   } else {
-    console.log("w");
+    console.log("no imgs");
   }
 
   await browser.close();

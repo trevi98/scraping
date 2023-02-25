@@ -600,32 +600,18 @@ async function visit_each(link, page, browser) {
     //     )
     //     .click();
     // });
-    clicked = false;
-    if (!clicked) {
-      const [newPage] = await Promise.all([
-        new Promise((resolve) =>
-          browser.once("targetcreated", (target) => resolve(target.page()))
-        ),
-        await page.click(
-          "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-        ),
-      ]);
-      const url = await newPage.url();
-      brochure = url;
-      await newPage.close();
-      data[0].brochure = brochure;
-      console.log(brochure);
-      await page.goBack();
-      console.log(data[0]);
-    }
-    clicked = true;
+    // Click on the button to open the new page
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click(
+        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+      ),
+    ]);
 
     // Get the URL of the new page
-    const url = await newPage.url();
-    brochure = url;
-    await newPage.close();
-    data[0].brochure = brochure;
-    console.log(brochure);
+    const newPageUrl = await page.url();
+    console.log(newPageUrl);
+    // console.log(brochure);
     await page.goBack();
     console.log(data[0]);
     // await newPage.goBack();
