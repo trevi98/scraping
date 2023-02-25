@@ -559,7 +559,12 @@ async function visit_each(link, page, browser) {
       };
     })
   );
-
+  await page.waitForSelector(
+    ".comagic-c-callback__panel.comagic-c-callback__panel__screen--callback"
+  );
+  await page.click(
+    ".comagic-c-callback__panel.comagic-c-callback__panel__screen--callback .comagic-o-button_close"
+  );
   //#################### brochure #####################################
   const exists = await page.evaluate(() => {
     return (
@@ -578,7 +583,38 @@ async function visit_each(link, page, browser) {
     await page.waitForSelector(
       "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
     );
+
     await page.evaluate(() => {
+      let Numbers = document
+        .querySelector(
+          "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 span"
+        )
+        .textContent.match(/\w/g);
+      let operation = document
+        .querySelector(
+          "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 span"
+        )
+        .textContent.match(/\W/)[0];
+      let reselt;
+      switch (operation) {
+        case "+":
+          reselt = Number(Numbers[0]) + Number(Numbers[1]);
+          break;
+        case "-":
+          reselt = Number(Numbers[0]) - Number(Numbers[1]);
+          break;
+        case "*":
+          reselt = Number(Numbers[0]) * Number(Numbers[1]);
+          break;
+        case "/":
+          reselt =
+            Number(Numbers[1]) !== 0
+              ? Number(Numbers[0]) / Number(Numbers[1])
+              : 0;
+          break;
+        default:
+          break;
+      }
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
       ).value = "John";
@@ -591,6 +627,9 @@ async function visit_each(link, page, browser) {
       document.querySelector(
         "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
       ).value = "Hello";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form .wpcf7-form-control-wrap.quiz-221 input[name='quiz-221']"
+      ).value = reselt;
     });
 
     // await page.evaluate(() => {
@@ -601,19 +640,27 @@ async function visit_each(link, page, browser) {
     //     .click();
     // });
     // Click on the button to open the new page
-    await Promise.all([
-      page.waitForNavigation(),
-      page.click(
+    // await Promise.all([
+    //   page.waitForNavigation(),
+    //   page.click(
+    //     "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //   ),
+    // ]);
+    const [newPage] = await Promise([
+      new Promise((resolve) =>
+        browser.once("targetcreated", (target) => resolve(target.page()))
+      ),
+      await page.click(
         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
       ),
     ]);
 
     // Get the URL of the new page
-    const newPageUrl = await page.url();
-    console.log(newPageUrl);
+    const url = await newPage.url();
+    console.log(url);
     // console.log(brochure);
     await page.goBack();
-    console.log(data[0]);
+    // console.log(data[0]);
     // await newPage.goBack();
   } else {
     console.log("no brochure");
