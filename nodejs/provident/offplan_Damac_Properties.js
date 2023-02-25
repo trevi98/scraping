@@ -24,6 +24,7 @@ function csv_handler(directory, batch) {
       { id: "Unit_Sizes", title: "Unit_Sizes" },
       { id: "Overview", title: "Overview" },
       { id: "Payment_Plan", title: "Payment_Plan" },
+      { id: "Payment_Plan_table", title: "Payment_Plan_table" },
       { id: "Interiors", title: "Interiors" },
       { id: "Amenities_description", title: "Amenities_description" },
       { id: "Amenities_List", title: "Amenities_List" },
@@ -31,8 +32,10 @@ function csv_handler(directory, batch) {
       { id: "Location_Map", title: "Location_Map" },
       { id: "Image_location_map", title: "Image_location_map" },
       { id: "images", title: "images" },
-      { id: "video", title: "video" },
       { id: "floor_plan_images", title: "floor_plan_images" },
+      { id: "brochure", title: "brochure" },
+      { id: "floor_plan_link", title: "floor_plan_link" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -57,7 +60,7 @@ let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
-async function visit_each(link, page) {
+async function visit_each(link, page, browser) {
   // await page.setCacheEnabled(false);
   await page.goto(link);
   let data = [];
@@ -75,8 +78,10 @@ async function visit_each(link, page) {
           return text;
         }
       }
-
-      let title = clean(document.title);
+      let title = "";
+      try {
+        title = clean(document.title);
+      } catch (error) {}
       let temp = Array.from(
         document.querySelectorAll(
           "div.wpb_column.vc_column_container.vc_col-sm-6 div.vc_column-inner div.wpb_wrapper div.wpb_text_column.wpb_content_element div.wpb_wrapper div.table-responsive table#datatable1 tbody td "
@@ -95,25 +100,39 @@ async function visit_each(link, page) {
           Down_Payment = clean(temp[i + 1].textContent);
         }
         if (/Location/i.test(temp[i].textContent)) {
-          Location = clean(temp[i + 1].textContent);
+          try {
+            Location = clean(temp[i + 1].textContent);
+          } catch (error) {}
         }
         if (/Bedrooms/i.test(temp[i].textContent)) {
-          Bedrooms = clean(temp[i + 1].textContent);
+          try {
+            Bedrooms = clean(temp[i + 1].textContent);
+          } catch (error) {}
         }
         if (/Area/i.test(temp[i].textContent)) {
-          Area = clean(temp[i + 1].textContent);
+          try {
+            Area = clean(temp[i + 1].textContent);
+          } catch (error) {}
         }
         if (/Type/i.test(temp[i].textContent)) {
-          Type = clean(temp[i + 1].textContent);
+          try {
+            Type = clean(temp[i + 1].textContent);
+          } catch (error) {}
         }
         if (/Completion/i.test(temp[i].textContent)) {
-          Completion = clean(temp[i + 1].textContent);
+          try {
+            Completion = clean(temp[i + 1].textContent);
+          } catch (error) {}
         }
         if (/price/i.test(temp[i].textContent)) {
-          Starting_Price = clean(temp[i + 1].textContent);
+          try {
+            Starting_Price = temp[i + 1].textContent;
+          } catch (error) {}
         }
         if (/Community/i.test(temp[i].textContent)) {
-          Community = clean(temp[i + 1].textContent);
+          try {
+            Community = clean(temp[i + 1].textContent);
+          } catch (error) {}
         }
       }
       let Investment = [];
@@ -121,6 +140,7 @@ async function visit_each(link, page) {
       let Unit_Sizes = [];
       let Overview = "";
       let Payment_Plan = [];
+      let Payment_Plan_table = [];
       let Interiors = "";
       let Location_Map = "";
       let Image_location_map = "";
@@ -129,11 +149,10 @@ async function visit_each(link, page) {
       let Amenities_description = "";
       let Amenities_List = [];
       let images = [];
-      let video = "";
       let temp1, temp2;
       temp = Array.from(document.querySelectorAll("div.wpb_wrapper"));
       temp.forEach((e) => {
-        // ---------------h3------------
+        //-------------h3-------------
         if (e.querySelector("h3") !== null) {
           if (/Investment/i.test(e.querySelector("h3").textContent)) {
             temp1 = e.querySelector(
@@ -143,10 +162,10 @@ async function visit_each(link, page) {
             temp2.forEach((e) => {
               let one = "";
               try {
-                one = e.textContent;
+                one = clean(e.textContent);
               } catch (error) {}
               if (one) {
-                Investment.push(clean(one));
+                Investment.push(one);
               }
             });
           }
@@ -157,11 +176,12 @@ async function visit_each(link, page) {
             temp2 = Array.from(temp1.querySelectorAll("li"));
             temp2.forEach((e) => {
               let one = "";
+
               try {
-                one = e.textContent;
+                one = clean(e.textContent);
               } catch (error) {}
               if (one) {
-                Exclusive_Features.push(clean(one));
+                Exclusive_Features.push(one);
               }
             });
           }
@@ -173,10 +193,10 @@ async function visit_each(link, page) {
             temp2.forEach((e) => {
               let one = "";
               try {
-                one = e.textContent;
+                one = clean(e.textContent);
               } catch (error) {}
               if (one) {
-                Unit_Sizes.push(clean(one));
+                Unit_Sizes.push(one);
               }
             });
           }
@@ -195,6 +215,7 @@ async function visit_each(link, page) {
                 "div.vc_grid-container-wrapper.vc_clearfix img"
               )
             );
+
             temp1.forEach((e) => {
               let one = "";
               try {
@@ -204,13 +225,6 @@ async function visit_each(link, page) {
                 images.push(one);
               }
             });
-          }
-          if (/video/i.test(e.querySelector("h3").textContent)) {
-            try {
-              video = e.querySelector(
-                "div.fluid-width-video-wrapper iframe"
-              ).src;
-            } catch (error) {}
           }
           if (/Payment Plan/i.test(e.querySelector("h3").textContent)) {
             if (
@@ -223,21 +237,26 @@ async function visit_each(link, page) {
               );
               temp2 = Array.from(temp1.querySelectorAll("li"));
               temp2.forEach((e) => {
+                let one = "";
                 try {
-                  temp = e.textContent;
+                  one = clean(e.textContent);
                 } catch (error) {}
-                if (temp) {
-                  Payment_Plan.push(clean(temp));
+                if (one) {
+                  Payment_Plan.push(one);
                 }
               });
-              temp = Array.from(
+              let s = Array.from(
                 e.querySelectorAll(
                   "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
                 )
               );
-              temp.forEach((e) => {
+              s.forEach((e) => {
                 if (/Handover/i.test(e.textContent)) {
-                  handover = e.textContent.replaceAll("Handover:", "").trim();
+                  try {
+                    handover = clean(
+                      e.textContent.replaceAll("Handover:", "").trim()
+                    );
+                  } catch (error) {}
                 }
               });
             } else {
@@ -245,13 +264,33 @@ async function visit_each(link, page) {
               temp1.forEach((e) => {
                 let one = "";
                 try {
-                  one = e.textContent;
+                  one = clean(e.textContent);
                 } catch (error) {}
                 if (one) {
-                  Payment_Plan.push(clean(one));
+                  Payment_Plan.push(one);
                 }
               });
             }
+            let temp4 = Array.from(
+              document.querySelectorAll("#paymentplan #datatable1 tr")
+            );
+            let Payment_Plan_all_table = {};
+            for (let i = 1; i < temp4.length; i++) {
+              let des = "";
+              let mil = "";
+              let pay = "";
+              try {
+                des = clean(temp4[i].querySelectorAll("td")[0].textContent);
+              } catch (error) {}
+              try {
+                mil = clean(temp4[i].querySelectorAll("td")[1].textContent);
+              } catch (error) {}
+              try {
+                pay = clean(temp4[i].querySelectorAll("td")[2].textContent);
+              } catch (error) {}
+              Payment_Plan_all_table[des] = [mil, pay];
+            }
+            Payment_Plan_table.push(JSON.stringify(Payment_Plan_all_table));
           }
           if (/Interiors/i.test(e.querySelector("h3").textContent)) {
             try {
@@ -274,12 +313,14 @@ async function visit_each(link, page) {
           if (/Floor/i.test(e.querySelector("h3").textContent)) {
             let images = Array.from(e.querySelectorAll("img"));
             images.forEach((e) => {
-              floor_plan_images.push(e.src);
+              try {
+                floor_plan_images.push(e.src);
+              } catch (error) {}
             });
             floor_plan_images = [...new Set(floor_plan_images)];
           }
         }
-        // -----------h2--------------
+        // ------------h2-------------
         if (e.querySelector("h2") !== null) {
           if (/Investment/i.test(e.querySelector("h2").textContent)) {
             temp1 = e.querySelector(
@@ -289,10 +330,10 @@ async function visit_each(link, page) {
             temp2.forEach((e) => {
               let one = "";
               try {
-                one = e.textContent;
+                one = clean(e.textContent);
               } catch (error) {}
               if (one) {
-                Investment.push(clean(one));
+                Investment.push(one);
               }
             });
           }
@@ -303,11 +344,12 @@ async function visit_each(link, page) {
             temp2 = Array.from(temp1.querySelectorAll("li"));
             temp2.forEach((e) => {
               let one = "";
+
               try {
-                one = e.textContent;
+                one = clean(e.textContent);
               } catch (error) {}
               if (one) {
-                Exclusive_Features.push(clean(one));
+                Exclusive_Features.push(one);
               }
             });
           }
@@ -319,10 +361,10 @@ async function visit_each(link, page) {
             temp2.forEach((e) => {
               let one = "";
               try {
-                one = e.textContent;
+                one = clean(e.textContent);
               } catch (error) {}
               if (one) {
-                Unit_Sizes.push(clean(one));
+                Unit_Sizes.push(one);
               }
             });
           }
@@ -341,6 +383,7 @@ async function visit_each(link, page) {
                 "div.vc_grid-container-wrapper.vc_clearfix img"
               )
             );
+
             temp1.forEach((e) => {
               let one = "";
               try {
@@ -350,13 +393,6 @@ async function visit_each(link, page) {
                 images.push(one);
               }
             });
-          }
-          if (/video/i.test(e.querySelector("h2").textContent)) {
-            try {
-              video = e.querySelector(
-                "div.fluid-width-video-wrapper iframe"
-              ).src;
-            } catch (error) {}
           }
           if (/Payment Plan/i.test(e.querySelector("h2").textContent)) {
             if (
@@ -369,21 +405,26 @@ async function visit_each(link, page) {
               );
               temp2 = Array.from(temp1.querySelectorAll("li"));
               temp2.forEach((e) => {
+                let one = "";
                 try {
-                  temp = e.textContent;
+                  one = clean(e.textContent);
                 } catch (error) {}
-                if (temp) {
-                  Payment_Plan.push(clean(temp));
+                if (one) {
+                  Payment_Plan.push(one);
                 }
               });
-              temp = Array.from(
+              let s = Array.from(
                 e.querySelectorAll(
                   "div.wpb_text_column.wpb_content_element div.wpb_wrapper ul li"
                 )
               );
-              temp.forEach((e) => {
+              s.forEach((e) => {
                 if (/Handover/i.test(e.textContent)) {
-                  handover = e.textContent.replaceAll("Handover:", "").trim();
+                  try {
+                    handover = clean(
+                      e.textContent.replaceAll("Handover:", "").trim()
+                    );
+                  } catch (error) {}
                 }
               });
             } else {
@@ -391,13 +432,33 @@ async function visit_each(link, page) {
               temp1.forEach((e) => {
                 let one = "";
                 try {
-                  one = e.textContent;
+                  one = clean(e.textContent);
                 } catch (error) {}
                 if (one) {
-                  Payment_Plan.push(clean(one));
+                  Payment_Plan.push(one);
                 }
               });
             }
+            let temp4 = Array.from(
+              document.querySelectorAll("#paymentplan #datatable1 tr")
+            );
+            let Payment_Plan_all_table = {};
+            for (let i = 1; i < temp4.length; i++) {
+              let des = "";
+              let mil = "";
+              let pay = "";
+              try {
+                des = clean(temp4[i].querySelectorAll("td")[0].textContent);
+              } catch (error) {}
+              try {
+                mil = clean(temp4[i].querySelectorAll("td")[1].textContent);
+              } catch (error) {}
+              try {
+                pay = clean(temp4[i].querySelectorAll("td")[2].textContent);
+              } catch (error) {}
+              Payment_Plan_all_table[des] = [mil, pay];
+            }
+            Payment_Plan_table.push(JSON.stringify(Payment_Plan_all_table));
           }
           if (/Interiors/i.test(e.querySelector("h2").textContent)) {
             try {
@@ -420,7 +481,9 @@ async function visit_each(link, page) {
           if (/Floor/i.test(e.querySelector("h2").textContent)) {
             let images = Array.from(e.querySelectorAll("img"));
             images.forEach((e) => {
-              floor_plan_images.push(e.src);
+              try {
+                floor_plan_images.push(e.src);
+              } catch (error) {}
             });
             floor_plan_images = [...new Set(floor_plan_images)];
           }
@@ -449,22 +512,24 @@ async function visit_each(link, page) {
       );
       let all = [];
       for (let i = 0; i < temp.length; i++) {
-        if (temp[i].querySelector("h3") !== null)
+        if (temp[i].querySelector("h3") !== null) {
           if (/Amenities/i.test(temp[i].querySelector("h3").textContent)) {
-            {
-              all = Array.from(temp[i + 1].querySelectorAll("li"));
-              break;
-            }
+            all = Array.from(temp[i + 1].querySelectorAll("li"));
+            break;
           }
-        if (temp[i].querySelector("h2") !== null)
+        }
+        if (temp[i].querySelector("h2") !== null) {
           if (/Amenities/i.test(temp[i].querySelector("h2").textContent)) {
-            {
-              all = Array.from(temp[i + 1].querySelectorAll("li"));
-              break;
-            }
+            all = Array.from(temp[i + 1].querySelectorAll("li"));
+            break;
           }
+        }
       }
-      all.forEach((e) => Amenities_List.push(clean(e.textContent)));
+      all.forEach((e) => {
+        try {
+          Amenities_List.push(clean(e.textContent));
+        } catch (error) {}
+      });
 
       return {
         title: title,
@@ -481,6 +546,7 @@ async function visit_each(link, page) {
         Unit_Sizes: Unit_Sizes,
         Overview: Overview,
         Payment_Plan: Payment_Plan,
+        Payment_Plan_table: Payment_Plan_table,
         Interiors: Interiors,
         Amenities_description: Amenities_description,
         Amenities_List: Amenities_List,
@@ -488,11 +554,134 @@ async function visit_each(link, page) {
         Location_Map: Location_Map,
         Image_location_map: Image_location_map,
         images: images,
-        video: video,
         floor_plan_images: floor_plan_images,
+        signaturea: Date.now(),
       };
     })
   );
+
+  //#################### brochure #####################################
+  const exists = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        "div.vc_btn3-container.download_btn.vc_btn3-center a"
+      ) !== null &&
+      /download brochure/i.test(
+        document.querySelectorAll(
+          "div.vc_btn3-container.download_btn.vc_btn3-center a"
+        )[0].textContent
+      )
+    );
+  });
+  if (exists) {
+    await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
+    await page.waitForSelector(
+      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+    );
+    await page.evaluate(() => {
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+      ).value = "John";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
+      ).value = "jhon@jmail.com";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
+      ).value = "944331234";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
+      ).value = "Hello";
+    });
+
+    // await page.evaluate(() => {
+    //   document
+    //     .querySelector(
+    //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //     )
+    //     .click();
+    // });
+    // Click on the button to open the new page
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click(
+        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+      ),
+    ]);
+
+    // Get the URL of the new page
+    const newPageUrl = await page.url();
+    console.log(newPageUrl);
+    // console.log(brochure);
+    await page.goBack();
+    console.log(data[0]);
+    // await newPage.goBack();
+  } else {
+    console.log("no brochure");
+  }
+
+  //#################### floor_link #####################################
+  const exists_floor_btn = await page.evaluate(() => {
+    return (
+      document.querySelectorAll(
+        "div.vc_btn3-container.download_btn.vc_btn3-center a"
+      )[1] !== null &&
+      /floor/i.test(
+        document.querySelectorAll(
+          "div.vc_btn3-container.download_btn.vc_btn3-center a"
+        )[1].textContent
+      )
+    );
+  });
+  if (exists_floor_btn) {
+    await page.evaluate(() => {
+      document
+        .querySelectorAll(
+          "div.vc_btn3-container.download_btn.vc_btn3-center a"
+        )[1]
+        .click();
+    });
+    await page.waitForSelector(
+      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+    );
+    await page.evaluate(() => {
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+      ).value = "John";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
+      ).value = "jhon@jmail.com";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
+      ).value = "944331234";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
+      ).value = "Hello";
+    });
+
+    await page.evaluate(() => {
+      document
+        .querySelector(
+          "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+        )
+        .click();
+    });
+
+    const [newPage] = await Promise([
+      new Promise((resolve) =>
+        browser.once("targetcreated", (target) => resolve(target.page()))
+      ),
+      await page.click(
+        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+      ),
+    ]);
+    // Get the URL of the new page
+    const url = await newPage.url();
+    let floor_plan_link = url;
+    data[0].floor_plan_link = floor_plan_link;
+    console.log(floor_plan_link);
+  } else {
+    console.log("no floor_plan_link");
+  }
 
   if (j % 500 == 0) {
     batch++;
@@ -505,7 +694,7 @@ async function visit_each(link, page) {
   j++;
 }
 
-async function main_loop(page, i) {
+async function main_loop(page, i, browser) {
   let target = `https://www.providentestate.com/dubai-offplan/dubai-developer/damac-properties/page/${i}`;
   if (i == 1) {
     target =
@@ -530,13 +719,13 @@ async function main_loop(page, i) {
 
   for (const link of links) {
     try {
-      await visit_each(link, page);
+      await visit_each(link, page, browser);
     } catch (error) {
       try {
-        await visit_each(link, page);
+        await visit_each(link, page, browser);
       } catch (err) {
         try {
-          await visit_each(link, page);
+          await visit_each(link, page, browser);
         } catch (error) {
           console.error(error);
           csvErrr
@@ -560,7 +749,7 @@ async function main() {
   // let plans_data = {};
   for (let i = 1; i <= 3; i++) {
     try {
-      await main_loop(page, i);
+      await main_loop(page, i, browser);
     } catch (error) {
       try {
         await main_loop(page, i);

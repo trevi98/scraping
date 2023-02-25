@@ -7,10 +7,19 @@ async function run() {
     args: ["--enable-automation"],
   });
   const page = await browser.newPage();
-  await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.providentestate.com/dubai-offplan/belair-the-trump-estate.html"
+    "https://www.providentestate.com/dubai-offplan/damac-bay-by-cavalli.html"
   );
+  // Evaluate the page content and modify target attribute
+  const html = await page.evaluate(() => {
+    const links = document.querySelectorAll('a[target="_blank"]');
+    links.forEach((link) => link.setAttribute("target", ""));
+    return document.documentElement.outerHTML;
+  });
+
+  // Update the page with the modified HTML content
+  await page.setContent(html);
+
   const links = await page.evaluate(() => {
     let title = document.title;
     let temp = Array.from(
@@ -57,6 +66,7 @@ async function run() {
     let Unit_Sizes = [];
     let Overview = "";
     let Payment_Plan = [];
+    let Payment_Plan_table = [];
     let Interiors = "";
     let Location_Map = "";
     let Image_location_map = "";
@@ -185,6 +195,26 @@ async function run() {
               }
             });
           }
+          let temp4 = Array.from(
+            document.querySelectorAll("#paymentplan #datatable1 tr")
+          );
+          let Payment_Plan_all_table = {};
+          for (let i = 1; i < temp4.length; i++) {
+            let des = "";
+            let mil = "";
+            let pay = "";
+            try {
+              des = temp4[i].querySelectorAll("td")[0].textContent;
+            } catch (error) {}
+            try {
+              mil = temp4[i].querySelectorAll("td")[1].textContent;
+            } catch (error) {}
+            try {
+              pay = temp4[i].querySelectorAll("td")[2].textContent;
+            } catch (error) {}
+            Payment_Plan_all_table[des] = [mil, pay];
+          }
+          Payment_Plan_table.push(JSON.stringify(Payment_Plan_all_table));
         }
         if (/Interiors/i.test(e.querySelector("h3").textContent)) {
           Interiors = e.querySelector(
@@ -322,6 +352,26 @@ async function run() {
               }
             });
           }
+          let temp4 = Array.from(
+            document.querySelectorAll("#paymentplan #datatable1 tr")
+          );
+          let Payment_Plan_all_table = {};
+          for (let i = 1; i < temp4.length; i++) {
+            let des = "";
+            let mil = "";
+            let pay = "";
+            try {
+              des = temp4[i].querySelectorAll("td")[0].textContent;
+            } catch (error) {}
+            try {
+              mil = temp4[i].querySelectorAll("td")[1].textContent;
+            } catch (error) {}
+            try {
+              pay = temp4[i].querySelectorAll("td")[2].textContent;
+            } catch (error) {}
+            Payment_Plan_all_table[des] = [mil, pay];
+          }
+          Payment_Plan_table.push(JSON.stringify(Payment_Plan_all_table));
         }
         if (/Interiors/i.test(e.querySelector("h2").textContent)) {
           Interiors = e.querySelector(
@@ -397,6 +447,7 @@ async function run() {
       Unit_Sizes: Unit_Sizes,
       Overview: Overview,
       Payment_Plan: Payment_Plan,
+      Payment_Plan_table: Payment_Plan_table,
       Interiors: Interiors,
       Amenities_description: Amenities_description,
       Amenities_List: Amenities_List,
@@ -410,81 +461,159 @@ async function run() {
   });
   console.log(links);
 
-  //#################### brochure#####################################
-  // const exists = await page.evaluate(() => {
-  //   return (
-  //     document.querySelector(
-  //       "div.vc_btn3-container.download_btn.vc_btn3-center a"
-  //     ) !== null &&
-  //     document
-  //       .querySelector("div.vc_btn3-container.download_btn.vc_btn3-center a")
-  //       .textContent.includes("Brochure")
-  //   );
-  // });
-  // if (exists) {
-  //   await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
-  //   await page.waitForSelector(
-  //     "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-  //   );
-  //   // await page.type(
-  //   //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-name"]',
-  //   //   "John"
-  //   // );
-  //   // await page.type(
-  //   //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-email"]',
-  //   //   "jhon@jmail.com"
-  //   // );
-  //   // await page.type(
-  //   //   'div.modal-content div.modal-body.listing-form-7 form input[name="your-phone"]',
-  //   //   "944331234"
-  //   // );
-  //   // await page.type(
-  //   //   'div.modal-content div.modal-body.listing-form-7 form textarea[name="your-message"]',
-  //   //   "Hello"
-  //   // );
-  //   await page.evaluate(() => {
-  //     document.querySelector(
-  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-  //     ).value = "John";
-  //     document.querySelector(
-  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
-  //     ).value = "jhon@jmail.com";
-  //     document.querySelector(
-  //       "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
-  //     ).value = "944331234";
-  //     document.querySelector(
-  //       "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
-  //     ).value = "Hello";
-  //     // document.querySelector("div.modal-content div.modal-body.listing-form-7 div form input[type=submit]").click()
-  //   });
-  //   // await page.click(
-  //   //   "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-  //   // );
-  //   await page.evaluate(() => {
-  //     document
-  //       .querySelector(
-  //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-  //       )
-  //       .click();
-  //   });
-  //   await page.waitForNavigation();
-  //   // let brochure = await page.evaluate(() => document.location.href);
-  //   // const pages = await browser.pages();
-  //   // await page.waitForTarget((target) => target.url() !== page.url());
-  //   // const newPage = pages[pages.length - 1];
-  //   // console.log(await newPage.url());
-  //   if ((await browser.pages()).length !== 2) {
-  //     throw "unexpected number of tabs";
-  //   }
-  //   const otherPage = (await browser.pages())[1];
-  //   // data[0].brochure = brochure;
-  //   // data.push({brochure:url})
-  //   console.log(otherPage);
-  // } else {
-  //   console.log("yyyy");
-  // }
+  //#################### brochure #####################################
+  const exists = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        "div.vc_btn3-container.download_btn.vc_btn3-center a"
+      ) !== null &&
+      /download brochure/i.test(
+        document.querySelectorAll(
+          "div.vc_btn3-container.download_btn.vc_btn3-center a"
+        )[0].textContent
+      )
+    );
+  });
+  if (exists) {
+    await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
+    await page.waitForSelector(
+      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+    );
+    await page.evaluate(() => {
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+      ).value = "John";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
+      ).value = "jh@gmail.com";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
+      ).value = "944331234";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
+      ).value = "Hello";
+    });
+
+    // await page.evaluate(() => {
+    //   document
+    //     .querySelector(
+    //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //     )
+    //     .click();
+    // });
+    // await page.waitForNavigation();
+    // let brochure = await page.evaluate(() => document.location.href);
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click(
+        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+      ),
+    ]);
+
+    // Get the URL of the new page
+    const newPageUrl = await page.url();
+    console.log(newPageUrl);
+
+    // const [newPage] = await Promise.all([
+    //   new Promise((resolve) =>
+    //     browser.once("targetcreated", (target) => resolve(target.page()))
+    //   ),
+    //   await page.evaluate(() => {
+    //     document
+    //       .querySelector(
+    //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //       )
+    //       .click();
+    //   }),
+    // ]);
+    // // Get the URL of the new page
+    // const url = await newPage.url();
+    // brochure = url;
+    // console.log(brochure);
+    console.log("yes");
+    await page.goBack();
+  } else {
+    console.log("no");
+  }
+
+  //#################### floor_link #####################################
+  const exists_floor_btn = await page.evaluate(() => {
+    return (
+      document.querySelectorAll(
+        "div.vc_btn3-container.download_btn.vc_btn3-center a"
+      )[1] !== null &&
+      /floor/i.test(
+        document.querySelectorAll(
+          "div.vc_btn3-container.download_btn.vc_btn3-center a"
+        )[1].textContent
+      )
+    );
+  });
+  if (exists_floor_btn) {
+    await page.evaluate(() => {
+      document
+        .querySelectorAll(
+          "div.vc_btn3-container.download_btn.vc_btn3-center a"
+        )[1]
+        .click();
+    });
+    await page.waitForSelector(
+      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+    );
+    await page.evaluate(() => {
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
+      ).value = "John";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
+      ).value = "jhon@jmail.com";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
+      ).value = "944331234";
+      document.querySelector(
+        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
+      ).value = "Hello";
+    });
+
+    // await page.evaluate(() => {
+    //   document
+    //     .querySelector(
+    //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //     )
+    //     .click();
+    // });
+
+    // const [newPage] = await Promise.all([
+    //   new Promise((resolve) =>
+    //     browser.once("targetcreated", (target) => resolve(target.page()))
+    //   ),
+    //   await page.evaluate(() => {
+    //     document
+    //       .querySelector(
+    //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+    //       )
+    //       .click();
+    //   }),
+    // ]);
+    // // Get the URL of the new page
+    // const url = await newPage.url();
+    await Promise.all([
+      page.waitForNavigation(),
+      page.click(
+        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
+      ),
+    ]);
+
+    // Get the URL of the new page
+    const newPageUrl = await page.url();
+    console.log(newPageUrl);
+    let floor_plan_link = url;
+    console.log(floor_plan_link);
+  } else {
+    console.log("no floor_plan_link");
+  }
+
   await browser.close();
-  // await otherPage.close();
 }
 run();
 // https://www.providentestate.com/dubai-offplan/damac-lagoons.html

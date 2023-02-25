@@ -13,6 +13,7 @@ function csv_handler(directory, batch) {
     header: [
       { id: "title", title: "title" },
       { id: "price", title: "price" },
+      { id: "area", title: "area" },
       { id: "size", title: "size" },
       { id: "type", title: "type" },
       { id: "parkings", title: "parkings" },
@@ -25,6 +26,7 @@ function csv_handler(directory, batch) {
       { id: "amenities", title: "amenities" },
       { id: "nearby_schools", title: "nearby_schools" },
       { id: "images", title: "images" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -49,9 +51,9 @@ let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
-async function visit_each(link, page) {
+async function visit_each(obj, page) {
   // await page.setCacheEnabled(false);
-  await page.goto(link);
+  await page.goto(obj.link);
   let data = [];
   data.push(
     await page.evaluate(async () => {
@@ -106,34 +108,44 @@ async function visit_each(link, page) {
         let value = clean(e.textContent);
         if (/price per/i.test(key)) {
           per_price = value;
+          per_price = per_price.replace(key, "");
         }
         if (/type/i.test(key)) {
           type = value;
+          type = type.replace(key, "");
         }
         if (/Size/i.test(key)) {
           size = value;
+          size = size.replace(key, "");
         }
         if (/Bed/i.test(key)) {
           Bedrooms = value;
+          Bedrooms = Bedrooms.replace(key, "");
         }
         if (/bath/i.test(key)) {
           Bathrooms = value;
+          Bathrooms = Bathrooms.replace(key, "");
         }
         if (/developer/i.test(key)) {
           developer = value;
+          developer = developer.replace(key, "");
         }
         if (/Parking/i.test(key)) {
           parkings = value;
+          parkings = parkings.replace(key, "");
         }
         if (/View/i.test(key)) {
           view = value;
+          view = view.replace(key, "");
         }
       });
       let price = "";
       try {
-        price = document.querySelector(
-          ".padding-top-sm.margin-bottom-sm.u-textLeft.padding-bottom-none b"
-        ).textContent;
+        price = clean(
+          document.querySelector(
+            ".padding-top-sm.margin-bottom-sm.u-textLeft.padding-bottom-none b"
+          ).textContent
+        );
       } catch (error) {}
       let about = "";
       try {
@@ -175,10 +187,11 @@ async function visit_each(link, page) {
         about: about,
         amenities: amenities,
         nearby_schools: nearby_schools,
-        images: images,
+        signaturea: Date.now(),
       };
     })
   );
+  data[0].area = obj.area;
 
   const exist = await page.evaluate(() => {
     return (
@@ -189,11 +202,6 @@ async function visit_each(link, page) {
   });
   let images = [];
   if (exist) {
-    await page.evaluate(() => {
-      document
-        .querySelector(".t-Button.t-Button--icon.t-Button--iconLeft.info")
-        .click();
-    });
     let number = await page.evaluate(() => {
       let num = document.querySelector(
         ".t-Button.t-Button--icon.t-Button--iconLeft.info"
@@ -204,6 +212,7 @@ async function visit_each(link, page) {
     for (let i = 0; i < number; i++) {
       await page.evaluate(() => document.querySelector("a.next").click());
     }
+    await page.waitForTimeout(2000);
     images = await page.evaluate(() => {
       let imgs = [];
       let temp = Array.from(document.querySelectorAll(".modal-content img"));
@@ -215,14 +224,13 @@ async function visit_each(link, page) {
             imgs.push(e.getAttribute("data-src"));
           } catch (error) {}
         }
-        return imgs;
       });
+      return imgs;
     });
-    // console.log(images);
-    // console.log(images.length);
   } else {
     console.log("no imgs");
   }
+  data[0].images = images;
   if (j % 500 == 0) {
     batch++;
     csvWriter = csv_handler("luxury_apartments_for_sale", batch);
@@ -234,35 +242,83 @@ async function visit_each(link, page) {
   j++;
 }
 
-async function main_loop(page, i) {
+async function main_loop(page) {
   let target = `https://famproperties.com/luxury-apartments-for-sale-dubai`;
 
   console.log(target);
   await page.goto(target);
-  const links = await page.evaluate(() => {
-    let all = [];
-    let link = Array.from(document.querySelectorAll(".card "));
-    link.forEach((e) => {
-      let a = e.querySelector("a").href;
-      all.push(a);
+  let links = [];
+  // Use page.evaluate to interact with the popup and close it
+  await page.evaluate(() => {
+    const popup = document.querySelector("#marquizPopup");
+    const closeButton = popup.querySelector(".fa.fa-times.fa-2x.closeMarquiz");
+    closeButton.click();
+  });
+  await page.addStyleTag({
+    content: "#marquizPopup { display: none !important; }",
+  });
+  while (true) {
+    await page.addStyleTag({
+      content: "#marquizPopup { display: none !important; }",
     });
-    let uniqe_links = [...new Set(all)];
-    return uniqe_links;
+    await page.evaluate(() => {
+      document.querySelectorAll("footer .row")[15].style.display = "none";
+      document.querySelector("#marquizPopup").style.display = "none";
+    });
+    await page.waitForSelector(".a-CardView");
+    await page.waitForTimeout(6000);
+    links.push(
+      await page.evaluate(() => {
+        let all = [];
+        let link = Array.from(document.querySelectorAll(".a-CardView"));
+        link.forEach((e) => {
+          let a = e.querySelector("a.card-image").href;
+          let area = e.querySelector(" h5 .u-color-10-text").textContent;
+          all.push({ link: a, area: area });
+        });
+        let uniqe_links = [...new Set(all)];
+        return uniqe_links;
+      })
+    );
+    if (
+      await page.evaluate(() => {
+        return (
+          document
+            .querySelector(".a-GV-pageButton.a-GV-pageButton--nav.js-pg-next")
+            .getAttribute("disabled") === "disabled"
+        );
+      })
+    ) {
+      break;
+    } else {
+      await page.addStyleTag({
+        content:
+          ".col.col-12.apex-col-auto.padding-top-md.margin-top-sm.padding-bottom-md.topFixedSearch.fixedSearch { display: none !important; }",
+      });
+
+      await page.waitForTimeout(2000);
+      await page.click(".a-GV-pageButton.a-GV-pageButton--nav.js-pg-next");
+    }
+  }
+  let all_ = [];
+  links.forEach((e) => {
+    e.forEach((s) => all_.push(s));
   });
 
-  for (const link of links) {
+  all_ = [...new Set(all_)];
+  for (const obj of all_) {
     try {
-      await visit_each(link, page);
+      await visit_each(obj, page);
     } catch (error) {
       try {
-        await visit_each(link, page);
+        await visit_each(obj, page);
       } catch (err) {
         try {
-          await visit_each(link, page);
+          await visit_each(obj, page);
         } catch (error) {
           console.error(error);
           csvErrr
-            .writeRecords({ link: link, error: err })
+            .writeRecords({ link: all_links[i], error: err })
             .then(() => console.log("error logged main loop"));
           continue;
         }
@@ -280,18 +336,21 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 4000; i++) {
+  for (let i = 1; i <= 1; i++) {
     try {
-      await main_loop(page, i);
+      await main_loop(page);
     } catch (error) {
       try {
-        await main_loop(page, i);
+        await main_loop(page);
       } catch (error) {
-        console.error(error);
+        try {
+          await main_loop(page);
+        } catch (error) {}
         csvErrr
           .writeRecords({ link: i, error: error })
           .then(() => console.log("error logged main"));
         continue;
+        console.error(error);
       }
     }
   }

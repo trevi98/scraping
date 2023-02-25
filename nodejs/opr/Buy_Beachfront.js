@@ -306,7 +306,9 @@ async function visit_each(link, page) {
     });
   } else if (
     await page.evaluate(() => {
-      document.querySelector("#gallery .gallery1-image.fancybox") !== null;
+      return (
+        document.querySelector("#gallery .gallery1-image.fancybox") !== null
+      );
     })
   ) {
     images = await page.evaluate(() => {
