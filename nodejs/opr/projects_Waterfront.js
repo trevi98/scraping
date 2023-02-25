@@ -66,6 +66,7 @@ async function visit_each(link, page) {
   let data = [];
   data.push(
     await page.evaluate(async () => {
+      
       function clean(text) {
         try {
           return text
@@ -399,6 +400,7 @@ async function visit_each(link, page) {
 
   //  ----------- brochure --------------
   const exists = await page.evaluate(() => {
+
     return (
       document.querySelector(
         "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
@@ -415,17 +417,60 @@ async function visit_each(link, page) {
       "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
     );
     await page.waitForSelector(".modal6-root.is-active");
+
+
+    // Function to generate a random email
+      function generateRandomEmail() {
+        const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let email = '';
+        for (let i = 0; i < 10; i++) {
+          email += characters[Math.floor(Math.random() * characters.length)];
+        }
+        email += '@example.com';
+        return email;
+      }
+
+      // Function to generate a random name
+      function generateRandomName() {
+        const firstNames = ['John', 'Jane', 'Bob', 'Alice', 'Mike', 'Emily'];
+        const lastNames = ['Doe', 'Smith', 'Johnson', 'Jones', 'Brown', 'Taylor'];
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        return `${firstName} ${lastName}`;
+      }
+
+      // Function to generate a random phone number
+      function generateRandomPhoneNumber() {
+        let phoneNumber = '555-';
+        for (let i = 0; i < 4; i++) {
+          phoneNumber += Math.floor(Math.random() * 10);
+        }
+        return phoneNumber;
+      }
+
+      // Generate a random email, name, and phone number
+      const email = generateRandomEmail();
+      const name = generateRandomName();
+      const phoneNumber = generateRandomPhoneNumber();
+
+      // console.log('Email:', email);
+      // console.log('Name:', name);
+      // console.log('Phone Number:', phoneNumber);
+
+
+
+
     await page.type(
       "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
-      "John"
+      generateRandomName()
     );
     await page.type(
       ".modal.nocolors.active .form-control[autocomplete='tel']",
-      "+968509465823"
+      generateRandomPhoneNumber()
     );
     await page.type(
       ".modal.nocolors.active .form-control[autocomplete='email']",
-      "jhon@jmail.com"
+      generateRandomEmail()
     );
 
     await page.evaluate(() => {
@@ -433,13 +478,13 @@ async function visit_each(link, page) {
         .querySelector(".modal.nocolors.active button:not(.modal6-close)")
         .click();
     });
-    page.on("response", (response) => {
-      const statusCode = response.status();
-      if (statusCode >= 300 && statusCode < 400) {
-        const redirectUrl = response.headers()["location"];
-        console.log(`Redirected to ${redirectUrl}`);
-      }
-    });
+    // page.on("response", (response) => {
+    //   const statusCode = response.status();
+    //   if (statusCode >= 300 && statusCode < 400) {
+    //     const redirectUrl = response.headers()["location"];
+    //     console.log(`Redirected to ${redirectUrl}`);
+    //   }
+    // });
     await page.waitForNavigation();
     let brochure = await page.evaluate(() => document.location.href);
     console.log('bB',brochure)
@@ -467,17 +512,44 @@ async function visit_each(link, page) {
       "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
     );
     await page.waitForSelector(".modal6-root.is-active");
+    function generateRandomEmail() {
+      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let email = '';
+      for (let i = 0; i < 10; i++) {
+        email += characters[Math.floor(Math.random() * characters.length)];
+      }
+      email += '@example.com';
+      return email;
+    }
+
+    // Function to generate a random name
+    function generateRandomName() {
+      const firstNames = ['John', 'Jane', 'Bob', 'Alice', 'Mike', 'Emily'];
+      const lastNames = ['Doe', 'Smith', 'Johnson', 'Jones', 'Brown', 'Taylor'];
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      return `${firstName} ${lastName}`;
+    }
+
+    // Function to generate a random phone number
+    function generateRandomPhoneNumber() {
+      let phoneNumber = '555-';
+      for (let i = 0; i < 4; i++) {
+        phoneNumber += Math.floor(Math.random() * 10);
+      }
+      return phoneNumber;
+    }
     await page.type(
       '.modal6-root.is-active div.input input[autocomplete="name"]',
-      "John"
+      generateRandomName()
     );
     await page.type(
       '.modal6-root.is-active div.input input[autocomplete="tel"]',
-      "+968509465823"
+      generateRandomPhoneNumber()
     );
     await page.type(
       '.modal6-root.is-active div.input input[autocomplete="email"]',
-      "jhon@jmail.com"
+      generateRandomEmail()
     );
     await page.evaluate(() => {
       document
@@ -489,6 +561,7 @@ async function visit_each(link, page) {
     // data[0].floor_plans_pdf = floor_plans_pdf;
     // console.log("f  ", floor_plans_pdf);
     console.log("yes");
+    console.log(floor_plans_pdf);
     data[0].floor_plans_pdf = floor_plans_pdf;
 
     // data.push({ brochure: url });
