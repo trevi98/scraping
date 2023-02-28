@@ -332,7 +332,6 @@ async function main() {
     args: ["--enable-automation"],
   });
   const page = await browser.newPage();
-  // let plans_data = {};
   for (let i = 1; i <= 4; i++) {
     try {
       await main_loop(page, i);
