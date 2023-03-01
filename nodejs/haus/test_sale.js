@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+
 async function run() {
   const browser = await puppeteer.launch({
     headless: false,
@@ -9,130 +10,126 @@ async function run() {
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
   await page.goto(
-    "https://www.hausandhaus.com/living-in-dubai/area-guides/downtown-business-bay-and-difc"
+    "https://www.bayut.com/to-rent/apartments/dubai/dubai-marina/mag-218-tower/"
   );
   const links = await page.evaluate(() => {
-    let title = document.querySelector(".intro-content h1").textContent;
-    let about = document.querySelector(
-      "div.article-head div.introtext.row.js-animate-right div.col-sm-12 p"
-    ).textContent;
-    let temp = Array.from(
-      document.querySelectorAll(".article-entry div.col-sm-6 p")
-    );
-    let description = [];
-    temp.forEach((e) => {
-      let one = "";
+    function clean(text) {
       try {
-        one = e.textContent;
-      } catch (error) {}
-      if (one) description.push(one);
-    });
-    // for (let i = 0; i < temp.length; i++) {
-    //   if (
-    //     temp[i].innerHTML.startsWith("<strong") ||
-    //     temp[i].innerHTML.startsWith("<b>")
-    //   ) {
-    //     all_title.push(temp[i].textContent);
-    //     let results = "";
-    //     let s = i + 1;
-    //     while (s < temp.length) {
-    //       if (
-    //         temp[s].innerHTML.startsWith("<strong") ||
-    //         temp[s].innerHTML.startsWith("<b>")
-    //       )
-    //         break;
-    //       else {
-    //         results += temp[s].textContent;
-    //         s += 1;
-    //         continue;
-    //       }
-    //     }
-    //     i = s - 1;
-    //     all_description.push(results);
-    //   } else {
-    //     continue;
-    //   }
-    // }
-    // all = {};
-    // for (let i = 0; i < all_description.length; i++) {
-    //   all[all_title[i]] = all_description[i];
-    // }
-    temp = Array.from(
-      document.querySelectorAll("div.article-entry div.row div.col-sm-6 > *")
+        return text
+          .replaceAll("\n", "")
+          .replaceAll("\r", "")
+          .replaceAll("\t", "")
+          .replaceAll("  ", "")
+          .trim();
+      } catch (error) {
+        return text;
+      }
+    }
+    let title = "";
+    try {
+      title = clean(document.title.split("|")[0]);
+    } catch (error) {}
+    let temp = Array.from(
+      document.querySelectorAll(".post.container.text-base.leading-9 >div")
     );
-    let all_title = [];
-    let all_description = [];
+    let content = [];
+    let all_content = {};
     for (let i = 0; i < temp.length; i++) {
-      if (
-        temp[i].innerHTML.startsWith("<strong") ||
-        temp[i].innerHTML.startsWith("<b>")
-      ) {
-        all_title.push(temp[i].textContent);
-        let results = "";
+      let des = [];
+      let titles = "";
+      if (temp[i].hasAttribute("id")) {
+        try {
+          titles = temp[i].textContent;
+        } catch (error) {}
         let s = i + 1;
+        let res = [];
         while (s < temp.length) {
-          if (
-            temp[s].innerHTML.startsWith("<strong") ||
-            temp[s].innerHTML.startsWith("<b>")
-          )
-            break;
+          if (temp[s].hasAttribute("id")) break;
           else {
-            results += temp[s].textContent;
-            s += 1;
-            continue;
+            res.push(clean(temp[s].textContent));
+            s++;
           }
         }
+        des.push(res);
+        all_content[titles] = des;
         i = s - 1;
-        all_description.push(results);
       } else {
         continue;
       }
     }
-    all = {};
-    for (let i = 0; i < all_description.length; i++) {
-      all[all_title[i]] = all_description[i];
+    if (temp.length === 0) {
+      temp = Array.from(document.querySelectorAll("._53549583.be4c198c >*"));
+      for (let i = 0; i < temp.length; i++) {
+        let des = [];
+        let titles = "";
+        if (
+          temp[i].tagName === "H3" ||
+          temp[i].tagName === "H4" ||
+          temp[i].tagName === "H5" ||
+          temp[i].tagName === "H2"
+        ) {
+          try {
+            titles = temp[i].textContent;
+          } catch (error) {}
+          let s = i + 1;
+          let res = [];
+          while (s < temp.length) {
+            if (
+              temp[s].tagName === "H3" ||
+              temp[s].tagName === "H4" ||
+              temp[s].tagName === "H5" ||
+              temp[s].tagName === "H2"
+            )
+              break;
+            else {
+              try {
+                res.push(clean(temp[s].textContent));
+              } catch (error) {}
+              s++;
+            }
+          }
+          des.push(res);
+          all_content[titles] = des;
+          i = s - 1;
+        } else {
+          continue;
+        }
+      }
     }
-    let all_content = [];
-    all_content.push(JSON.stringify(all_content));
 
+    content.push(JSON.stringify(all_content));
+    let cover_img = "";
+    try {
+      cover_img = document.querySelectorAll(
+        "div.container div.relative div div span img"
+      )[5].src;
+    } catch (error) {}
+    if (!cover_img) {
+      try {
+        cover_img = clean(
+          document.querySelectorAll("._53549583.be4c198c img")[0].src
+        );
+      } catch (error) {}
+    }
+    let images = [];
+    temp = Array.from(document.querySelectorAll("div.mt-6.mb-5 img"));
+    if (temp.length == 0)
+      temp = Array.from(document.querySelectorAll("._53549583.be4c198c img"));
+    temp.forEach((e) => {
+      try {
+        images.push(clean(e.src));
+      } catch (error) {}
+    });
     return {
       title: title,
-      about: about,
-      description: description,
-      all_content: all_content,
+      content: content,
+      temp: temp.length,
+      images: images,
+      cover_img: cover_img,
+      signaturea: Date.now(),
     };
   });
   console.log(links);
-
   await browser.close();
 }
 run();
-// let all = Array.from(
-//   document.querySelectorAll(
-//     "div.description.col-md-12 div.item-description div.col-md-6 > *"
-//   )
-// );
-
-// // temp.forEach((e) => all.push(e.innerHTML));
-// let titles = [];
-// let descriptions = [];
-// let i = 0;
-// for (; i < all.length; i++) {
-//   if (all[i].textContent.length < 40) {
-//     titles.push(all[i].textContent);
-//     let results = [];
-//     let s = i + 1;
-//     while (s < all.length) {
-//       if (all[s].textContent.length < 40) {
-//         break;
-//       } else {
-//         results.push(all[s].textContent);
-//         s + 1;
-//       }
-//     }
-//     i = s - 1;
-//     descriptions.push(results);
-//   } else {
-//     continue;
-//   }
-// }
