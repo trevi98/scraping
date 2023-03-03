@@ -2,7 +2,6 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
-const { on } = require("events");
 const axios = require("axios");
 const { exec } = require("child_process");
 function csv_handler(directory, batch) {
