@@ -213,7 +213,7 @@ async function main() {
     args: ["--enable-automation"],
   });
   const page = await browser.newPage();
-  for (let i = 1; i <= 214; i++) {
+  for (let i = 100; i <= 150; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

@@ -12,8 +12,6 @@ class testingSpider(scrapy.Spider):
     start_urls = ["https://www.bayut.com/schools/dubai/"]
     page_number = 2
     link = ""
-
-
     def parse(self,response):
 
         all = response.css("div.relative.inline.h-full.w-full.rounded.border.border-gray-100 > a::attr(href)").extract() 

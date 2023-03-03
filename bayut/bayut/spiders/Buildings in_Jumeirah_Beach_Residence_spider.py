@@ -1,6 +1,6 @@
 import scrapy
 from scrapy.http import FormRequest
-from ..items import Buildings_in_Jumeirah_Beach_ResidenceItem
+from ..items import BuildingsItem
 import requests
 from bs4 import BeautifulSoup
 from .file_downloader import img_downloader
@@ -8,15 +8,15 @@ from .helpers import methods
 import uuid
 
 class testingSpider(scrapy.Spider):
-    name = 'Buildings_in_Jumeirah_Beach_Residence'
-    start_urls = ["https://www.bayut.com/buildings/jumeirah-beach-residence-jbr/"]
+    name = 'Buildings'
+    start_urls = ["https://www.bayut.com/buildings/dubai/"]
     page_number = 2
     link = ""
 
 
     def parse(self,response):
 
-        all = response.css("div.main div.listings div.listItem a::attr('href')").extract()
+        all = response.css(".mt-10.gap-5.grid.grid-cols-2.grid-rows-auto a::attr('href')").extract()
 
         for one in all:
             self.link = one
@@ -24,8 +24,8 @@ class testingSpider(scrapy.Spider):
             yield response.follow("https://www.bayut.com"+one,callback = self.page)
             
 
-        next_page = f"https://www.bayut.com/buildings/jumeirah-beach-residence-jbr/page/{self.page_number}"
-        if next_page is not None and self.page_number < 6:
+        next_page = f"https://www.bayut.com/buildings/dubai/page/{self.page_number}/"
+        if next_page is not None and self.page_number < 241:
             self.page_number +=1
             yield response.follow(next_page,callback = self.parse)
         else:
@@ -35,7 +35,7 @@ class testingSpider(scrapy.Spider):
 
     def page(self,response):
 
-        items = Buildings_in_Jumeirah_Beach_ResidenceItem()
+        items = BuildingsItem()
         signature = uuid.uuid1()
 
         #title
@@ -45,7 +45,7 @@ class testingSpider(scrapy.Spider):
             title="hassan"+self.link
 
         #cover_img    
-        cover_image = img_downloader.download(response.css("main div.container img::attr(src)").get(),signature,99)
+        cover_image = (response.css("main div.container img::attr(src)").get())
 
         #highlights
         highlights=response.css("section#highlights ul.postjumplink li a::text").extract()

@@ -93,10 +93,15 @@ async function visit_each(link, page) {
       let Developer = "";
       let Property_age = "";
       temp.forEach((e) => {
-        let key = e.querySelector(".property-facts__label").textContent;
-        let value = clean(
-          e.querySelector(".property-facts__value").textContent
-        );
+        let key = "";
+        let value = "";
+        try {
+          key = e.querySelector(".property-facts__label").textContent;
+        } catch (error) {}
+        try {
+        } catch (error) {
+          value = clean(e.querySelector(".property-facts__value").textContent);
+        }
         if (/Property type/i.test(key)) {
           Property_type = value;
         }
@@ -131,10 +136,17 @@ async function visit_each(link, page) {
       let Monthly_Payment = "";
       let Pay_Over = "";
       temp.forEach((e) => {
-        let key = e.querySelector(".property-payment-plan__label").textContent;
-        let value = clean(
-          e.querySelector(".property-payment-plan__value").textContent
-        );
+        let key = "";
+        let value = "";
+        try {
+          key = e.querySelector(".property-payment-plan__label").textContent;
+        } catch (error) {}
+        try {
+        } catch (error) {
+          value = clean(
+            e.querySelector(".property-payment-plan__value").textContent
+          );
+        }
         if (/Down Payment/i.test(key)) {
           Down_Payment = value;
         }
@@ -152,13 +164,19 @@ async function visit_each(link, page) {
       let Starting_price = "";
       let Completion = "";
       temp.forEach((e) => {
-        let key = e.querySelector(
-          ".property-project-details__list-item div:not(.property-project-details__list-item-value)"
-        ).textContent;
-        let value = clean(
-          e.querySelector(".property-project-details__list-item-value")
-            .textContent
-        );
+        let key = "";
+        let value = "";
+        try {
+          key = e.querySelector(
+            ".property-project-details__list-item div:not(.property-project-details__list-item-value)"
+          ).textContent;
+        } catch (error) {}
+        try {
+          value = clean(
+            e.querySelector(".property-project-details__list-item-value")
+              .textContent
+          );
+        } catch (error) {}
         if (/Size range/i.test(key)) {
           Size_range_sqm = value;
         }
@@ -357,7 +375,7 @@ async function main() {
     args: ["--enable-automation"],
   });
   const page = await browser.newPage();
-  // let plans_data = {};
+
   for (let i = 1; i <= 4000; i++) {
     try {
       await main_loop(page, i);

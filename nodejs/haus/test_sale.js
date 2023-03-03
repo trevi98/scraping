@@ -9,9 +9,7 @@ async function run() {
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
-  await page.goto(
-    "https://www.bayut.com/to-rent/apartments/dubai/dubai-marina/mag-218-tower/"
-  );
+  await page.goto("https://www.bayut.com/buildings/the-jewels/");
   const links = await page.evaluate(() => {
     function clean(text) {
       try {
@@ -44,7 +42,11 @@ async function run() {
         let s = i + 1;
         let res = [];
         while (s < temp.length) {
-          if (temp[s].hasAttribute("id")) break;
+          if (
+            temp[s].hasAttribute("id") ||
+            temp[s].querySelectorAll("img").length > 0
+          )
+            break;
           else {
             res.push(clean(temp[s].textContent));
             s++;
@@ -83,6 +85,12 @@ async function run() {
               break;
             else {
               try {
+                let one = Array.from(temp[s].querySelectorAll("*"));
+                one.forEach((e) => {
+                  try {
+                    res.push(clean(e.textContent));
+                  } catch (e) {}
+                });
                 res.push(clean(temp[s].textContent));
               } catch (error) {}
               s++;
@@ -120,12 +128,23 @@ async function run() {
         images.push(clean(e.src));
       } catch (error) {}
     });
+    let Floor_plans = [];
+    let floor = Array.from(document.querySelectorAll("a"));
+    floor.forEach((e) => {
+      if (/floor/i.test(e.href)) {
+        try {
+          Floor_plans.push(clean(e.href));
+        } catch (error) {}
+      }
+    });
+    Floor_plans = [...new Set(Floor_plans)];
     return {
       title: title,
       content: content,
       temp: temp.length,
       images: images,
       cover_img: cover_img,
+      Floor_plans: Floor_plans,
       signaturea: Date.now(),
     };
   });

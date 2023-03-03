@@ -190,7 +190,7 @@ class buildings_marinaItem(scrapy.Item):
     answers = scrapy.Field()
     images = scrapy.Field()
 
-class Buildings_in_Jumeirah_Beach_ResidenceItem(scrapy.Item):
+class BuildingsItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     title = scrapy.Field()

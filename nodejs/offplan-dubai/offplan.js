@@ -53,7 +53,7 @@ let visit_err_record = 0;
 
 async function visit_each(link, page) {
   // await page.setCacheEnabled(false);
-  await page.goto(link);
+  await page.goto(link.link);
   console.log(link);
   let data = [];
   data.push(
@@ -74,37 +74,21 @@ async function visit_each(link, page) {
       try {
         title = clean(document.title);
       } catch (error) {}
-      let developer = "";
-      try {
-        developer = clean(
-          document.querySelector(
-            ".l-section.wpb_row.height_medium.project_head_area  .has-fill h3"
-          ).textContent
-        );
-      } catch (error) {}
       let temp = Array.from(
         document.querySelectorAll(
           ".g-cols.vc_row.type_default.valign_top .wpb_text_column + .g-cols.type_default.valign_top tr"
         )
       );
       let price = "";
-      let area = "";
       let Bedrooms = "";
-      let type = "";
       temp.forEach((e) => {
         let key = clean(e.querySelector("td[align='left']").textContent);
         let value = clean(e.querySelector("td[align='right']").textContent);
         if (/price/i.test(key)) {
           price = value;
         }
-        if (/location/i.test(key)) {
-          area = value;
-        }
         if (/bed/i.test(key)) {
           Bedrooms = value;
-        }
-        if (/type/i.test(key)) {
-          type = value;
         }
       });
       let propery_info = [];
@@ -161,7 +145,7 @@ async function visit_each(link, page) {
           " .w-separator.type_default.size_medium.thick_1.style_dotted.color_primary.align_center.with_content"
         );
         if (key !== null) {
-          if (/amenities/i.test(key.textContent)) {
+          if (/Amenities/i.test(key.textContent)) {
             let list = Array.from(e.querySelectorAll("li"));
             list.forEach((e) => {
               try {
@@ -185,13 +169,102 @@ async function visit_each(link, page) {
           }
         }
       });
+      temp = Array.from(
+        document.querySelectorAll(
+          ".vc_col-sm-9 .vc_column-inner> .wpb_wrapper >*"
+        )
+      );
+      for (let i = 0; i < temp.length; i++) {
+        if (temp[i] !== null) {
+          let key = temp[i].textContent;
+          if (Payment_Plan.length === 0) {
+            if (/payment/i.test(key)) {
+              let s = [];
+              try {
+                s = Array.from(temp[i + 1].querySelectorAll("li,h6"));
+              } catch (error) {}
+              s.forEach((e) => {
+                try {
+                  Payment_Plan.push(clean(e.textContent));
+                } catch (error) {}
+              });
+              if (s.length == 0) {
+                try {
+                  s = Array.from(temp[i].querySelectorAll("li,h6"));
+                } catch (error) {}
+                s.forEach((e) => {
+                  try {
+                    Payment_Plan.push(clean(e.textContent));
+                  } catch (error) {}
+                });
+              }
+              if (s.length == 0) {
+                try {
+                  s = Array.from(temp[i + 2].querySelectorAll("li,h6"));
+                } catch (error) {}
+                s.forEach((e) => {
+                  try {
+                    Payment_Plan.push(clean(e.textContent));
+                  } catch (error) {}
+                });
+              }
+            }
+          }
+          if (amenities.length === 0) {
+            if (/Amenities/i.test(key)) {
+              let s = [];
+              try {
+                s = Array.from(temp[i + 1].querySelectorAll("li,h6"));
+              } catch (error) {}
+              s.forEach((e) => {
+                try {
+                  amenities.push(clean(e.textContent));
+                } catch (error) {}
+              });
+              if (s.length == 0) {
+                try {
+                  s = Array.from(temp[i].querySelectorAll("li,h6"));
+                } catch (error) {}
+                s.forEach((e) => {
+                  try {
+                    amenities.push(clean(e.textContent));
+                  } catch (error) {}
+                });
+              }
+              if (s.length == 0) {
+                try {
+                  s = Array.from(temp[i + 2].querySelectorAll("li,h6"));
+                } catch (error) {}
+                s.forEach((e) => {
+                  try {
+                    amenities.push(clean(e.textContent));
+                  } catch (error) {}
+                });
+              }
+            }
+          }
+          if (!price) {
+            if (/Price/i.test(key)) {
+              if (/aed/i.test(key)) {
+                price = key;
+              } else {
+                price = clean(temp[i + 1].textContent);
+              }
+            }
+          }
+        }
+      }
+      if (!description) {
+        try {
+          description = clean(
+            document.querySelector(".l-section-h.i-cf p").textContent
+          );
+        } catch (error) {}
+      }
       return {
         title: title,
-        developer: developer,
         price: price,
-        area: area,
         Bedrooms: Bedrooms,
-        type: type,
         propery_info: propery_info,
         description: description,
         Payment_Plan: Payment_Plan,
@@ -205,7 +278,9 @@ async function visit_each(link, page) {
       };
     })
   );
-  data[0].link = link;
+  data[0].area = link.area;
+  data[0].type = link.type;
+  data[0].developer = link.developer;
   if (j % 500 == 0) {
     batch++;
     csvWriter = csv_handler("offplan_Dubai_Properties", batch);
@@ -225,17 +300,50 @@ async function main_loop(page, i) {
   console.log(target);
   await page.goto(target);
   const links = await page.evaluate(() => {
+    function clean(text) {
+      try {
+        return text
+          .replaceAll("\n", "")
+          .replaceAll("\r", "")
+          .replaceAll("\t", "")
+          .replaceAll("  ", "")
+          .trim();
+      } catch (error) {
+        return text;
+      }
+    }
     let all = [];
-    let link = Array.from(
-      document.querySelectorAll(".w-btn.usg_btn_1.with_text_color")
-    );
+    let link = Array.from(document.querySelectorAll(".w-grid-list article "));
     link.forEach((e) => {
-      all.push(e.href);
+      let developer = "";
+      let area = "";
+      let type = "";
+      try {
+        developer = clean(
+          e.querySelector(" .w-hwrapper.usg_hwrapper_1 .usg_post_taxonomy_5")
+            .textContent
+        );
+      } catch (error) {}
+      try {
+        area = clean(
+          e.querySelector(" .w-hwrapper.usg_hwrapper_1 .usg_post_taxonomy_1")
+            .textContent
+        );
+      } catch (error) {}
+      try {
+        type = clean(
+          e
+            .querySelector(".w-hwrapper.usg_hwrapper_3")
+            .textContent.split(":")[1]
+        );
+      } catch (error) {}
+      let a = "";
+      a = e.querySelector(".w-btn.usg_btn_1").href;
+      all.push({ link: a, type: type, area: area, developer: developer });
     });
     let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
-
   for (const link of links) {
     try {
       await visit_each(link, page);

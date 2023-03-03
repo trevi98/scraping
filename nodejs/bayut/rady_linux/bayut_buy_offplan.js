@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
+const { on } = require("events");
 const axios = require("axios");
 const { exec } = require("child_process");
 function csv_handler(directory, batch) {
@@ -9,35 +10,33 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/bayut_Shops_for_rent_comm${batch}.csv`,
+    path: `${directory}/buy${batch}.csv`,
     header: [
       { id: "title", title: "title" },
-      { id: "description", title: "description" },
-      { id: "bedrooms", title: "bedrooms" },
-      { id: "bathrooms", title: "bathrooms" },
-      { id: "size", title: "size" },
-      { id: "area", title: "area" },
-      { id: "type", title: "type" },
-      { id: "date", title: "date" },
-      { id: "parking", title: "parking" },
-      { id: "ownership", title: "ownership" },
-      { id: "completion", title: "completion" },
-      { id: "developer", title: "developer" },
-      { id: "furnishing", title: "furnishing" },
-      { id: "built_up_area", title: "built_up_area" },
-      { id: "elevators", title: "elevators" },
-      { id: "number_of_parking", title: "number_of_parking" },
-      { id: "number_of_appartments", title: "number_of_appartments" },
-      { id: "balcony_size", title: "balcony_size" },
-      { id: "category", title: "category" },
-      { id: "number_of_floors", title: "number_of_floors" },
-      { id: "amenities", title: "amenities" },
-      { id: "totla_building_area", title: "totla_building_area" },
-      { id: "imgs", title: "imgs" },
-      { id: "plans_2d", title: "plans_2d" },
-      { id: "plans_3d", title: "plans_3d" },
-      { id: "signaturea", title: "signaturea" },
+      { id: "Property_type", title: "Property_type" },
+      { id: "Property_size", title: "Property_size" },
+      { id: "Bedrooms", title: "Bedrooms" },
+      { id: "Bathrooms", title: "Bathrooms" },
+      { id: "Developer", title: "Developer" },
       { id: "price", title: "price" },
+      { id: "Down_Payment", title: "Down_Payment" },
+      { id: "Monthly_Payment", title: "Monthly_Payment" },
+      { id: "Pay_Over", title: "Pay_Over" },
+      { id: "Size_range_sqm", title: "Size_range_sqm" },
+      { id: "Starting_price", title: "Starting_price" },
+      { id: "Completion", title: "Completion" },
+      { id: "location", title: "location" },
+      { id: "agent", title: "agent" },
+      { id: "amenities__list", title: "amenities__list" },
+      { id: "description", title: "description" },
+      { id: "Reference", title: "Reference" },
+      { id: "Trakheesi_Permit", title: "Trakheesi_Permit" },
+      { id: "Agent_BRN", title: "Agent_BRN" },
+      { id: "Broker_ORN", title: "Broker_ORN" },
+      { id: "Ownership", title: "Ownership" },
+      { id: "Property_age", title: "Property_age" },
+      { id: "images", title: "images" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -55,238 +54,275 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("bayut_Shops_for_rent_comm");
-let csvWriter = csv_handler("bayut_Shops_for_rent_comm", 1);
+let csvErrr = csv_error_handler("buy");
+let csvWriter = csv_handler("buy", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
-async function clean(text) {
-  try {
-    return text
-      .replace("\n", "")
-      .replace("\r", "")
-      .replace("\t", "")
-      .replace("  ", "");
-  } catch (error) {
-    return text;
-  }
-}
-
 async function visit_each(link, page) {
+  // await page.setCacheEnabled(false);
   await page.goto(link);
   let data = [];
-  let data_plans_3d = [];
-  let data_plans_2d = [];
-  let btns = await page.evaluate(() => {
-    let elmnts = Array.from(document.querySelectorAll("span._4b6fd844"));
-    let b = [];
-    elmnts.forEach((elmnt) => {
-      if (elmnt.textContent.includes("3D Image")) {
-        elmnt.id = "d3fd";
-        b.push("d3fd");
-      } else if (elmnt.textContent.includes("2D Image")) {
-        elmnt.id = "d2fd";
-        b.push("d2fd");
-      }
-    });
-    return b;
-  });
-
-  let plans = {
-    d3: [],
-    d2: [],
-  };
-
-  if (btns.length > 0) {
-    for (let btn of btns) {
-      await page.click(`#${btn}`);
-      const element = await page.waitForSelector("._50f15c14 img");
-      if (btn == "d3fd") {
-        plans.d3.push(
-          await page.evaluate(() => {
-            return Array.from(
-              document.querySelectorAll("._50f15c14 img"),
-              (img) =>
-                img.src
-                  .replace("\n", "")
-                  .replace("\r", "")
-                  .replace("\t", "")
-                  .replace("  ", "")
-            );
-          })
-        );
-      } else {
-        plans.d2.push(
-          await page.evaluate(() => {
-            return Array.from(
-              document.querySelectorAll("._50f15c14 img"),
-              (img) =>
-                img.src
-                  .replace("\n", "")
-                  .replace("\r", "")
-                  .replace("\t", "")
-                  .replace("  ", "")
-            );
-          })
-        );
-      }
-    }
-  }
-  if (plans.d3.length > 0) {
-    data_plans_3d.push({ plans_3d: plans.d3[0] });
-  }
-  if (plans.d2.length > 0) {
-    data_plans_2d.push({ plans_2d: plans.d2[0] });
-  }
-
-  await page.click("._35b183c9._39b0d6c4");
-  const element = await page.waitForSelector("._18c28cd2._277fb980");
   data.push(
     await page.evaluate(async () => {
-      function extract_pare(elmnts, key) {
-        let pare = [];
-        pare = elmnts.filter((elmnt) => {
-          try {
-            if (elmnt.includes(key)) {
-              return true;
-            }
-          } catch (error) {}
-        });
+      function clean(text) {
         try {
-          pare = pare[0]
-            .replace(key, "")
-            .replace(" ", "")
-            .replace("\n", "")
-            .replace("\t", "")
-            .replace("\r", "")
-            .replace("  ", "");
-          return pare;
+          return text
+            .replaceAll("\n", "")
+            .replaceAll("\r", "")
+            .replaceAll("\t", "")
+            .replaceAll("  ", "")
+            .trim();
         } catch (error) {
-          return "";
+          return text;
         }
       }
-      const images = document.querySelectorAll("._18c28cd2._277fb980 img");
-      let imgs = Array.from(images, (img) =>
-        img.src
-          .replace("\n", "")
-          .replace("\r", "")
-          .replace("\t", "")
-          .replace("  ", "")
+
+      let title = "";
+      try {
+        title = clean(document.title.split("|")[0]);
+      } catch (error) {
+        title = clean(document.title);
+      }
+      let temp = Array.from(document.querySelectorAll("ul.property-facts li"));
+      let Property_type = "";
+      let Property_size = "";
+      let Bedrooms = "";
+      let Bathrooms = "";
+      let Developer = "";
+      let Property_age = "";
+      temp.forEach((e) => {
+        let key = "";
+        let value = "";
+        try {
+          key = e.querySelector(".property-facts__label").textContent;
+        } catch (error) {}
+        try {
+        } catch (error) {
+          value = clean(e.querySelector(".property-facts__value").textContent);
+        }
+        if (/Property type/i.test(key)) {
+          Property_type = value;
+        }
+        if (/Property size/i.test(key)) {
+          Property_size = value;
+        }
+        if (/Property age/i.test(key)) {
+          Property_age = value;
+        }
+        if (/Bedrooms/i.test(key)) {
+          Bedrooms = value;
+        }
+        if (/Bathrooms/i.test(key)) {
+          Bathrooms = value;
+        }
+        if (/Developer/i.test(key)) {
+          Developer = value;
+        }
+      });
+      let price = "";
+      try {
+        price = clean(
+          document.querySelector(
+            ".property-page__contact-section  .property-price .property-price__price"
+          ).textContent
+        );
+      } catch (error) {}
+      temp = Array.from(
+        document.querySelectorAll(".property-payment-plan__item")
       );
-      let title = document
-        .querySelector("h1.fcca24e0")
-        .textContent.replace("\n", "")
-        .replace("\r", "")
-        .replace("\t", "")
-        .replace("  ", "");
-      let info = Array.from(
-        document.querySelectorAll("div.ba1ca68e._0ee3305d"),
-        (elmnt) =>
-          elmnt.textContent
-            .replace("\n", "")
-            .replace("\r", "")
-            .replace("\t", "")
-            .replace("  ", "")
+      let Down_Payment = "";
+      let Monthly_Payment = "";
+      let Pay_Over = "";
+      temp.forEach((e) => {
+        let key = "";
+        let value = "";
+        try {
+          key = e.querySelector(".property-payment-plan__label").textContent;
+        } catch (error) {}
+        try {
+        } catch (error) {
+          value = clean(
+            e.querySelector(".property-payment-plan__value").textContent
+          );
+        }
+        if (/Down Payment/i.test(key)) {
+          Down_Payment = value;
+        }
+        if (/Monthly Payment/i.test(key)) {
+          Monthly_Payment = value;
+        }
+        if (/Pay Over/i.test(key)) {
+          Pay_Over = value;
+        }
+      });
+      temp = Array.from(
+        document.querySelectorAll(".property-project-details__list-item")
       );
-      let bedrooms = extract_pare(info, "Beds");
-      let bathrooms = extract_pare(info, "Baths");
-      let size = extract_pare(info, "sqft");
-      let area = Array.from(
-        document.querySelectorAll("span._327a3afc"),
-        (elmnt) => elmnt.textContent
-      )[2]
-        .replace("\n", "")
-        .replace("\r", "")
-        .replace("\t", "")
-        .replace("  ", "");
-      let price = document
-        .querySelector("span._105b8a67")
-        .textContent.replace("\n", "")
-        .replace("\r", "")
-        .replace("\t", "")
-        .replace("  ", "");
-      let date = document
-        .querySelector("span._56562304")
-        .textContent.replace("\n", "")
-        .replace("\r", "")
-        .replace("\t", "")
-        .replace("  ", "");
-      info = Array.from(document.querySelectorAll("._033281ab li"), (elmnt) =>
-        elmnt.textContent
-          .replace("\n", "")
-          .replace("\r", "")
-          .replace("\t", "")
-          .replace("  ", "")
+      let Size_range_sqm = "";
+      let Starting_price = "";
+      let Completion = "";
+      temp.forEach((e) => {
+        let key = "";
+        let value = "";
+        try {
+          key = e.querySelector(
+            ".property-project-details__list-item div:not(.property-project-details__list-item-value)"
+          ).textContent;
+        } catch (error) {}
+        try {
+          value = clean(
+            e.querySelector(".property-project-details__list-item-value")
+              .textContent
+          );
+        } catch (error) {}
+        if (/Size range/i.test(key)) {
+          Size_range_sqm = value;
+        }
+        if (/Starting price/i.test(key)) {
+          Starting_price = value;
+        }
+        if (/Completion/i.test(key)) {
+          Completion = value;
+        }
+        if (!Property_type) {
+          if (/Property type/i.test(key)) {
+            Property_type = value;
+          }
+        }
+      });
+      let location = "";
+      try {
+        location = clean(
+          document.querySelector(".property-location__detail-area").textContent
+        );
+      } catch (error) {}
+      let agent = "";
+      try {
+        agent = clean(
+          document.querySelector(
+            ".text.text--size3.link.link--underline.property-agent__name"
+          ).textContent
+        );
+      } catch (error) {}
+      temp = Array.from(document.querySelectorAll(".property-amenities__list"));
+      let amenities__list = [];
+      temp.forEach((e) => {
+        try {
+          amenities__list.push(clean(e.textContent));
+        } catch (error) {}
+      });
+      let description = "";
+      try {
+        description = clean(
+          document.querySelector(
+            ".text-trim.property-description__text-trim.text-trim--enabled"
+          ).textContent
+        );
+      } catch (error) {}
+
+      let Reference = "";
+      let Trakheesi_Permit = "";
+      let Agent_BRN = "";
+      let Broker_ORN = "";
+      let Ownership = "";
+      temp = Array.from(
+        document.querySelectorAll(".property-page__legal-list-item")
       );
-      let type = extract_pare(info, "Type");
-      let completion = extract_pare(info, "Completion");
-      let furnishing = extract_pare(info, "Furnishing");
-      let ownership = extract_pare(info, "Ownership");
-      let built_up_area = extract_pare(info, "Built-up Area");
-      let developer = extract_pare(info, "Developer");
-      let number_of_floors = extract_pare(info, "Total Floors");
-      let number_of_appartments = extract_pare(info, "Number of Apartments");
-      let number_of_parking = extract_pare(info, "Total Parking Spaces");
-      let parking_availability = extract_pare(info, "Parking Availability");
-      let totla_building_area = extract_pare(info, "Total Building Area");
-      let elevators = extract_pare(info, "Elevators");
-      let balcony_size = extract_pare(info, "Balcony Size");
-      let category = extract_pare(info, "Usage");
-      let description = document
-        .querySelector("._2015cd68.d320ecf0")
-        .textContent.replace("\n", "")
-        .replace("\r", "")
-        .replace("\t", "")
-        .replace("  ", "");
-      let amenities = Array.from(
-        document.querySelectorAll("div._4b64e3bd div._9676c577"),
-        (elmnt) =>
-          elmnt.textContent
-            .replace("\n", "")
-            .replace("\r", "")
-            .replace("\t", "")
-            .replace("  ", "")
-      );
+      temp.forEach((e) => {
+        let key = e.querySelector(
+          ".property-page__legal-list-label"
+        ).textContent;
+        let value = clean(
+          e.querySelector(".property-page__legal-list-content").textContent
+        );
+        if (/Reference/i.test(key)) {
+          Reference = value;
+        }
+        if (/Trakheesi Permit/i.test(key)) {
+          Trakheesi_Permit = value;
+        }
+        if (/Agent BRN/i.test(key)) {
+          Agent_BRN = value;
+        }
+
+        if (/Broker ORN/i.test(key)) {
+          Broker_ORN = value;
+        }
+        if (/Ownership/i.test(key)) {
+          Ownership = value;
+        }
+      });
 
       return {
-        description: description,
-        bedrooms: bedrooms,
-        bathrooms: bathrooms,
-        size: size,
-        area: area,
-        date: date,
-        type: type,
-        parking: parking_availability,
-        ownership: ownership,
-        compleation: completion,
-        developer: developer,
-        furnishing: furnishing,
-        built_up_area: built_up_area,
-        elevators: elevators,
-        number_of_parking: number_of_parking,
-        number_of_appartments: number_of_appartments,
-        balcony_size: balcony_size,
-        catrgory: category,
-        amenities: amenities,
         title: title,
-        number_of_floors: number_of_floors,
-        totla_building_area: totla_building_area,
-        imgs: imgs,
+        Property_type: Property_type,
+        Property_size: Property_size,
+        Property_age: Property_age,
+        Bedrooms: Bedrooms,
+        Bathrooms: Bathrooms,
+        Developer: Developer,
         price: price,
+        Down_Payment: Down_Payment,
+        Monthly_Payment: Monthly_Payment,
+        Pay_Over: Pay_Over,
+        Size_range_sqm: Size_range_sqm,
+        Starting_price: Starting_price,
+        Completion: Completion,
+        location: location,
+        agent: agent,
+        amenities__list: amenities__list,
+        description: description,
+        Reference: Reference,
+        Trakheesi_Permit: Trakheesi_Permit,
+        Agent_BRN: Agent_BRN,
+        Broker_ORN: Broker_ORN,
+        Ownership: Ownership,
         signaturea: Date.now(),
       };
     })
   );
+  let images = [];
+  const exist = await page.evaluate(() => {
+    return (
+      document.querySelector(
+        ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
+      ) !== null
+    );
+  });
+  if (exist) {
+    let number = await page.evaluate(() => {
+      let number = document.querySelector(
+        ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
+      ).textContent;
+      return number.match(/(\d+)/)[0];
+    });
+    await page.click(
+      ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
+    );
 
+    for (let i = 0; i < number + 1; i++) {
+      await page.evaluate(() =>
+        document.querySelector(".gallery__item").click()
+      );
+    }
+    images = await page.evaluate(() => {
+      let temp = Array.from(document.querySelectorAll(".gallery__item img "));
+      let imgs = [];
+      temp.forEach((e) => {
+        imgs.push(e.src);
+      });
+      return imgs;
+    });
+  }
+  data[0].images = images;
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("bayut_Shops_for_rent_comm", batch);
+    csvWriter = csv_handler("buy", batch);
   }
 
-  data[0].plans_2d = plans.d2[0];
-  data[0].plans_3d = plans.d3[0];
   csvWriter
     .writeRecords(data)
     .then(() => console.log("The CSV file was written successfully"));
@@ -294,18 +330,20 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.bayut.com/to-rent/shops/uae/page-${i}/?rent_frequency=any`;
+  let target = `https://www.propertyfinder.ae/en/buy/properties-for-sale.html?page=${i}`;
   if (i == 1) {
-    target = "https://www.bayut.com/to-rent/shops/uae/?rent_frequency=any";
+    target = "https://www.propertyfinder.ae/en/buy/properties-for-sale.html";
   }
   console.log(target);
   await page.goto(target);
   const links = await page.evaluate(() => {
-    const anchors = Array.from(
-      document.querySelectorAll("._357a9937 .ef447dde ._4041eb80 ._287661cb"),
-      (a) => a.href
-    );
-    let uniqe_links = [...new Set(anchors)];
+    let all = [];
+    let link = Array.from(document.querySelectorAll(".card "));
+    link.forEach((e) => {
+      let a = e.querySelector("a").href;
+      all.push(a);
+    });
+    let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
 
@@ -316,15 +354,20 @@ async function main_loop(page, i) {
       try {
         await visit_each(link, page);
       } catch (err) {
-        csvErrr
-          .writeRecords({ link: link, error: err })
-          .then(() => console.log("error logged"));
-        continue;
+        try {
+          await visit_each(link, page);
+        } catch (error) {
+          console.error(error);
+          csvErrr
+            .writeRecords({ link: link, error: err })
+            .then(() => console.log("error logged main loop"));
+          continue;
+        }
       }
     }
   }
-  if (i == 1 || i % 20 == 0 || i == 84) {
-    const message = `Data - bayut_Shops_for_rent_comm ${i} done`;
+  if (i == 1 || i % 20 == 0) {
+    const message = `Data - buy property_finder ${i} done`;
 
     const url = "https://profoundproject.com/tele/";
 
@@ -340,7 +383,7 @@ async function main_loop(page, i) {
       .catch((error) => {
         console.error(error);
       });
-    if (i == 84) {
+    if (i == 4000) {
       exec("pm2 stop main", (error, stdout, stderr) => {
         if (error) {
           console.error(`Error executing command: ${error}`);
@@ -361,16 +404,18 @@ async function main() {
     args: ["--no-sandbox"],
   });
   const page = await browser.newPage();
-  for (let i = 1; i <= 84; i++) {
+
+  for (let i = 1; i <= 4000; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {
       try {
         await main_loop(page, i);
       } catch (error) {
+        console.error(error);
         csvErrr
           .writeRecords({ link: i, error: error })
-          .then(() => console.log("error logged"));
+          .then(() => console.log("error logged main"));
         continue;
       }
     }
