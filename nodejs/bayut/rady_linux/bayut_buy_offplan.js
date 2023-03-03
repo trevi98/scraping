@@ -1,10 +1,12 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer-extra')
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const { on } = require("events");
-const axios = require("axios");
-const { exec } = require("child_process");
+const axios = require('axios');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
+
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
@@ -63,6 +65,8 @@ let visit_err_record = 0;
 
 async function visit_each(link, page) {
   // await page.setCacheEnabled(false);
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
+  await page.waitForTimeout(1000);
   await page.goto(link);
   let data = [];
   data.push(
@@ -367,7 +371,7 @@ async function main_loop(page, i) {
     }
   }
   if (i == 1 || i % 20 == 0) {
-    const message = `Data - buy property_finder ${i} done`;
+    const message = `Data - Bayut Wearhous rent ${i} done`;
 
     const url = "https://profoundproject.com/tele/";
 
@@ -401,7 +405,7 @@ async function main() {
   const browser = await puppeteer.launch({
     headless: true,
     executablePath: "/usr/bin/google-chrome-stable",
-    args: ["--no-sandbox"],
+    args: ["--no-sandbox",'--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
 

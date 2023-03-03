@@ -4,6 +4,7 @@ import os
 from file_downloader import img_downloader
 import uuid
 
+
 class csvHandler():
     counter_rec = 0
 # Read CSV file
@@ -33,14 +34,36 @@ class csvHandler():
                         #     continue
                         if ',' in str(row[column]):
                             links = row[column].split(",")
-                            res = self.download_array(links,signaturea)
-                            df.at[index, column] = res
+                            try:
+                                if 'https://' not in str(links[0]):
+                                    requests.get('https://profoundproject.com/tele', {'message':'download skipped file '+file})
+                                    break
+                                res = self.download_array(links,signaturea)
+                                df.at[index, column] = res
+                            except:
+                                try:
+                                    res = self.download_array(links,signaturea)
+                                    df.at[index, column] = res
+                                except Exception as error:
+                                    print('file error '+ file+' Error: '+str(error))
+                                    requests.get('https://profoundproject.com/tele', {'message':'Error occured => file error '+ file+' Error: '+str(error)+" "+str(link)})
+                                continue
                         elif ',' not in str(row[column]) and len(str(row[column])) > 3:
                             link = row[column]
                             print(link)
-                            res = self.download(str(link),signaturea)
-                            requests.get('https://profoundproject.com/tele', {'message':'Link '+str(link)})
-                            df.at[index, column] = res
+                            try:
+                                if 'https://' not in str(link):
+                                    requests.get('https://profoundproject.com/tele', {'message':'download skipped file '+file})
+                                    break
+                                res = self.download(str(link),signaturea)
+                                df.at[index, column] = res
+                            except:
+                                try:
+                                    res = self.download(str(link),signaturea)
+                                    df.at[index, column] = res
+                                except Exception as error:
+                                    print('file error '+ file+' Error: '+str(error))
+                                    requests.get('https://profoundproject.com/tele', {'message':'Error occured => file error '+ file+' Error: '+str(error)+" "+str(link)})
             except Exception as error:
                 print('file error '+ file+' Error: '+str(error))
                 requests.get('https://profoundproject.com/tele', {'message':'Error occured => file error '+ file+' Error: '+str(error)})

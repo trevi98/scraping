@@ -1,10 +1,15 @@
 import urllib.request
 import os
 import requests
+import ssl
+import urllib.request
 
 class img_downloader():
 
     def download(url, signature, idd):
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
         url = str(url)
         try:
         # User-Agent string
@@ -17,7 +22,7 @@ class img_downloader():
                 req = urllib.request.Request(url, headers={'User-Agent': user_agent})
 
                 # Open the URL with the Request object
-                with urllib.request.urlopen(req) as url:
+                with urllib.request.urlopen(req,context=context) as url:
                     s = url.read()
             except urllib.error.HTTPError as e:
                 print(f'HTTP Error: {e.code}')
@@ -35,6 +40,6 @@ class img_downloader():
                     return new_name
         except Exception as error:
             print('error inside download function '+ url+' error: '+str(error))
-            requests.get('https://profoundproject.com/tele', {'message':'Error occured => error inside the download function '+ url+' Error: '+error})
+            requests.get('https://profoundproject.com/tele', {'message':'Error occured => error inside the download function '+ url+' Error: '+str(error)})
 
 

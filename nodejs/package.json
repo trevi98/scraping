@@ -7,6 +7,8 @@
     "nightmare": "^3.0.2",
     "node-libcurl": "^3.0.0",
     "puppeteer": "^19.6.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "request": "^2.88.2",
     "user-agent": "^1.0.4"
   },
