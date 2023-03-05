@@ -1,8 +1,10 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const { on } = require("events");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
@@ -351,7 +353,7 @@ async function main_loop(page, i) {
 
 async function main() {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     executablePath:
       "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     args: ["--enable-automation"],

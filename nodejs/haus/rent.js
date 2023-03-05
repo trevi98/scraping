@@ -11,13 +11,13 @@ function csv_handler(directory, batch) {
     path: `${directory}/rent_haus${batch}.csv`,
     header: [
       { id: "title", title: "title" },
-      { id: "images", title: "images" },
       { id: "Area", title: "Area" },
       { id: "Bathrooms", title: "Bathrooms" },
       { id: "Bedrooms", title: "Bedrooms" },
       { id: "features", title: "features" },
       { id: "price", title: "price" },
       { id: "overview", title: "overview" },
+      { id: "images", title: "images" },
       { id: "brochure", title: "brochure" },
       { id: "signaturea", title: "signaturea" },
     ],
@@ -62,17 +62,23 @@ async function visit_each(link, page) {
           return text;
         }
       }
-
-      let title = clean(
-        document.querySelector(
-          "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading"
-        ).textContent
-      );
+      let title = "";
+      try {
+        title = clean(
+          document.querySelector(
+            "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h1.h3.item-heading"
+          ).textContent
+        );
+      } catch (error) {}
       let images = [];
       let temp = Array.from(
         document.querySelectorAll("div.section-gallery.js-animate-top img")
       );
-      temp.forEach((e) => images.push(e.src));
+      temp.forEach((e) => {
+        try {
+          images.push(clean(e.src));
+        } catch (error) {}
+      });
       images = [...new Set(images)];
       let bathrooms = "";
       let bedrooms = "";
@@ -103,25 +109,22 @@ async function visit_each(link, page) {
         } catch (error) {}
         if (one) features.push(clean(one));
       });
-
-      features = [];
-
-      let price = document.querySelector(
-        "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price"
-      );
+      let price = "";
       try {
-        price = clean(price.textContent);
-      } catch (error) {
-        price = "";
-      }
-      let overview = document.querySelector(
-        "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text"
-      );
+        price = clean(
+          document.querySelector(
+            "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper h6.item-price"
+          ).textContent
+        );
+      } catch (error) {}
+      let overview = "";
       try {
-        overview = clean(overview.textContent);
-      } catch (error) {
-        overview = "";
-      }
+        overview = clean(
+          document.querySelector(
+            "div.main section.section-details.section-details-1 div.section-body.section-body-wrapper div.container div.row.row-wrapper div.col-wrapper div.section-tabs div.tabs-details.slider-multiple-filters div.tab-content div.active.sub-section div.item-intro-text"
+          ).textContent
+        );
+      } catch (error) {}
       let brochure = "";
       temp = Array.from(document.querySelectorAll("ul.tabs-list li a"));
       temp.forEach((e) => {
@@ -176,7 +179,8 @@ async function main_loop(page, i) {
     let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
-
+  console.log(links);
+  console.log(links.length);
   for (const link of links) {
     try {
       await visit_each(link, page);

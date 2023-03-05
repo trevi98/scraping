@@ -76,33 +76,48 @@ async function visit_each(link, page) {
           if (
             temp2.tagName === "H3" ||
             temp2.tagName === "H4" ||
+            temp2.tagName === "H2" ||
             temp2.tagName === "H5"
           ) {
             try {
               titles = temp2.textContent;
             } catch (error) {}
             let s = j + 1;
-            let res = [];
             while (s < q) {
+              let obj = {};
               let temp3 = temp1[s];
-              if (
+              if (temp3.tagName === "P") {
+                des.push(clean(temp3.textContent));
+                // as = "ssd";
+                s++;
+              } else if (temp3.tagName === "UL") {
+                let li = Array.from(temp3.querySelectorAll("li"));
+                li.forEach((e) => {
+                  try {
+                    des.push(clean(e.textContent));
+                  } catch (error) {}
+                });
+                s++;
+              } else if (temp3.tagName === "TABLE") {
+                let th = Array.from(temp3.querySelectorAll(".values"));
+                let m = 0;
+                for (; m < th.length; ) {
+                  obj[clean(th[m].textContent)] = clean(th[m + 1].textContent);
+                  m += 2;
+                }
+                des.push(JSON.stringify(obj));
+                s++;
+              } else if (
                 temp3.tagName === "H3" ||
                 temp3.tagName === "H4" ||
+                temp3.tagName === "H2" ||
                 temp3.tagName === "H5"
               ) {
                 break;
-              } else if (
-                temp3.tagName === "STYLE" ||
-                temp3.tagName === "FIGURE"
-              ) {
-                s++;
-                continue;
               } else {
-                res.push(clean(temp3.textContent));
                 s++;
               }
             }
-            des.push(res);
             all_content[titles] = des;
             j = s - 1;
           }

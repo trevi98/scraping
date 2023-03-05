@@ -1,10 +1,11 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const axios = require("axios");
 const { exec } = require("child_process");
-
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);

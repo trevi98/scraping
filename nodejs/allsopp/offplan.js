@@ -19,6 +19,7 @@ function csv_handler(directory, batch) {
       { id: "payment_plan", title: "payment_plan" },
       { id: "images", title: "images" },
       { id: "signaturea", title: "signaturea" },
+      { id: "brochure", title: "brochure" },
     ],
   });
 }
@@ -113,6 +114,12 @@ async function visit_each(link, page) {
         ] = clean(e.querySelectorAll("div")[1].textContent);
       });
       payment_plan.push(JSON.stringify(all_payment_plan));
+      var brochure = "";
+      try{
+        brochure = document.querySelector(".brochure").parentElement.href
+      }catch(error){
+
+      }
 
       return {
         title: title,
@@ -122,6 +129,7 @@ async function visit_each(link, page) {
         handover: handover,
         places_in_proximity: places_in_proximity,
         payment_plan: payment_plan,
+        brochure: brochure,
         signaturea: Date.now(),
       };
     })

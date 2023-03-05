@@ -293,7 +293,7 @@ async function main_loop(page) {
     } else {
       await page.addStyleTag({
         content:
-          ".col.col-12.apex-col-auto.padding-top-md.margin-top-sm.padding-bottom-md.topFixedSearch.fixedSearch { display: none !important; }",
+          ".col.col-12.apex-col-auto.padding-top-md.margin-top-sm.padding-bottom-md { display: none !important; }",
       });
 
       await page.waitForTimeout(2000);
@@ -306,6 +306,7 @@ async function main_loop(page) {
   });
 
   all_ = [...new Set(all_)];
+  console.log(all_.length);
   for (const obj of all_) {
     try {
       await visit_each(obj, page);

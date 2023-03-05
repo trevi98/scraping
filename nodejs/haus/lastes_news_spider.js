@@ -109,11 +109,7 @@ async function main_loop(page, i) {
   await page.goto(target);
   const links = await page.evaluate(() => {
     let all = [];
-    let link = Array.from(
-      document.querySelectorAll(
-        "div.row.blog-news div.col-sm-12.col-md-8.infinite-container.blog-news-items.equalize-items div.infinite-item.news-article.js-animate-bottom div.row div.col-sm-8.col-xs-8.item-contents a"
-      )
-    );
+    let link = Array.from(document.querySelectorAll(".card-image a"));
     link.forEach((e) => all.push(e.href));
     let uniqe_links = [...new Set(all)];
     return uniqe_links;

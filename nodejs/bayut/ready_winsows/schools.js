@@ -64,31 +64,33 @@ async function visit_each(link, page) {
         document.querySelectorAll("div.post.container.text-base.leading-9 >*")
       );
       let content = [];
-      let titles = [];
-      let des = [];
+      let all_content = {};
       for (let i = 0; i < temp.length; i++) {
+        let titles = "";
+        let des = [];
         if (temp[i].hasAttribute("id")) {
           try {
-            titles.push(clean(temp[i].textContent));
+            titles = clean(temp[i].textContent);
           } catch (error) {}
           let s = i + 1;
-          let res = [];
+
           while (s < temp.length) {
             if (temp[s].hasAttribute("id")) break;
             else {
-              res.push(clean(temp[s].textContent));
+              let one = Array.from(temp[s].querySelectorAll("li,p,tr"));
+              one.forEach((e) => {
+                try {
+                  des.push(clean(e.textContent));
+                } catch (error) {}
+              });
               s++;
             }
           }
-          des.push(res);
+          all_content[titles] = des;
           i = s - 1;
         } else {
           continue;
         }
-      }
-      let all_content = {};
-      for (let i = 0; i < titles.length; i++) {
-        all_content[titles[i]] = des[i];
       }
       content.push(JSON.stringify(all_content));
       let cover_img = "";

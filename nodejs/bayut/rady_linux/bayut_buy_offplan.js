@@ -9,32 +9,12 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/buy${batch}.csv`,
+    path: `${directory}/schools${batch}.csv`,
     header: [
       { id: "title", title: "title" },
-      { id: "Property_type", title: "Property_type" },
-      { id: "Property_size", title: "Property_size" },
-      { id: "Bedrooms", title: "Bedrooms" },
-      { id: "Bathrooms", title: "Bathrooms" },
-      { id: "Developer", title: "Developer" },
-      { id: "price", title: "price" },
-      { id: "Down_Payment", title: "Down_Payment" },
-      { id: "Monthly_Payment", title: "Monthly_Payment" },
-      { id: "Pay_Over", title: "Pay_Over" },
-      { id: "Size_range_sqm", title: "Size_range_sqm" },
-      { id: "Starting_price", title: "Starting_price" },
-      { id: "Completion", title: "Completion" },
-      { id: "location", title: "location" },
-      { id: "agent", title: "agent" },
-      { id: "amenities__list", title: "amenities__list" },
-      { id: "description", title: "description" },
-      { id: "Reference", title: "Reference" },
-      { id: "Trakheesi_Permit", title: "Trakheesi_Permit" },
-      { id: "Agent_BRN", title: "Agent_BRN" },
-      { id: "Broker_ORN", title: "Broker_ORN" },
-      { id: "Ownership", title: "Ownership" },
-      { id: "Property_age", title: "Property_age" },
+      { id: "content", title: "content" },
       { id: "images", title: "images" },
+      { id: "cover_img", title: "cover_img" },
       { id: "signaturea", title: "signaturea" },
     ],
   });
@@ -53,15 +33,14 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("buy");
-let csvWriter = csv_handler("buy", 1);
+let csvErrr = csv_error_handler("schools");
+let csvWriter = csv_handler("schools", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
 async function visit_each(link, page) {
-  // await page.setCacheEnabled(false);
   await page.goto(link);
   let data = [];
   data.push(
@@ -78,248 +57,69 @@ async function visit_each(link, page) {
           return text;
         }
       }
-
       let title = "";
       try {
         title = clean(document.title.split("|")[0]);
-      } catch (error) {
-        title = clean(document.title);
-      }
-      let temp = Array.from(document.querySelectorAll("ul.property-facts li"));
-      let Property_type = "";
-      let Property_size = "";
-      let Bedrooms = "";
-      let Bathrooms = "";
-      let Developer = "";
-      let Property_age = "";
-      temp.forEach((e) => {
-        let key = "";
-        let value = "";
-        try {
-          key = e.querySelector(".property-facts__label").textContent;
-        } catch (error) {}
-        try {
-        } catch (error) {
-          value = clean(e.querySelector(".property-facts__value").textContent);
-        }
-        if (/Property type/i.test(key)) {
-          Property_type = value;
-        }
-        if (/Property size/i.test(key)) {
-          Property_size = value;
-        }
-        if (/Property age/i.test(key)) {
-          Property_age = value;
-        }
-        if (/Bedrooms/i.test(key)) {
-          Bedrooms = value;
-        }
-        if (/Bathrooms/i.test(key)) {
-          Bathrooms = value;
-        }
-        if (/Developer/i.test(key)) {
-          Developer = value;
-        }
-      });
-      let price = "";
-      try {
-        price = clean(
-          document.querySelector(
-            ".property-page__contact-section  .property-price .property-price__price"
-          ).textContent
-        );
       } catch (error) {}
-      temp = Array.from(
-        document.querySelectorAll(".property-payment-plan__item")
+      let temp = Array.from(
+        document.querySelectorAll("div.post.container.text-base.leading-9 >*")
       );
-      let Down_Payment = "";
-      let Monthly_Payment = "";
-      let Pay_Over = "";
-      temp.forEach((e) => {
-        let key = "";
-        let value = "";
-        try {
-          key = e.querySelector(".property-payment-plan__label").textContent;
-        } catch (error) {}
-        try {
-        } catch (error) {
-          value = clean(
-            e.querySelector(".property-payment-plan__value").textContent
-          );
-        }
-        if (/Down Payment/i.test(key)) {
-          Down_Payment = value;
-        }
-        if (/Monthly Payment/i.test(key)) {
-          Monthly_Payment = value;
-        }
-        if (/Pay Over/i.test(key)) {
-          Pay_Over = value;
-        }
-      });
-      temp = Array.from(
-        document.querySelectorAll(".property-project-details__list-item")
-      );
-      let Size_range_sqm = "";
-      let Starting_price = "";
-      let Completion = "";
-      temp.forEach((e) => {
-        let key = "";
-        let value = "";
-        try {
-          key = e.querySelector(
-            ".property-project-details__list-item div:not(.property-project-details__list-item-value)"
-          ).textContent;
-        } catch (error) {}
-        try {
-          value = clean(
-            e.querySelector(".property-project-details__list-item-value")
-              .textContent
-          );
-        } catch (error) {}
-        if (/Size range/i.test(key)) {
-          Size_range_sqm = value;
-        }
-        if (/Starting price/i.test(key)) {
-          Starting_price = value;
-        }
-        if (/Completion/i.test(key)) {
-          Completion = value;
-        }
-        if (!Property_type) {
-          if (/Property type/i.test(key)) {
-            Property_type = value;
+      let content = [];
+      let all_content = {};
+      for (let i = 0; i < temp.length; i++) {
+        let titles = "";
+        let des = [];
+        if (temp[i].hasAttribute("id")) {
+          try {
+            titles = clean(temp[i].textContent);
+          } catch (error) {}
+          let s = i + 1;
+
+          while (s < temp.length) {
+            if (temp[s].hasAttribute("id")) break;
+            else {
+              let one = Array.from(temp[s].querySelectorAll("li,p,tr"));
+              one.forEach((e) => {
+                try {
+                  des.push(clean(e.textContent));
+                } catch (error) {}
+              });
+              s++;
+            }
           }
+          all_content[titles] = des;
+          i = s - 1;
+        } else {
+          continue;
         }
-      });
-      let location = "";
+      }
+      content.push(JSON.stringify(all_content));
+      let cover_img = "";
       try {
-        location = clean(
-          document.querySelector(".property-location__detail-area").textContent
-        );
+        cover_img = document.querySelectorAll(
+          "div.container div.relative div div span img"
+        )[5].src;
       } catch (error) {}
-      let agent = "";
-      try {
-        agent = clean(
-          document.querySelector(
-            ".text.text--size3.link.link--underline.property-agent__name"
-          ).textContent
-        );
-      } catch (error) {}
-      temp = Array.from(document.querySelectorAll(".property-amenities__list"));
-      let amenities__list = [];
+      let images = [];
+      temp = Array.from(document.querySelectorAll("div.mt-6.mb-5 img"));
       temp.forEach((e) => {
         try {
-          amenities__list.push(clean(e.textContent));
+          images.push(clean(e.src));
         } catch (error) {}
       });
-      let description = "";
-      try {
-        description = clean(
-          document.querySelector(
-            ".text-trim.property-description__text-trim.text-trim--enabled"
-          ).textContent
-        );
-      } catch (error) {}
-
-      let Reference = "";
-      let Trakheesi_Permit = "";
-      let Agent_BRN = "";
-      let Broker_ORN = "";
-      let Ownership = "";
-      temp = Array.from(
-        document.querySelectorAll(".property-page__legal-list-item")
-      );
-      temp.forEach((e) => {
-        let key = e.querySelector(
-          ".property-page__legal-list-label"
-        ).textContent;
-        let value = clean(
-          e.querySelector(".property-page__legal-list-content").textContent
-        );
-        if (/Reference/i.test(key)) {
-          Reference = value;
-        }
-        if (/Trakheesi Permit/i.test(key)) {
-          Trakheesi_Permit = value;
-        }
-        if (/Agent BRN/i.test(key)) {
-          Agent_BRN = value;
-        }
-
-        if (/Broker ORN/i.test(key)) {
-          Broker_ORN = value;
-        }
-        if (/Ownership/i.test(key)) {
-          Ownership = value;
-        }
-      });
-
       return {
         title: title,
-        Property_type: Property_type,
-        Property_size: Property_size,
-        Property_age: Property_age,
-        Bedrooms: Bedrooms,
-        Bathrooms: Bathrooms,
-        Developer: Developer,
-        price: price,
-        Down_Payment: Down_Payment,
-        Monthly_Payment: Monthly_Payment,
-        Pay_Over: Pay_Over,
-        Size_range_sqm: Size_range_sqm,
-        Starting_price: Starting_price,
-        Completion: Completion,
-        location: location,
-        agent: agent,
-        amenities__list: amenities__list,
-        description: description,
-        Reference: Reference,
-        Trakheesi_Permit: Trakheesi_Permit,
-        Agent_BRN: Agent_BRN,
-        Broker_ORN: Broker_ORN,
-        Ownership: Ownership,
+        content: content,
+        images: images,
+        cover_img: cover_img,
         signaturea: Date.now(),
       };
     })
   );
-  let images = [];
-  const exist = await page.evaluate(() => {
-    return (
-      document.querySelector(
-        ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
-      ) !== null
-    );
-  });
-  if (exist) {
-    let number = await page.evaluate(() => {
-      let number = document.querySelector(
-        ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
-      ).textContent;
-      return number.match(/(\d+)/)[0];
-    });
-    await page.click(
-      ".property-page__gallery-button-area > .button-2.button-floating.button-floating--shadow.property-page__gallery-button"
-    );
 
-    for (let i = 0; i < number + 1; i++) {
-      await page.evaluate(() =>
-        document.querySelector(".gallery__item").click()
-      );
-    }
-    images = await page.evaluate(() => {
-      let temp = Array.from(document.querySelectorAll(".gallery__item img "));
-      let imgs = [];
-      temp.forEach((e) => {
-        imgs.push(e.src);
-      });
-      return imgs;
-    });
-  }
-  data[0].images = images;
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("buy", batch);
+    csvWriter = csv_handler("schools", batch);
   }
 
   csvWriter
@@ -329,23 +129,25 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.propertyfinder.ae/en/buy/properties-for-sale.html?page=${i}`;
+  let target = `https://www.bayut.com/schools/dubai/page/${i}/`;
   if (i == 1) {
-    target = "https://www.propertyfinder.ae/en/buy/properties-for-sale.html";
+    target = "https://www.bayut.com/schools/dubai";
   }
   console.log(target);
   await page.goto(target);
+  await page.waitForSelector(
+    "div.relative.inline.h-full.w-full.rounded.border.border-gray-100 > a"
+  );
   const links = await page.evaluate(() => {
-    let all = [];
-    let link = Array.from(document.querySelectorAll(".card "));
-    link.forEach((e) => {
-      let a = e.querySelector("a").href;
-      all.push(a);
-    });
-    let uniqe_links = [...new Set(all)];
+    const anchors = Array.from(
+      document.querySelectorAll(
+        "div.relative.inline.h-full.w-full.rounded.border.border-gray-100 > a"
+      ),
+      (a) => a.href
+    );
+    let uniqe_links = [...new Set(anchors)];
     return uniqe_links;
   });
-
   for (const link of links) {
     try {
       await visit_each(link, page);
@@ -353,20 +155,15 @@ async function main_loop(page, i) {
       try {
         await visit_each(link, page);
       } catch (err) {
-        try {
-          await visit_each(link, page);
-        } catch (error) {
-          console.error(error);
-          csvErrr
-            .writeRecords({ link: link, error: err })
-            .then(() => console.log("error logged main loop"));
-          continue;
-        }
+        csvErrr
+          .writeRecords({ link: link, error: err })
+          .then(() => console.log("error logged"));
+        continue;
       }
     }
   }
   if (i == 1 || i % 20 == 0) {
-    const message = `Data - buy property_finder ${i} done`;
+    const message = `Data - Bayut schools ${i} done`;
 
     const url = "https://profoundproject.com/tele/";
 
@@ -382,7 +179,7 @@ async function main_loop(page, i) {
       .catch((error) => {
         console.error(error);
       });
-    if (i == 4000) {
+    if (i == 20) {
       exec("pm2 stop main", (error, stdout, stderr) => {
         if (error) {
           console.error(`Error executing command: ${error}`);
@@ -403,18 +200,16 @@ async function main() {
     args: ["--no-sandbox"],
   });
   const page = await browser.newPage();
-
-  for (let i = 1; i <= 4000; i++) {
+  for (let i = 1; i <= 20; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {
       try {
         await main_loop(page, i);
       } catch (error) {
-        console.error(error);
         csvErrr
           .writeRecords({ link: i, error: error })
-          .then(() => console.log("error logged main"));
+          .then(() => console.log("error logged"));
         continue;
       }
     }

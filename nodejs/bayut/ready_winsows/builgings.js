@@ -42,6 +42,7 @@ let visit_err_record = 0;
 async function visit_each(link, page) {
   await page.goto(link);
   let data = [];
+  await page.waitForSelector(".post.container.text-base.leading-9 >div");
   data.push(
     await page.evaluate(async () => {
       function clean(text) {
@@ -60,7 +61,8 @@ async function visit_each(link, page) {
       try {
         title = clean(document.title.split("|")[0]);
       } catch (error) {}
-      let temp = Array.from(
+      let temp;
+      temp = Array.from(
         document.querySelectorAll(".post.container.text-base.leading-9 >div")
       );
       let content = [];
@@ -73,15 +75,19 @@ async function visit_each(link, page) {
             titles = temp[i].textContent;
           } catch (error) {}
           let s = i + 1;
-          let res = [];
           while (s < temp.length) {
             if (temp[s].hasAttribute("id")) break;
             else {
-              res.push(clean(temp[s].textContent));
+              let one = Array.from(temp[s].querySelectorAll("li,p"));
+              one.forEach((e) => {
+                try {
+                  des.push(clean(e.textContent));
+                } catch (error) {}
+              });
               s++;
             }
           }
-          des.push(res);
+
           all_content[titles] = des;
           i = s - 1;
         } else {
@@ -114,12 +120,17 @@ async function visit_each(link, page) {
                 break;
               else {
                 try {
-                  res.push(clean(temp[s].textContent));
+                  let one = Array.from(temp[s].querySelectorAll("li,p"));
+                  one.forEach((e) => {
+                    try {
+                      des.push(clean(e.textContent));
+                    } catch (error) {}
+                  });
                 } catch (error) {}
                 s++;
               }
             }
-            des.push(res);
+
             all_content[titles] = des;
             i = s - 1;
           } else {
@@ -151,10 +162,10 @@ async function visit_each(link, page) {
           images.push(clean(e.src));
         } catch (error) {}
       });
+
       return {
         title: title,
         content: content,
-        temp: temp.length,
         images: images,
         cover_img: cover_img,
         signaturea: Date.now(),
@@ -213,7 +224,7 @@ async function main() {
     args: ["--enable-automation"],
   });
   const page = await browser.newPage();
-  for (let i = 100; i <= 150; i++) {
+  for (let i = 1; i <= 241; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

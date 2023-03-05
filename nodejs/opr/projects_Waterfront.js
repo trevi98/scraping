@@ -423,17 +423,20 @@ async function visit_each(link, page) {
       for (let i = 0; i < 10; i++) {
         email += characters[Math.floor(Math.random() * characters.length)];
       }
-      email += Math.floor(Math.random() * 100)  + "@example.com";
+      email += Math.floor(Math.random() * 100) + "@gmail.com";
       return email;
     }
 
     // Function to generate a random name
     function generateRandomName() {
-      const firstNames = ["John", "Jane", "Bob", "Alice", "Mike", "Emily"];
-      const lastNames = ["Doe", "Smith", "Johnson", "Jones", "Brown", "Taylor"];
-      const firstName =
-        firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const firstNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      const lastNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      let firstName = "";
+      let lastName = "";
+      for (let i = 0; i < 5; i++) {
+        firstName += firstNames[Math.floor(Math.random() * firstNames.length)];
+        lastName += lastNames[Math.floor(Math.random() * lastNames.length)];
+      }
       return `${firstName} ${lastName}`;
     }
 
@@ -441,7 +444,7 @@ async function visit_each(link, page) {
     function generateRandomPhoneNumber() {
       let phoneNumber = "555-";
       for (let i = 0; i < 4; i++) {
-        phoneNumber += Math.floor(Math.random() * 10);
+        phoneNumber += Math.floor(Math.random() * 100);
       }
       return phoneNumber;
     }
@@ -464,19 +467,8 @@ async function visit_each(link, page) {
         .querySelector(".modal.nocolors.active button:not(.modal6-close)")
         .click();
     });
-    // page.on("response", (response) => {
-    //   const statusCode = response.status();
-    //   if (statusCode >= 300 && statusCode < 400) {
-    //     const redirectUrl = response.headers()["location"];
-    //     console.log(`Redirected to ${redirectUrl}`);
-    //   }
-    // });
     await page.waitForNavigation();
     let brochure = await page.evaluate(() => document.location.href);
-    console.log("bB", brochure);
-    console.log("yes");
-    // data.push({brochure:url})
-
     data[0].brochure = brochure;
     await page.goto(link.link);
   } else {
@@ -503,17 +495,20 @@ async function visit_each(link, page) {
       for (let i = 0; i < 10; i++) {
         email += characters[Math.floor(Math.random() * characters.length)];
       }
-      email += Math.floor(Math.random() * 100)  + "@example.com";
+      email += Math.floor(Math.random() * 100) + "@gmail.com";
       return email;
     }
 
     // Function to generate a random name
     function generateRandomName() {
-      const firstNames = ["John", "Jane", "Bob", "Alice", "Mike", "Emily"];
-      const lastNames = ["Doe", "Smith", "Johnson", "Jones", "Brown", "Taylor"];
-      const firstName =
-        firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const firstNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      const lastNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      let firstName = "";
+      let lastName = "";
+      for (let i = 0; i < 5; i++) {
+        firstName += firstNames[Math.floor(Math.random() * firstNames.length)];
+        lastName += lastNames[Math.floor(Math.random() * lastNames.length)];
+      }
       return `${firstName} ${lastName}`;
     }
 
@@ -521,7 +516,7 @@ async function visit_each(link, page) {
     function generateRandomPhoneNumber() {
       let phoneNumber = "555-";
       for (let i = 0; i < 4; i++) {
-        phoneNumber += Math.floor(Math.random() * 10);
+        phoneNumber += Math.floor(Math.random() * 100);
       }
       return phoneNumber;
     }
@@ -544,13 +539,7 @@ async function visit_each(link, page) {
     });
     await page.waitForNavigation();
     let floor_plans_pdf = await page.evaluate(() => document.location.href);
-    // data[0].floor_plans_pdf = floor_plans_pdf;
-    // console.log("f  ", floor_plans_pdf);
-    console.log("yes");
-    console.log(floor_plans_pdf);
     data[0].floor_plans_pdf = floor_plans_pdf;
-
-    // data.push({ brochure: url });
   } else {
     console.log("yyyy");
   }
@@ -619,7 +608,7 @@ async function main_loop(page, i) {
 
 async function main() {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     executablePath:
       "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     args: ["--enable-automation"],
@@ -633,8 +622,6 @@ async function main() {
       await main_loop(page, 4);
     } catch (error) {
       console.error(error);
-      // csvErrr.writeRecords({link:i,error:error})
-      // .then(()=> console.log('error logged main'));
     }
   }
 

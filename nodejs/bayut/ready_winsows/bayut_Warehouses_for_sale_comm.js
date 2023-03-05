@@ -139,7 +139,7 @@ async function visit_each(link, page) {
     data_plans_2d.push({ plans_2d: plans.d2[0] });
   }
 
-  await page.click("._35b183c9._39b0d6c4");
+  await page.click("._37beb648.c0cdb541");
   const element = await page.waitForSelector("._18c28cd2._277fb980");
   data.push(
     await page.evaluate(async () => {

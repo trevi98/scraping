@@ -493,6 +493,7 @@ async function main_loop(page) {
     e.forEach((s) => all.push(s));
   });
   let all_links = [...new Set(all)];
+  console.log(all_links.length);
   for (const link of all_links) {
     try {
       await visit_each(link, page);

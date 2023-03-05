@@ -8,7 +8,7 @@ async function run() {
   });
   const page = await browser.newPage();
   await page.goto(
-    "https://www.providentestate.com/dubai-offplan/damac-bay-by-cavalli.html"
+    "https://www.providentestate.com/dubai-offplan/camelia-townhouses.html"
   );
   // Evaluate the page content and modify target attribute
   const html = await page.evaluate(() => {
@@ -418,13 +418,19 @@ async function run() {
     let all = [];
     for (let i = 0; i < temp.length; i++) {
       if (temp[i].querySelector("h3") !== null) {
-        if (/Amenities/i.test(temp[i].querySelector("h3").textContent)) {
+        if (
+          /Amenities/i.test(temp[i].querySelector("h3").textContent) &&
+          temp[i + 1].querySelector("h3") === null
+        ) {
           all = Array.from(temp[i + 1].querySelectorAll("li"));
           break;
         }
       }
       if (temp[i].querySelector("h2") !== null) {
-        if (/Amenities/i.test(temp[i].querySelector("h2").textContent)) {
+        if (
+          /Amenities/i.test(temp[i].querySelector("h2").textContent) &&
+          temp[i + 1].querySelector("h2") === null
+        ) {
           all = Array.from(temp[i + 1].querySelectorAll("li"));
           break;
         }
@@ -460,159 +466,6 @@ async function run() {
     };
   });
   console.log(links);
-
-  //#################### brochure #####################################
-  const exists = await page.evaluate(() => {
-    return (
-      document.querySelector(
-        "div.vc_btn3-container.download_btn.vc_btn3-center a"
-      ) !== null &&
-      /download brochure/i.test(
-        document.querySelectorAll(
-          "div.vc_btn3-container.download_btn.vc_btn3-center a"
-        )[0].textContent
-      )
-    );
-  });
-  if (exists) {
-    await page.click("div.vc_btn3-container.download_btn.vc_btn3-center a");
-    await page.waitForSelector(
-      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-    );
-    await page.evaluate(() => {
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-      ).value = "John";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
-      ).value = "jh@gmail.com";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
-      ).value = "944331234";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
-      ).value = "Hello";
-    });
-
-    // await page.evaluate(() => {
-    //   document
-    //     .querySelector(
-    //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-    //     )
-    //     .click();
-    // });
-    // await page.waitForNavigation();
-    // let brochure = await page.evaluate(() => document.location.href);
-    await Promise.all([
-      page.waitForNavigation(),
-      page.click(
-        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-      ),
-    ]);
-
-    // Get the URL of the new page
-    const newPageUrl = await page.url();
-    console.log(newPageUrl);
-
-    // const [newPage] = await Promise.all([
-    //   new Promise((resolve) =>
-    //     browser.once("targetcreated", (target) => resolve(target.page()))
-    //   ),
-    //   await page.evaluate(() => {
-    //     document
-    //       .querySelector(
-    //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-    //       )
-    //       .click();
-    //   }),
-    // ]);
-    // // Get the URL of the new page
-    // const url = await newPage.url();
-    // brochure = url;
-    // console.log(brochure);
-    console.log("yes");
-    await page.goBack();
-  } else {
-    console.log("no");
-  }
-
-  //#################### floor_link #####################################
-  const exists_floor_btn = await page.evaluate(() => {
-    return (
-      document.querySelectorAll(
-        "div.vc_btn3-container.download_btn.vc_btn3-center a"
-      )[1] !== null &&
-      /floor/i.test(
-        document.querySelectorAll(
-          "div.vc_btn3-container.download_btn.vc_btn3-center a"
-        )[1].textContent
-      )
-    );
-  });
-  if (exists_floor_btn) {
-    await page.evaluate(() => {
-      document
-        .querySelectorAll(
-          "div.vc_btn3-container.download_btn.vc_btn3-center a"
-        )[1]
-        .click();
-    });
-    await page.waitForSelector(
-      "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-    );
-    await page.evaluate(() => {
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-name']"
-      ).value = "John";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-email']"
-      ).value = "jhon@jmail.com";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form input[name='your-phone']"
-      ).value = "944331234";
-      document.querySelector(
-        "div.modal-content div.modal-body.listing-form-7 form textarea[name='your-message']"
-      ).value = "Hello";
-    });
-
-    // await page.evaluate(() => {
-    //   document
-    //     .querySelector(
-    //       "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-    //     )
-    //     .click();
-    // });
-
-    // const [newPage] = await Promise.all([
-    //   new Promise((resolve) =>
-    //     browser.once("targetcreated", (target) => resolve(target.page()))
-    //   ),
-    //   await page.evaluate(() => {
-    //     document
-    //       .querySelector(
-    //         "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-    //       )
-    //       .click();
-    //   }),
-    // ]);
-    // // Get the URL of the new page
-    // const url = await newPage.url();
-    await Promise.all([
-      page.waitForNavigation(),
-      page.click(
-        "div.modal-content div.modal-body.listing-form-7 div form input[type=submit]"
-      ),
-    ]);
-
-    // Get the URL of the new page
-    const newPageUrl = await page.url();
-    console.log(newPageUrl);
-    let floor_plan_link = url;
-    console.log(floor_plan_link);
-  } else {
-    console.log("no floor_plan_link");
-  }
-
   await browser.close();
 }
 run();
