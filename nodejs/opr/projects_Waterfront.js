@@ -472,7 +472,7 @@ async function visit_each(link, page) {
     data[0].brochure = brochure;
     await page.goto(link.link);
   } else {
-    console.log("yyyy");
+    console.log("no brochure");
   }
 
   // ----------- floor plan pdf  --------------
@@ -541,7 +541,7 @@ async function visit_each(link, page) {
     let floor_plans_pdf = await page.evaluate(() => document.location.href);
     data[0].floor_plans_pdf = floor_plans_pdf;
   } else {
-    console.log("yyyy");
+    console.log("no floor_plans_pdf");
   }
 
   if (j % 500 == 0) {

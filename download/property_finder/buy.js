@@ -1,10 +1,12 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const { on } = require("events");
-// const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-// puppeteer.use(StealthPlugin());
+const axios = require("axios");
+const { exec } = require("child_process");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
@@ -329,6 +331,35 @@ async function main_loop(page, i) {
     let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
+  if (i == 1 || i % 20 == 0 || i == 4000) {
+    const message = `Start - buy property_finder ${i} start`;
+
+    const url = "https://profoundproject.com/tele/";
+
+    axios
+      .get(url, {
+        params: {
+          message: message,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    if (i == 4000) {
+      exec("pm2 stop main", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error executing command: ${error}`);
+          return;
+        }
+
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
+    }
+  }
 
   for (const link of links) {
     try {
@@ -349,14 +380,42 @@ async function main_loop(page, i) {
       }
     }
   }
+  if (i == 1 || i % 20 == 0 || i == 4000) {
+    const message = `Done - buy property_finder ${i} done`;
+
+    const url = "https://profoundproject.com/tele/";
+
+    axios
+      .get(url, {
+        params: {
+          message: message,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    if (i == 4000) {
+      exec("pm2 stop main", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error executing command: ${error}`);
+          return;
+        }
+
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
+    }
+  }
 }
 
 async function main() {
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath:
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    args: ["--enable-automation"],
+    executablePath: "/usr/bin/google-chrome-stable",
+    args: ["--no-sandbox"],
   });
   const page = await browser.newPage();
   // let plans_data = {};

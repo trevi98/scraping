@@ -411,17 +411,51 @@ async function visit_each(link, page) {
       "#header-menu-mobile ~ div.node.section-clear.section.lg-hidden div.node.widget-button.widget div.button-container.center div.button-wrapper a"
     );
     await page.waitForSelector(".modal6-root.is-active");
+
+    // Function to generate a random email
+    function generateRandomEmail() {
+      const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let email = "";
+      for (let i = 0; i < 10; i++) {
+        email += characters[Math.floor(Math.random() * characters.length)];
+      }
+      email += Math.floor(Math.random() * 100) + "@gmail.com";
+      return email;
+    }
+
+    // Function to generate a random name
+    function generateRandomName() {
+      const firstNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      const lastNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      let firstName = "";
+      let lastName = "";
+      for (let i = 0; i < 5; i++) {
+        firstName += firstNames[Math.floor(Math.random() * firstNames.length)];
+        lastName += lastNames[Math.floor(Math.random() * lastNames.length)];
+      }
+      return `${firstName} ${lastName}`;
+    }
+
+    // Function to generate a random phone number
+    function generateRandomPhoneNumber() {
+      let phoneNumber = "555-";
+      for (let i = 0; i < 4; i++) {
+        phoneNumber += Math.floor(Math.random() * 100);
+      }
+      return phoneNumber;
+    }
+
     await page.type(
       "div.modal6-root div.modal6-panel2 div.cont div.node.widget-form2.cr-form.widget div div.metahtml div.form1-cover div div.cont div.node.widget-field.cr-field.widget div.metahtml div.is-text div.input input[autocomplete='name']",
-      "John"
+      generateRandomName()
     );
     await page.type(
       ".modal.nocolors.active .form-control[autocomplete='tel']",
-      "+968509465823"
+      generateRandomPhoneNumber()
     );
     await page.type(
       ".modal.nocolors.active .form-control[autocomplete='email']",
-      "jhon@jmail.com"
+      generateRandomEmail()
     );
 
     await page.evaluate(() => {
@@ -431,13 +465,10 @@ async function visit_each(link, page) {
     });
     await page.waitForNavigation();
     let brochure = await page.evaluate(() => document.location.href);
-    console.log("yes");
-    // data.push({brochure:url})
-
     data[0].brochure = brochure;
     await page.goto(link.link);
   } else {
-    console.log("yyyy");
+    console.log("no brochure");
   }
 
   // ----------- floor plan pdf  --------------
@@ -454,17 +485,48 @@ async function visit_each(link, page) {
       "#fp .node.widget-element.widget .cont .node.widget-button.widget.lg-hidden .button-container.left.xs-full .button-wrapper a"
     );
     await page.waitForSelector(".modal6-root.is-active");
+    function generateRandomEmail() {
+      const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let email = "";
+      for (let i = 0; i < 10; i++) {
+        email += characters[Math.floor(Math.random() * characters.length)];
+      }
+      email += Math.floor(Math.random() * 100) + "@gmail.com";
+      return email;
+    }
+
+    // Function to generate a random name
+    function generateRandomName() {
+      const firstNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      const lastNames = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      let firstName = "";
+      let lastName = "";
+      for (let i = 0; i < 5; i++) {
+        firstName += firstNames[Math.floor(Math.random() * firstNames.length)];
+        lastName += lastNames[Math.floor(Math.random() * lastNames.length)];
+      }
+      return `${firstName} ${lastName}`;
+    }
+
+    // Function to generate a random phone number
+    function generateRandomPhoneNumber() {
+      let phoneNumber = "555-";
+      for (let i = 0; i < 4; i++) {
+        phoneNumber += Math.floor(Math.random() * 100);
+      }
+      return phoneNumber;
+    }
     await page.type(
       '.modal6-root.is-active div.input input[autocomplete="name"]',
-      "John"
+      generateRandomName()
     );
     await page.type(
       '.modal6-root.is-active div.input input[autocomplete="tel"]',
-      "+968509465823"
+      generateRandomPhoneNumber()
     );
     await page.type(
       '.modal6-root.is-active div.input input[autocomplete="email"]',
-      "jhon@jmail.com"
+      generateRandomEmail()
     );
     await page.evaluate(() => {
       document
@@ -473,14 +535,9 @@ async function visit_each(link, page) {
     });
     await page.waitForNavigation();
     let floor_plans_pdf = await page.evaluate(() => document.location.href);
-    // data[0].floor_plans_pdf = floor_plans_pdf;
-    // console.log("f  ", floor_plans_pdf);
-    console.log("yes");
     data[0].floor_plans_pdf = floor_plans_pdf;
-
-    // data.push({ brochure: url });
   } else {
-    console.log("yyyy");
+    console.log("no floor_plans_pdf");
   }
 
   if (j % 500 == 0) {
