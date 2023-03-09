@@ -179,9 +179,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.drivenproperties.com/dubai/warehouses-for-rent??page=${i}`;
+  let target = `https://www.drivenproperties.com/dubai/warehouses-for-rent?page=${i}`;
   if (i == 1) {
-    target = "https://www.drivenproperties.com/dubai/warehouses-for-rent?";
+    target = "https://www.drivenproperties.com/dubai/warehouses-for-rent";
   }
   console.log(target);
   await page.goto(target);

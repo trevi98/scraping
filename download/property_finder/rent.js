@@ -58,8 +58,8 @@ function csv_error_handler(directory) {
 }
 
 let csvErrr = csv_error_handler("rent");
-let csvWriter = csv_handler("rent", 31);
-let batch = 30;
+let csvWriter = csv_handler("rent", 36);
+let batch = 35;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
@@ -305,7 +305,7 @@ async function visit_each(link, page) {
   data[0].images = images;
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("rent", batch);
+    csvWriter = csv_handler("rent_finder", batch);
   }
 
   csvWriter
@@ -331,7 +331,7 @@ async function main_loop(page, i) {
     let uniqe_links = [...new Set(all)];
     return uniqe_links;
   });
-  if (i == 1 || i % 20 == 0 || i == 3157) {
+  if (i == 1 || i % 20 == 0 || i == 3271) {
     const message = `Start - rent property_finder ${i} done`;
 
     const url = "https://profoundproject.com/tele/";
@@ -368,7 +368,7 @@ async function main_loop(page, i) {
       }
     }
   }
-  if (i == 1 || i % 20 == 0 || i == 3157) {
+  if (i == 1 || i % 20 == 0 || i == 3271) {
     const message = `Done - rent property_finder ${i} done`;
 
     const url = "https://profoundproject.com/tele/";
@@ -385,7 +385,7 @@ async function main_loop(page, i) {
       .catch((error) => {
         console.error(error);
       });
-    if (i == 3157) {
+    if (i == 3271) {
       exec("pm2 stop main_rent", (error, stdout, stderr) => {
         if (error) {
           console.error(`Error executing command: ${error}`);
@@ -403,11 +403,16 @@ async function main() {
   const browser = await puppeteer.launch({
     headless: true,
     executablePath: "/usr/bin/google-chrome-stable",
-    args: ["--no-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--proxy-server=socks://127.0.0.1:9050",
+      "--disable-web-security",
+      "--allow-running-insecure-content",
+    ],
   });
   const page = await browser.newPage();
 
-  for (let i = 600; i <= 3157; i++) {
+  for (let i = 1; i <= 3271; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

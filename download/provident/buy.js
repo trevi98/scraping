@@ -10,23 +10,7 @@ function csv_handler(directory, batch) {
   }
   return createCsvWriter({
     path: `${directory}/buy${batch}.csv`,
-    header: [
-      { id: "title", title: "title" },
-      { id: "type", title: "type" },
-      { id: "price", title: "price" },
-      { id: "location", title: "location" },
-      { id: "developer", title: "developer" },
-      { id: "Property_Type", title: "Property_Type" },
-      { id: "Purpose", title: "Purpose" },
-      { id: "Bedrooms", title: "Bedrooms" },
-      { id: "Baths", title: "Baths" },
-      { id: "Property_ID", title: "Property_ID" },
-      { id: "Area_Size", title: "Area_Size" },
-      { id: "description", title: "description" },
-      { id: "features", title: "features" },
-      { id: "Images", title: "Images" },
-      { id: "signaturea", title: "signaturea" },
-    ],
+    header: [{ id: "title", title: "title" }],
   });
 }
 

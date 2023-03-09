@@ -9,7 +9,7 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/schools${batch}.csv`,
+    path: `${directory}/blog_bauyt${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "content", title: "content" },
@@ -33,8 +33,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("schools");
-let csvWriter = csv_handler("schools", 1);
+let csvErrr = csv_error_handler("blog_bauyt");
+let csvWriter = csv_handler("blog_bauyt", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -59,31 +59,66 @@ async function visit_each(link, page) {
       }
       let title = "";
       try {
-        title = clean(document.title.split("|")[0]);
+        title = clean(document.title.split("-")[0]);
       } catch (error) {}
-      let temp = Array.from(
-        document.querySelectorAll("div.post.container.text-base.leading-9 >*")
-      );
+      let sections = [
+        ...document.querySelectorAll(
+          ".entry-content.blog_post_text.blog_post_description.clearfix>*"
+        ),
+      ];
       let content = [];
-      let all_content = {};
-      for (let i = 0; i < temp.length; i++) {
+      for (let i = 0; i < sections.length; i++) {
+        let section = sections[i];
+        let all_content = {};
         let titles = "";
         let des = [];
-        if (temp[i].hasAttribute("id")) {
+        if (
+          section.tagName === "H1" ||
+          section.tagName === "H2" ||
+          section.tagName === "H3" ||
+          section.tagName === "H4" ||
+          section.tagName === "H5" ||
+          section.tagName === "H6"
+        ) {
           try {
-            titles = clean(temp[i].textContent);
+            titles = section.textContent;
           } catch (error) {}
           let s = i + 1;
-
-          while (s < temp.length) {
-            if (temp[s].hasAttribute("id")) break;
-            else {
-              let one = Array.from(temp[s].querySelectorAll("li,p,tr"));
-              one.forEach((e) => {
+          while (s < sections.length) {
+            let tds = [];
+            let temp3 = sections[s];
+            if (temp3.tagName === "P") {
+              des.push(clean(temp3.textContent));
+              s++;
+            } else if (temp3.tagName === "UL") {
+              let li = Array.from(temp3.querySelectorAll("li"));
+              li.forEach((e) => {
                 try {
                   des.push(clean(e.textContent));
                 } catch (error) {}
               });
+              s++;
+            } else if (temp3.tagName === "TABLE") {
+              let th = Array.from(temp3.querySelectorAll("tr"));
+
+              for (let m = 0; m < th.length; m++) {
+                let td = Array.from(th[m].querySelectorAll("td"));
+                td.forEach((e) => {
+                  tds.push(clean(e.textContent));
+                });
+                des.push(JSON.stringify(tds));
+              }
+              s++;
+            } else if (
+              temp3.tagName === "H1" ||
+              temp3.tagName === "H2" ||
+              temp3.tagName === "H3" ||
+              temp3.tagName === "H4" ||
+              temp3.tagName === "H5" ||
+              temp3.tagName === "H6"
+            ) {
+              break;
+            } else {
               s++;
             }
           }
@@ -92,16 +127,22 @@ async function visit_each(link, page) {
         } else {
           continue;
         }
+        content.push(JSON.stringify(all_content));
       }
-      content.push(JSON.stringify(all_content));
       let cover_img = "";
       try {
-        cover_img = document.querySelectorAll(
-          "div.container div.relative div div span img"
-        )[5].src;
+        cover_img = clean(
+          document.querySelector(
+            "main .row .col12.featured-single-post  .post_banner img"
+          ).src
+        );
       } catch (error) {}
       let images = [];
-      temp = Array.from(document.querySelectorAll("div.mt-6.mb-5 img"));
+      let temp = Array.from(
+        document.querySelectorAll(
+          ".entry-content.blog_post_text.blog_post_description.clearfix figure img"
+        )
+      );
       temp.forEach((e) => {
         try {
           images.push(clean(e.src));
@@ -110,8 +151,8 @@ async function visit_each(link, page) {
       return {
         title: title,
         content: content,
-        images: images,
         cover_img: cover_img,
+        images: images,
         signaturea: Date.now(),
       };
     })
@@ -119,7 +160,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("schools", batch);
+    csvWriter = csv_handler("blog_bauyt", batch);
   }
 
   csvWriter
@@ -129,20 +170,16 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.bayut.com/schools/dubai/page/${i}/`;
+  let target = `https://www.bayut.com/mybayut/page/${i}/`;
   if (i == 1) {
-    target = "https://www.bayut.com/schools/dubai";
+    target = "https://www.bayut.com/mybayut";
   }
   console.log(target);
   await page.goto(target);
-  await page.waitForSelector(
-    "div.relative.inline.h-full.w-full.rounded.border.border-gray-100 > a"
-  );
+  await page.waitForSelector(".entry-title.title.post_title a");
   const links = await page.evaluate(() => {
     const anchors = Array.from(
-      document.querySelectorAll(
-        "div.relative.inline.h-full.w-full.rounded.border.border-gray-100 > a"
-      ),
+      document.querySelectorAll(".entry-title.title.post_title a"),
       (a) => a.href
     );
     let uniqe_links = [...new Set(anchors)];
@@ -157,13 +194,13 @@ async function main_loop(page, i) {
       } catch (err) {
         csvErrr
           .writeRecords({ link: link, error: err })
-          .then(() => console.log("error logged"));
+          .then(() => console.log("error logged visit"));
         continue;
       }
     }
   }
-  if (i == 1 || i % 20 == 0) {
-    const message = `Data - Bayut schools ${i} done`;
+  if (i == 1 || i % 20 == 0 || i == 526) {
+    const message = `Data - Bayut blog ${i} done`;
 
     const url = "https://profoundproject.com/tele/";
 
@@ -179,8 +216,8 @@ async function main_loop(page, i) {
       .catch((error) => {
         console.error(error);
       });
-    if (i == 20) {
-      exec("pm2 stop main", (error, stdout, stderr) => {
+    if (i == 526) {
+      exec("pm2 stop main_blog", (error, stdout, stderr) => {
         if (error) {
           console.error(`Error executing command: ${error}`);
           return;
@@ -200,7 +237,7 @@ async function main() {
     args: ["--no-sandbox"],
   });
   const page = await browser.newPage();
-  for (let i = 1; i <= 20; i++) {
+  for (let i = 1; i <= 526; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

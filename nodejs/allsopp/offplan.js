@@ -18,8 +18,8 @@ function csv_handler(directory, batch) {
       { id: "places_in_proximity", title: "places_in_proximity" },
       { id: "payment_plan", title: "payment_plan" },
       { id: "images", title: "images" },
-      { id: "signaturea", title: "signaturea" },
       { id: "brochure", title: "brochure" },
+      { id: "signaturea", title: "signaturea" },
     ],
   });
 }
@@ -114,12 +114,10 @@ async function visit_each(link, page) {
         ] = clean(e.querySelectorAll("div")[1].textContent);
       });
       payment_plan.push(JSON.stringify(all_payment_plan));
-      var brochure = "";
-      try{
-        brochure = document.querySelector(".brochure").parentElement.href
-      }catch(error){
-
-      }
+      let brochure = "";
+      try {
+        brochure = document.querySelector(".brochure").parentElement.href;
+      } catch (error) {}
 
       return {
         title: title,

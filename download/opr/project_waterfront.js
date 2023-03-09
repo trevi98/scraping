@@ -1,16 +1,18 @@
-const puppeteer = require("puppeteer-extra");
+const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const { on } = require("events");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-puppeteer.use(StealthPlugin());
+const axios = require("axios");
+const { exec } = require("child_process");
+// const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+// puppeteer.use(StealthPlugin());
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/projects_Waterfront${batch}.csv`,
+    path: `${directory}/buy_near_golf${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "price", title: "price" },
@@ -46,16 +48,14 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("opr_projects_Waterfrontprojects");
-let csvWriter = csv_handler("projects_Waterfront", 1);
+let csvErrr = csv_error_handler("buy_near_golf");
+let csvWriter = csv_handler("buy_near_golf", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
 
 async function visit_each(link, page) {
-  // console.log(link.types);
-  // await page.setCacheEnabled(false)
   await page.goto(link.link);
   let data = [];
   data.push(
@@ -461,10 +461,20 @@ async function visit_each(link, page) {
         .querySelector(".modal.nocolors.active button:not(.modal6-close)")
         .click();
     });
-    await page.waitForNavigation();
+    // await page.waitForNavigation();
+    // await page.setDefaultNavigationTimeout(80000);
+    // await page.waitForTimeout(1000);
+    while (true) {
+      if (/"#modal-brochure"/i.test(page.url())) {
+        await page.waitForTimeout(1000);
+      } else {
+        break;
+      }
+    }
     let brochure = await page.evaluate(() => document.location.href);
     data[0].brochure = brochure;
     await page.goto(link.link);
+    await page.waitForTimeout(1000);
   } else {
     console.log("yyyy");
   }
@@ -531,7 +541,15 @@ async function visit_each(link, page) {
         .querySelector(".modal6-root.is-active button:not(.modal6-close)")
         .click();
     });
-    await page.waitForNavigation();
+    // await page.waitForNavigation();
+    // await page.setDefaultNavigationTimeout(80000);
+    while (true) {
+      if (/"#modal-fp"/i.test(page.url())) {
+        await page.waitForTimeout(1000);
+      } else {
+        break;
+      }
+    }
     let floor_plans_pdf = await page.evaluate(() => document.location.href);
     data[0].floor_plans_pdf = floor_plans_pdf;
   } else {
@@ -540,7 +558,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("projects_Waterfront", batch);
+    csvWriter = csv_handler("buy_near_golf", batch);
   }
 
   csvWriter
@@ -550,14 +568,15 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = "https://opr.ae/projects/waterfront-properties-in-dubai";
+  let target = "https://opr.ae/projects/properties-near-golf-course-in-dubai";
   await page.goto(target);
-
+  console.log(target);
   for (let j = 1; j <= i; j++) {
     await page.waitForSelector("div.offPlanListing__loadMore a");
     await page.evaluate(() => {
       document.querySelector("div.offPlanListing__loadMore a").click();
     });
+    console.log(j);
   }
   const links = await page.evaluate(() => {
     const items = Array.from(
@@ -596,39 +615,39 @@ async function main_loop(page, i) {
         }
       }
     }
-    // if (
-    //   links.indexOf(link) == 0 ||
-    //   links.indexOf(link) % 20 == 0 ||
-    //   links.indexOf(link) === links.length - 1
-    // ) {
-    //   const message = `Data - Bayut Wearhous rent ${i} done`;
+    if (
+      links.indexOf(link) === 0 ||
+      links.indexOf(link) % 20 === 0 ||
+      links.indexOf(link) === links.length - 1
+    ) {
+      const message = `Data - opr ${links.indexOf(link) + 1} done`;
 
-    //   const url = "https://profoundproject.com/tele/";
+      const url = "https://profoundproject.com/tele/";
 
-    //   axios
-    //     .get(url, {
-    //       params: {
-    //         message: message,
-    //       },
-    //     })
-    //     .then((response) => {
-    //       console.log(response.data);
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-    //   if (links.indexOf(link) === links.length - 1) {
-    //     exec("pm2 stop main", (error, stdout, stderr) => {
-    //       if (error) {
-    //         console.error(`Error executing command: ${error}`);
-    //         return;
-    //       }
+      axios
+        .get(url, {
+          params: {
+            message: message,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      if (links.indexOf(link) === links.length - 1) {
+        exec("pm2 stop main2", (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error executing command: ${error}`);
+            return;
+          }
 
-    //       console.log(`stdout: ${stdout}`);
-    //       console.error(`stderr: ${stderr}`);
-    //     });
-    //   }
-    // }
+          console.log(`stdout: ${stdout}`);
+          console.error(`stderr: ${stderr}`);
+        });
+      }
+    }
   }
 }
 
@@ -636,14 +655,19 @@ async function main() {
   const browser = await puppeteer.launch({
     headless: true,
     executablePath: "/usr/bin/google-chrome-stable",
-    args: ["--no-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--proxy-server=socks://127.0.0.1:9050",
+      "--disable-web-security",
+      "--allow-running-insecure-content",
+    ],
   });
   const page = await browser.newPage();
   try {
-    await main_loop(page, 4);
+    await main_loop(page, 2);
   } catch (error) {
     try {
-      await main_loop(page, 4);
+      await main_loop(page, 2);
     } catch (error) {
       console.error(error);
     }

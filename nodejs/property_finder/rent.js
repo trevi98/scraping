@@ -58,8 +58,8 @@ function csv_error_handler(directory) {
 }
 
 let csvErrr = csv_error_handler("rent");
-let csvWriter = csv_handler("rent", 31);
-let batch = 30;
+let csvWriter = csv_handler("rent", 36);
+let batch = 35;
 let j = 0;
 let main_err_record = 0;
 let visit_err_record = 0;
@@ -362,7 +362,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 600; i <= 3157; i++) {
+  for (let i = 700; i <= 3157; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

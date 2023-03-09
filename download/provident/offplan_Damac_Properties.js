@@ -9,12 +9,13 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/offplan_Damac_Properties${batch}.csv`,
+    path: `${directory}/offplan${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "Down_Payment", title: "Down_Payment" },
       { id: "Location", title: "Location" },
       { id: "Bedrooms", title: "Bedrooms" },
+      { id: "developer", title: "developer" },
       { id: "Type", title: "Type" },
       { id: "Area", title: "Area" },
       { id: "Completion", title: "Completion" },
@@ -53,8 +54,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("offplan_Damac_Properties");
-let csvWriter = csv_handler("offplan_Damac_Properties", 1);
+let csvErrr = csv_error_handler("offplan");
+let csvWriter = csv_handler("offplan", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -62,7 +63,7 @@ let visit_err_record = 0;
 
 async function visit_each(link, page, browser) {
   // await page.setCacheEnabled(false);
-  await page.goto(link);
+  await page.goto(link.link);
   let data = [];
   data.push(
     await page.evaluate(async () => {
@@ -581,10 +582,11 @@ async function visit_each(link, page, browser) {
       };
     })
   );
+  data[0].developer = link.developer;
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("offplan_Damac_Properties", batch);
+    csvWriter = csv_handler("offplan", batch);
   }
 
   csvWriter
@@ -594,23 +596,38 @@ async function visit_each(link, page, browser) {
 }
 
 async function main_loop(page, i, browser) {
-  let target = `https://www.providentestate.com/dubai-offplan/dubai-developer/damac-properties/page/${i}`;
+  let target = `https://www.providentestate.com/dubai-off-plan-properties.html`;
   if (i == 1) {
-    target =
-      "https://www.providentestate.com/dubai-offplan/dubai-developer/damac-properties";
+    target = "https://www.providentestate.com/dubai-off-plan-properties.html";
   }
   console.log(target);
   await page.goto(target);
   const links = await page.evaluate(() => {
+    function clean(text) {
+      try {
+        return text
+          .replaceAll("\n", "")
+          .replaceAll("\r", "")
+          .replaceAll("\t", "")
+          .replaceAll("  ", "")
+          .trim();
+      } catch (error) {
+        return text;
+      }
+    }
     let all = [];
     let link = Array.from(
-      document.querySelectorAll(
-        "div.iw-isotope-main.isotope div.col-md-4.col-sm-6.col-xs-12.element-item article div.post-item.post_bg"
-      )
+      document.querySelectorAll("#contents-main .container .item-col")
     );
     link.forEach((e) => {
-      let a = e.querySelector("a").href;
-      all.push(a);
+      let a = e.querySelector(".item-post__image a").href;
+      let developer = "";
+      try {
+        developer = clean(
+          e.querySelectorAll(" .item-post__content .col-md-6 a")[1].textContent
+        );
+      } catch (error) {}
+      all.push({ link: a, developer: developer });
     });
     let uniqe_links = [...new Set(all)];
     return uniqe_links;
@@ -634,34 +651,38 @@ async function main_loop(page, i, browser) {
         }
       }
     }
-  }
-  if (i == 1 || i % 3 == 0 || i == 3) {
-    const message = `Done - offplan_damac prov ${i} done`;
+    if (
+      links.indexOf(link) === 0 ||
+      (links.indexOf(link) + 1) % 20 == 0 ||
+      links.indexOf(link) + 1 === links.length
+    ) {
+      const message = `Data - prov offplan ${links.indexOf(link) + 1} done`;
 
-    const url = "https://profoundproject.com/tele/";
+      const url = "https://profoundproject.com/tele/";
 
-    axios
-      .get(url, {
-        params: {
-          message: message,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    if (i == 3) {
-      exec("pm2 stop main", (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error executing command: ${error}`);
-          return;
-        }
+      axios
+        .get(url, {
+          params: {
+            message: message,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      if (links.indexOf(link) + 1 === links.length) {
+        exec("pm2 stop main1", (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error executing command: ${error}`);
+            return;
+          }
 
-        console.log(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
-      });
+          console.log(`stdout: ${stdout}`);
+          console.error(`stderr: ${stderr}`);
+        });
+      }
     }
   }
 }
@@ -674,7 +695,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 3; i++) {
+  for (let i = 1; i <= 1; i++) {
     try {
       await main_loop(page, i, browser);
     } catch (error) {

@@ -8,21 +8,11 @@ function csv_handler(directory, batch) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/rent_Villa${batch}.csv`,
+    path: `${directory}/communities${batch}.csv`,
     header: [
       { id: "title", title: "title" },
-      { id: "price", title: "price" },
-      { id: "location", title: "location" },
-      { id: "developer", title: "developer" },
-      { id: "Property_Type", title: "Property_Type" },
-      { id: "Purpose", title: "Purpose" },
-      { id: "Bedrooms", title: "Bedrooms" },
-      { id: "Baths", title: "Baths" },
-      { id: "Property_ID", title: "Property_ID" },
-      { id: "Area_Size", title: "Area_Size" },
       { id: "description", title: "description" },
-      { id: "features", title: "features" },
-      { id: "Images", title: "Images" },
+      { id: "content", title: "content" },
     ],
   });
 }
@@ -40,8 +30,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("rent_Villa");
-let csvWriter = csv_handler("rent_Villa", 1);
+let csvErrr = csv_error_handler("communities");
+let csvWriter = csv_handler("communities", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -66,91 +56,104 @@ async function visit_each(link, page) {
         }
       }
 
-      let title = clean(document.querySelector(".page-title h1").textContent);
-      let price = clean(
-        document.querySelector("div.property-price  div").textContent
-      );
-      let location = clean(
-        document
-          .querySelector("div.page-title div.iw-heading-title h2 span")
-          .textContent.split("in")[1]
-      );
-      let developer = clean(
+      let title = clean(
         document.querySelector(
-          "aside#iwp-property-author-infomation-2 div.agent-info .agent-name"
+          "div.col-sm-12.col-xs-12.col-lg-9.col-md-9.container-contentbar h1.development-header"
         ).textContent
       );
-      let Property_Type = "";
-      let Purpose = "";
-      let Bedrooms = "";
-      let Baths = "";
-      let Property_ID = "";
-      let Area_Size = "";
       let temp = Array.from(
         document.querySelectorAll(
-          "div.iwp-single-property-detail div.iwp-property-block-content div.row div.col-sm-6.col-xs-12.col-lg-6.col-md-6 div.iwp-items div.iwp-item"
+          "div.wpb_text_column.wpb_content_element  div.wpb_wrapper .DB_content >*"
         )
       );
-      for (let i = 0; i < temp.length; i++) {
-        if (temp[i].textContent.includes("Type")) {
-          Property_Type = clean(temp[i].textContent.split(":")[1]);
-        }
-        if (temp[i].textContent.includes("Purpose")) {
-          Purpose = clean(temp[i].textContent.split(":")[1]);
-        }
-        if (temp[i].textContent.includes("Bedroom")) {
-          Bedrooms = clean(temp[i].textContent.split(":")[1]);
-        }
-        if (temp[i].textContent.includes("Bath")) {
-          Baths = clean(temp[i].textContent.split(":")[1]);
-        }
-        if (temp[i].textContent.includes("ID")) {
-          Property_ID = clean(temp[i].textContent.split(":")[1]);
-        }
-        if (temp[i].textContent.includes("Size")) {
-          Area_Size = clean(temp[i].textContent.split(":")[1]);
+      if (temp.length == 0) {
+        temp = Array.from(
+          document.querySelectorAll(
+            "div.wpb_text_column.wpb_content_element  div.wpb_wrapper >*"
+          )
+        );
+      }
+      let description = "";
+      let content = [];
+
+      let a = 0;
+      while (true) {
+        if (temp[a].tagName === "P") {
+          try {
+            description += clean(temp[a].textContent);
+          } catch (error) {}
+          a++;
+        } else {
+          break;
         }
       }
-      let description = clean(
-        document.querySelector("div.iwp-single-property-description")
-          .textContent
-      );
-      let features = [];
-      temp = Array.from(
-        document.querySelectorAll(
-          "div.iwp-single-property-features div.iwp-property-block-content ul li"
-        )
-      );
-      temp.forEach((e) => {
-        features.push(e.textContent);
-      });
-      all = [];
-      temp = Array.from(document.querySelectorAll("div.iwp-flexslider img"));
-      temp.forEach((e) => {
-        all.push(e.src);
-      });
-      Images = [...new Set(all)];
+      for (let i = 0; i < temp.length; i++) {
+        let title = "";
+        let des = [];
+        let all_content = {};
+        if (
+          temp[i].tagName === "H1" ||
+          temp[i].tagName === "H2" ||
+          temp[i].tagName === "H3" ||
+          temp[i].tagName === "H4" ||
+          temp[i].tagName === "H5" ||
+          temp[i].tagName === "H6"
+        ) {
+          try {
+            title = clean(temp[i].textContent);
+          } catch (error) {}
+          let s = i + 1;
+          while (s < temp.length) {
+            if (
+              temp[s].tagName === "H1" ||
+              temp[s].tagName === "H2" ||
+              temp[s].tagName === "H3" ||
+              temp[s].tagName === "H4" ||
+              temp[s].tagName === "H5" ||
+              temp[s].tagName === "H6"
+            ) {
+              break;
+            } else if (temp[s].tagName == "UL") {
+              let te = Array.from(temp[s].querySelectorAll("li"));
+              te.forEach((e) => {
+                try {
+                  des.push(clean(e.textContent));
+                } catch (error) {}
+              });
+              s++;
+            } else if (temp[s].tagName === "P") {
+              try {
+                des.push(clean(temp[s].textContent));
+              } catch (error) {}
+              s++;
+            } else {
+              continue;
+              s++;
+            }
+          }
+          all_content[title] = des;
+          i = s - 1;
+          content.push(JSON.stringify(all_content));
+        }
+      }
+      if (content.length === 0) {
+        content.push(
+          document.querySelector(
+            "article.dubai-developments.type-dubai-developments.status-publish.has-post-thumbnail.hentry .entry-content"
+          ).textContent
+        );
+      }
       return {
         title: title,
-        price: price,
-        location: location,
-        developer: developer,
-        Property_Type: Property_Type,
-        Purpose: Purpose,
-        Bedrooms: Bedrooms,
-        Baths: Baths,
-        Property_ID: Property_ID,
-        Area_Size: Area_Size,
         description: description,
-        features: features,
-        Images: Images,
+        content: content,
       };
     })
   );
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("rent_Villa", batch);
+    csvWriter = csv_handler("communities", batch);
   }
 
   csvWriter
@@ -160,9 +163,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.providentestate.com/dubai/villa-for-rent.html?paged=${i}`;
+  let target = `https://www.providentestate.com/dubai-developments.html/page/${i}`;
   if (i == 1) {
-    target = "https://www.providentestate.com/dubai/villa-for-rent.html";
+    target = "https://www.providentestate.com/dubai-developments.html";
   }
   console.log(target);
   await page.goto(target);
@@ -210,7 +213,7 @@ async function main() {
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 2; i++) {
+  for (let i = 1; i <= 6; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {

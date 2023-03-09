@@ -580,7 +580,7 @@ async function main_loop(page, i) {
     let uniqe_links = [...new Set(anchors)];
     return uniqe_links;
   });
-
+  console.log(links.length);
   for (const link of links) {
     try {
       await visit_each(link, page);
