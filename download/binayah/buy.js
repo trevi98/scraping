@@ -2,7 +2,8 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
-
+const axios = require("axios");
+const { exec } = require("child_process");
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
@@ -223,14 +224,42 @@ async function main_loop(page, i) {
       }
     }
   }
+  if (i == 1 || i % 20 == 0 || i == 32) {
+    const message = `Done - buy binayah ${i} done`;
+
+    const url = "https://profoundproject.com/tele/";
+
+    axios
+      .get(url, {
+        params: {
+          message: message,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    if (i == 32) {
+      exec("pm2 stop main_binayah", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error executing command: ${error}`);
+          return;
+        }
+
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
+    }
+  }
 }
 
 async function main() {
   const browser = await puppeteer.launch({
-    headless: false,
-    executablePath:
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    args: ["--enable-automation"],
+    headless: true,
+    executablePath: "/usr/bin/google-chrome-stable",
+    args: ["--no-sandbox"],
   });
   const page = await browser.newPage();
   // let plans_data = {};

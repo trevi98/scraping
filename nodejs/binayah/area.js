@@ -215,25 +215,25 @@ async function main_loop(page, i) {
   });
   console.log(links);
   console.log(links.length);
-  // for (const link of links) {
-  //   try {
-  //     await visit_each(link.link, page, link.cover_image);
-  //   } catch (error) {
-  //     try {
-  //       await visit_each(link.link, page, link.cover_image);
-  //     } catch (err) {
-  //       try {
-  //         await visit_each(link.link, page, link.cover_image);
-  //       } catch (error) {
-  //         console.error(error);
-  //         csvErrr
-  //           .writeRecords({ link: link.link, error: err })
-  //           .then(() => console.log("error logged main loop"));
-  //         continue;
-  //       }
-  //     }
-  //   }
-  // }
+  for (const link of links) {
+    try {
+      await visit_each(link.link, page, link.cover_image);
+    } catch (error) {
+      try {
+        await visit_each(link.link, page, link.cover_image);
+      } catch (err) {
+        try {
+          await visit_each(link.link, page, link.cover_image);
+        } catch (error) {
+          console.error(error);
+          csvErrr
+            .writeRecords({ link: link.link, error: err })
+            .then(() => console.log("error logged main loop"));
+          continue;
+        }
+      }
+    }
+  }
 }
 
 async function main() {

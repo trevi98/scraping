@@ -2,13 +2,14 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
-
+const axios = require("axios");
+const { exec } = require("child_process");
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/buy_binayah${batch}.csv`,
+    path: `${directory}/rent_binayah${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "type", title: "type" },
@@ -42,8 +43,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("buy_binayah");
-let csvWriter = csv_handler("buy_binayah", 1);
+let csvErrr = csv_error_handler("rent_binayah");
+let csvWriter = csv_handler("rent_binayah", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -177,7 +178,7 @@ async function visit_each(link, page) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("buy_binayah", batch);
+    csvWriter = csv_handler("rent_binayah", batch);
   }
 
   csvWriter
@@ -187,9 +188,9 @@ async function visit_each(link, page) {
 }
 
 async function main_loop(page, i) {
-  let target = `https://www.binayah.com/dubai-properties-for-sale/page/${i}/`;
+  let target = `https://www.binayah.com/dubai-properties-for-rent/page/${i}/`;
   if (i == 1) {
-    target = "https://www.binayah.com/dubai-properties-for-sale";
+    target = "https://www.binayah.com/dubai-properties-for-rent";
   }
   console.log(target);
   await page.goto(target);
@@ -223,18 +224,46 @@ async function main_loop(page, i) {
       }
     }
   }
+  if (i == 1 || i % 20 == 0 || i == 8) {
+    const message = `Done - rent binayah ${i} done`;
+
+    const url = "https://profoundproject.com/tele/";
+
+    axios
+      .get(url, {
+        params: {
+          message: message,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    if (i == 8) {
+      exec("pm2 stop main_binayah", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error executing command: ${error}`);
+          return;
+        }
+
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+      });
+    }
+  }
 }
 
 async function main() {
   const browser = await puppeteer.launch({
-    headless: false,
-    executablePath:
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    args: ["--enable-automation"],
+    headless: true,
+    executablePath: "/usr/bin/google-chrome-stable",
+    args: ["--no-sandbox"],
   });
   const page = await browser.newPage();
   // let plans_data = {};
-  for (let i = 1; i <= 32; i++) {
+  for (let i = 1; i <= 8; i++) {
     try {
       await main_loop(page, i);
     } catch (error) {
