@@ -2,13 +2,14 @@ const puppeteer = require("puppeteer");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
-
+const axios = require("axios");
+const { exec } = require("child_process");
 function csv_handler(directory, batch) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   return createCsvWriter({
-    path: `${directory}/area${batch}.csv`,
+    path: `${directory}/area_offplan${batch}.csv`,
     header: [
       { id: "title", title: "title" },
       { id: "description", title: "description" },
@@ -35,8 +36,8 @@ function csv_error_handler(directory) {
   });
 }
 
-let csvErrr = csv_error_handler("area");
-let csvWriter = csv_handler("area", 1);
+let csvErrr = csv_error_handler("area_offplan");
+let csvWriter = csv_handler("area_offplan", 1);
 let batch = 0;
 let j = 0;
 let main_err_record = 0;
@@ -197,7 +198,7 @@ async function visit_each(link, page, cover_image) {
 
   if (j % 500 == 0) {
     batch++;
-    csvWriter = csv_handler("area", batch);
+    csvWriter = csv_handler("area_offplan", batch);
   }
 
   csvWriter
@@ -255,15 +256,47 @@ async function main_loop(page, i) {
         }
       }
     }
+    if (
+      links.indexOf(link) === 0 ||
+      (links.indexOf(link) + 1) % 20 == 0 ||
+      links.indexOf(link) === links.length - 1
+    ) {
+      const message = `Done - area_offplan  ${links.indexOf(link) + 1} done`;
+
+      const url = "https://profoundproject.com/tele/";
+
+      axios
+        .get(url, {
+          params: {
+            message: message,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      if (links.indexOf(link) === links.length - 1) {
+        exec("pm2 stop main_binayah", (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error executing command: ${error}`);
+            return;
+          }
+
+          console.log(`stdout: ${stdout}`);
+          console.error(`stderr: ${stderr}`);
+        });
+      }
+    }
   }
 }
 
 async function main() {
   const browser = await puppeteer.launch({
-    headless: false,
-    executablePath:
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    args: ["--enable-automation"],
+    headless: true,
+    executablePath: "/usr/bin/google-chrome-stable",
+    args: ["--no-sandbox"],
   });
   const page = await browser.newPage();
   // let plans_data = {};

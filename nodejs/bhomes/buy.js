@@ -192,6 +192,12 @@ async function visit_each(link, page) {
         } catch (error) {}
       });
       images = [...new Set(images)];
+      let virtual_tour = "";
+      try {
+        virtual_tour = clean(
+          document.querySelector(".w-full.aspect-video").src
+        );
+      } catch (error) {}
       return {
         title: title,
         type: type,
@@ -208,11 +214,12 @@ async function visit_each(link, page) {
         description: description,
         amenities: amenities,
         images: images,
+        virtual_tour: virtual_tour,
         signaturea: Date.now(),
       };
     })
   );
-
+  console.log(data[0]);
   if (j % 500 == 0) {
     batch++;
     csvWriter = csv_handler("buy", batch);

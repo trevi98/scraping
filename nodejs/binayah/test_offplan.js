@@ -8,9 +8,7 @@ async function run() {
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(80000);
-  await page.goto(
-    "https://www.binayah.com/dubai-projects/raffles-residences-palm-jumeirah/"
-  );
+  await page.goto("https://www.binayah.com/dubai-projects/tria-by-deyaar/");
   // .vc_row.wpb_row.vc_inner.vc_row-fluid:not(.payment) .wpb_single_image.wpb_content_element.vc_align_center +.wpb_text_column.wpb_content_element;
   const links = await page.evaluate(() => {
     let title = "";
@@ -93,7 +91,12 @@ async function run() {
     if (
       document.querySelector(
         ".wpb_text_column.wpb_content_element + .wpb_row.vc_inner.vc_row-fluid.lists"
-      ) !== null
+      ) !== null ||
+      /amenities/i.test(
+        document.querySelectorAll(
+          ".wpb_text_column.wpb_content_element .wpb_wrapper"
+        )[3].textContent
+      )
     ) {
       try {
         Amenities_description = document.querySelectorAll(
@@ -199,18 +202,27 @@ async function run() {
   });
   let images;
   if (exist) {
-    await page.waitForSelector(".vc_clearfix.vc_col-sm-3.vc_visible-item");
-    // try {
-    //   await page.waitForSelector(
-    //     ".vc_grid-container-wrapper.vc_clearfix.vc_grid-animation-fadeIn .vc_grid-item.vc_clearfix.vc_visible-item"
+    await page.keyboard.down("End");
+    await page.waitForTimeout(1000);
+    await page.keyboard.down("Home");
+    await page.waitForTimeout(5000);
+    // if (
+    //   await page.evaluate(() => {
+    //     return document.querySelector(
+    //       ".vc_gitem-link.prettyphoto.vc-zone-link.vc-prettyphoto-link"
+    //     );
+    //   })
+    // ) {
+    //   console.log("d");
+    //   await page.click(
+    //     ".vc_gitem-link.prettyphoto.vc-zone-link.vc-prettyphoto-link"
     //   );
-    // } catch (error) {}
-    await page.click(".vc_grid-item.vc_clearfix.vc_col-sm-3.vc_visible-item a");
+    // }
     images = await page.evaluate(() => {
       let imgs = [];
       temp = Array.from(
         document.querySelectorAll(
-          ".vc_grid-item.vc_clearfix.vc_col-sm-3.vc_visible-item a"
+          ".vc_gitem-link.prettyphoto.vc-zone-link.vc-prettyphoto-link"
         )
       );
       temp.forEach((e) => {

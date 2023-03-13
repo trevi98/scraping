@@ -24,6 +24,7 @@ function csv_handler(directory, batch) {
       { id: "description", title: "description" },
       { id: "amenities", title: "amenities" },
       { id: "images", title: "images" },
+      { id: "virtual_tour", title: "virtual_tour" },
       { id: "signaturea", title: "signaturea" },
     ],
   });
@@ -155,6 +156,12 @@ async function visit_each(link, page) {
         } catch (error) {}
       });
       images = [...new Set(images)];
+      let virtual_tour = "";
+      try {
+        virtual_tour = clean(
+          document.querySelector(".w-full.aspect-video").src
+        );
+      } catch (error) {}
       return {
         title: title,
         area: area,
@@ -169,6 +176,7 @@ async function visit_each(link, page) {
         description: description,
         amenities: amenities,
         images: images,
+        virtual_tour: virtual_tour,
         signaturea: Date.now(),
       };
     })
